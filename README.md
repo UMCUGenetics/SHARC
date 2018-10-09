@@ -10,3 +10,5 @@ pip install -r requirements.txt
 ```
 bash /hpc/cog_bioinf/kloosterman/common_scripts/sharc/sharc.sh -f </path/to/fastqdir> -m <email> -mc <mean_coverage> -o </path/to/outputdir>
 ```
+
+## Add random text for commit test
