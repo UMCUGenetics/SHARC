@@ -12,3 +12,4 @@ bash /hpc/cog_bioinf/kloosterman/common_scripts/sharc/sharc.sh -f </path/to/fast
 ```
 
 ## Add random text for commit test
+randome test
