@@ -8,5 +8,5 @@ pip install -r requirements.txt
 ```
 ## How to run
 ```
-bash sharc.sh -f </path/to/fastqdir> -m <email> -mc <mean_coverage> -o </path/to/outputdir>
+bash /hpc/cog_bioinf/kloosterman/common_scripts/sharc/sharc.sh -f </path/to/fastqdir> -m <email> -mc <mean_coverage> -o </path/to/outputdir>
 ```
