@@ -151,8 +151,7 @@ cat << EOF > $BED_SH
 #$ -l h_rt=$BED_TIME
 #$ -e $BED_ERR
 #$ -o $BED_LOG
-#$ -m ea
-#$ -M $MAIL
+
 
 ID=\$SGE_TASK_ID
 

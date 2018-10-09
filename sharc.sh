@@ -218,6 +218,10 @@ VCF_PRIMER_FILTER_MEM=2G
 VCF_PRIMER_FILTER_TIME=0:5:0
 VCF_PRIMER_FILTER_SCRIPT=$SCRIPTSDIR/vcf_primer_filter.py
 
+# CHECK_SHARC FILTER DEFAULTS
+CHECK_SHARC_MEM=1G
+CHECK_SHARC_TIME=0:5:0
+
 while [[ $# -gt 0 ]]
 do
     key="$1"
@@ -711,6 +715,14 @@ VCF_PRIMER_FILTER_ERR=$LOGDIR/$VCF_PRIMER_FILTER_JOBNAME.err
 VCF_PRIMER_FILTER_LOG=$LOGDIR/$VCF_PRIMER_FILTER_JOBNAME.log
 VCF_PRIMER_FILTER_OUT=$VCF_PRIMER_FILTER_OUTDIR/$(basename ${SHARC_FILTER_OUT/.vcf/.primers.vcf})
 
+
+CHECK_SHARC_OUTDIR=$OUTPUTDIR
+CHECK_SHARC_JOBNAME=$OUTNAME'_CHECKSHARC_'$RAND
+CHECK_SHARC_SH=$JOBDIR/$CHECK_SHARC_JOBNAME.sh
+CHECK_SHARC_ERR=$LOGDIR/$CHECK_SHARC_JOBNAME.err
+CHECK_SHARC_LOG=$LOGDIR/$CHECK_SHARC_JOBNAME.log
+CHECK_SHARC_OUT=$CHECK_SHARC_OUTDIR/$OUTNAME'.check'
+
 mkdir -p $OUTPUTDIR
 if [ ! -d $OUTPUTDIR ]; then
     exit
@@ -770,8 +782,7 @@ cat << EOF > $MAPPING_SH
 #$ -l h_rt=$MAPPING_TIME
 #$ -e $MAPPING_ERR
 #$ -o $MAPPING_LOG
-#$ -m ea
-#$ -M $MAIL
+
 
 ID=\$((\$SGE_TASK_ID-1))
 
@@ -810,8 +821,6 @@ cat << EOF > $MAPPING_MERGE_SH
 #$ -l h_rt=$MAPPING_MERGE_TIME
 #$ -e $MAPPING_MERGE_ERR
 #$ -o $MAPPING_MERGE_LOG
-#$ -m ea
-#$ -M $MAIL
 EOF
 
 if [ ! -z $MAPPING_JOBNAME ]; then
@@ -855,8 +864,6 @@ cat << EOF > $SV_SH
 #$ -l h_rt=$SV_TIME
 #$ -e $SV_ERR
 #$ -o $SV_LOG
-#$ -m ea
-#$ -M $MAIL
 EOF
 
 if [ ! -z $MAPPING_MERGE_JOBNAME ]; then
@@ -888,8 +895,6 @@ cat << EOF > $VCF_FILTER_SH
 #$ -l h_rt=$VCF_FILTER_TIME
 #$ -e $VCF_FILTER_ERR
 #$ -o $VCF_FILTER_LOG
-#$ -m ea
-#$ -M $MAIL
 EOF
 
 if [ ! -z $SV_JOBNAME ]; then
@@ -921,8 +926,6 @@ cat << EOF > $VCF_SPLIT_SH
 #$ -l h_rt=$VCF_SPLIT_TIME
 #$ -e $VCF_SPLIT_ERR
 #$ -o $VCF_SPLIT_LOG
-#$ -m ea
-#$ -M $MAIL
 EOF
 
 if [ ! -z $VCF_FILTER_JOBNAME ]; then
@@ -966,8 +969,6 @@ cat << EOF > $CREATE_BED_ANNOTATION_SH
 #$ -l h_rt=$CREATE_BED_ANNOTATION_TIME
 #$ -e $CREATE_BED_ANNOTATION_ERR
 #$ -o $CREATE_BED_ANNOTATION_LOG
-#$ -m ea
-#$ -M $MAIL
 EOF
 
 if [ ! -z $VCF_SPLIT_JOBNAME ]; then
@@ -1005,8 +1006,6 @@ cat << EOF > $BED_ANNOTATION_MERGE_SH
 #$ -l h_rt=$BED_ANNOTATION_MERGE_TIME
 #$ -e $BED_ANNOTATION_MERGE_ERR
 #$ -o $BED_ANNOTATION_MERGE_LOG
-#$ -m ea
-#$ -M $MAIL
 EOF
 
 if [ ! -z $BED_ANNOTATION_JOBNAMES ]; then
@@ -1047,8 +1046,6 @@ cat << EOF > $RF_SH
 #$ -l h_rt=$RF_TIME
 #$ -e $RF_ERR
 #$ -o $RF_LOG
-#$ -m ea
-#$ -M $MAIL
 EOF
 
 if [ ! -z $BED_ANNOTATION_MERGE_JOBNAME ]; then
@@ -1099,8 +1096,6 @@ cat << EOF > $DB_SH
 #$ -l h_rt=$DB_TIME
 #$ -e $DB_ERR
 #$ -o $DB_LOG
-#$ -m ea
-#$ -M $MAIL
 EOF
 
 if [ ! -z $RF_JOBNAME ]; then
@@ -1148,8 +1143,6 @@ cat << EOF > $DB_MERGE_SH
 #$ -l h_rt=$DB_MERGE_TIME
 #$ -e $DB_MERGE_ERR
 #$ -o $DB_MERGE_LOG
-#$ -m ea
-#$ -M $MAIL
 EOF
 
 if [ ! -z $DB_JOBNAMES ]; then
@@ -1188,8 +1181,6 @@ cat << EOF > $SHARC_FILTER_SH
 #$ -l h_rt=$SHARC_FILTER_TIME
 #$ -e $SHARC_FILTER_ERR
 #$ -o $SHARC_FILTER_LOG
-#$ -m ea
-#$ -M $MAIL
 EOF
 
 if [ ! -z $DB_MERGE_JOBNAME ]; then
@@ -1221,8 +1212,6 @@ cat << EOF > $VCF_FASTA_SH
 #$ -l h_rt=$VCF_FASTA_TIME
 #$ -e $VCF_FASTA_ERR
 #$ -o $VCF_FASTA_LOG
-#$ -m ea
-#$ -M $MAIL
 EOF
 
 if [ ! -z $SHARC_FILTER_JOBNAME ]; then
@@ -1265,8 +1254,6 @@ cat << EOF > $PRIMER_DESIGN_SH
 #$ -l h_rt=$PRIMER_DESIGN_TIME
 #$ -e $PRIMER_DESIGN_ERR
 #$ -o $PRIMER_DESIGN_ERR
-#$ -m ea
-#$ -M $MAIL
 EOF
 
 if [ ! -z $VCF_FASTA_JOBNAME ]; then
@@ -1314,8 +1301,6 @@ cat << EOF > $VCF_PRIMER_FILTER_SH
 #$ -l h_rt=$VCF_PRIMER_FILTER_TIME
 #$ -e $VCF_PRIMER_FILTER_ERR
 #$ -o $VCF_PRIMER_FILTER_LOG
-#$ -m ea
-#$ -M $MAIL
 EOF
 
 if [ ! -z $PRIMER_DESIGN_JOBNAME ]; then
@@ -1335,6 +1320,97 @@ fi
 echo \`date\`: Done
 EOF
 qsub $VCF_PRIMER_FILTER_SH
+}
+
+check_SHARC() {
+cat << EOF > $CHECK_SHARC_SH
+#!/bin/bash
+
+#$ -N $CHECK_SHARC_JOBNAME
+#$ -cwd
+#$ -l h_vmem=$CHECK_SHARC_MEM
+#$ -l h_rt=$CHECK_SHARC_TIME
+#$ -e $CHECK_SHARC_ERR
+#$ -o $CHECK_SHARC_LOG
+#$ -m ea
+#$ -M $MAIL
+EOF
+
+if [ ! -z $VCF_PRIMER_FILTER_JOBNAME ]; then
+cat << EOF >> $CHECK_SHARC_SH
+#$ -hold_jid $VCF_PRIMER_FILTER_JOBNAME
+EOF
+fi
+
+cat << EOF >> $CHECK_SHARC_SH
+echo \`date\`: Running on \`uname -n\`
+touch $CHECK_SHARC_OUT
+
+if [ -e $MAPPING_MERGE_OUT.done ]; then
+    echo "Mapping: Done" >> $CHECK_SHARC_OUT
+else
+    echo "Mapping: Fail" >> $CHECK_SHARC_OUT
+fi
+
+if [ -e $SV_OUT.done ]; then
+    echo "SV calling: Done" >> $CHECK_SHARC_OUT
+else
+    echo "SV calling: Fail" >> $CHECK_SHARC_OUT
+fi
+
+if [ -e $VCF_FILTER_OUT.done ]; then
+    echo "VCF filter: Done" >> $CHECK_SHARC_OUT
+else
+    echo "VCF filter: Fail" >> $CHECK_SHARC_OUT
+fi
+
+if [ -e $BED_ANNOTATION_MERGE_OUT.done ]; then
+    echo "BED annotation: Done" >> $CHECK_SHARC_OUT
+else
+    echo "BED annotation: Fail" >> $CHECK_SHARC_OUT
+fi
+
+if [ -e $RF_OUT.done ]; then
+    echo "Random Forest: Done" >> $CHECK_SHARC_OUT
+else
+    echo "Random Forest: Fail" >> $CHECK_SHARC_OUT
+fi
+
+if [ -e $DB_MERGE_OUT.done ]; then
+    echo "DB filter: Done" >> $CHECK_SHARC_OUT
+else
+    echo "DB filter: Fail" >> $CHECK_SHARC_OUT
+fi
+
+if [ -e $SHARC_FILTER_OUT.done ]; then
+    echo "SHARC filter: Done" >> $CHECK_SHARC_OUT
+else
+    echo "SHARC filter: Fail" >> $CHECK_SHARC_OUT
+fi
+
+if [ -e $VCF_FASTQ_OUT.done ]; then
+    echo "VCF to FASTA: Done" >> $CHECK_SHARC_OUT
+else
+    echo "VCF to FASTA: Fail" >> $CHECK_SHARC_OUT
+fi
+
+if [ -e $PRIMER_DESIGN_OUT.done ]; then
+    echo "Primer design: Done" >> $CHECK_SHARC_OUT
+else
+    echo "Primer design: Fail" >> $CHECK_SHARC_OUT
+fi
+
+if [ -e $VCF_PRIMER_FILTER.done ]; then
+    echo "VCF primer filter: Done" >> $CHECK_SHARC_OUT
+else
+    echo "VCF primer filter: Fail" >> $CHECK_SHARC_OUT
+fi
+touch $CHECK_SHARC_OUT.done
+
+
+echo \`date\`: Done
+EOF
+qsub $CHECK_SHARC_SH
 }
 
 prepare
@@ -1371,4 +1447,7 @@ if [ ! -e $PRIMER_DESIGN_OUT.done ]; then
 fi
 if [ ! -e $VCF_PRIMER_FILTER_OUT.done ]; then
   vcf_primer_filter
+fi
+if [ ! -e $CHECK_SHARC_OUT.done ]; then
+  check_SHARC
 fi
