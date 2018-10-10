@@ -836,7 +836,12 @@ NUMBER_OF_DONE_FILES=\$(ls -l $MAPPING_TMP_DIR/*.done | wc -l)
 
 if [ ! -e $MAPPING_MERGE_OUT.done ]; then
     if [ \$NUMBER_OF_DONE_FILES -eq $NUMBER_OF_FASTQ_FILES ]; then
-	     $MAPPING_SAMBAMBA merge -t $MAPPING_THREADS $MAPPING_MERGE_OUT $MAPPING_TMP_DIR/*.sorted.bam
+        if [ \$NUMBER_OF_DONE_FILES -eq 1 ]; then
+            cp $MAPPING_TMP_DIR/*.sorted.bam $MAPPING_MERGE_OUT
+            cp $MAPPING_TMP_DIR/*.sorted.bam.bai $MAPPING_MERGE_OUT.bai
+        else
+            $MAPPING_SAMBAMBA merge -t $MAPPING_THREADS $MAPPING_MERGE_OUT $MAPPING_TMP_DIR/*.sorted.bam
+        fi
     else
 	     echo "Not enough done files found"
        exit
@@ -1314,7 +1319,7 @@ echo \`date\`: Running on \`uname -n\`
 
 if [ -e $PRIMER_DESIGN_OUT.done ]; then
     bash $STEPSDIR/vcf_primer_filter.sh -v $SHARC_FILTER_OUT -p $PRIMER_DESIGN_OUT -o $VCF_PRIMER_FILTER_OUT -s $VCF_PRIMER_FILTER_SCRIPT
-    touch $VCF_PRIMER_FILTER.done
+    touch $VCF_PRIMER_FILTER_OUT.done
 fi
 
 echo \`date\`: Done
