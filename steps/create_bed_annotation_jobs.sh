@@ -119,7 +119,7 @@ elif [ -z $BED_MEM ]; then
     echo "Missing -vm|--vmem parameter"
     usage
     exit
-elif [ -z $BED_TIME]; then
+elif [ -z $BED_TIME ]; then
     echo "Missing -rt|--runtime parameter"
     usage
     exit

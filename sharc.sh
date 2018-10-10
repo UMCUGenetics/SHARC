@@ -32,67 +32,67 @@ MAPPING MERGE
 
 SV_CALLING
     -svt|--sv_threads                            Number of threads [$SV_THREADS]
-    -svhv|--sv_h_vmem                            Mapping memory [$SV_MEM]
-    -svhr|--sv_h_rt                              Mapping time [$SV_TIME]
+    -svhv|--sv_h_vmem                            SV calling memory [$SV_MEM]
+    -svhr|--sv_h_rt                              SV calling time [$SV_TIME]
     -svc|--sv_config		                         Path to config file [$SV_CONFIG]
     -svs|--sv_sambamba	                         Path to sambamba [$SV_SAMBAMBA]
 
 VCF_FILTER
-    -vfhv|--vcf_filter_h_vmem                    Mapping memory [$VCF_FILTER_MEM]
-    -vfhr|--vcf_filter_h_rt                      Mapping time [$VCF_FILTER_TIME]
+    -vfhv|--vcf_filter_h_vmem                    VCF filter memory [$VCF_FILTER_MEM]
+    -vfhr|--vcf_filter_h_rt                      VCF filter time [$VCF_FILTER_TIME]
     -vfq|--vcf_filter_query                      VCF Filter query [$VCF_FILTER_QUERY]
 
 VCF_SPLIT
-    -vshv|--vcf_split_h_vmem                     Mapping memory [$VCF_SPLIT_MEM]
-    -vshr|--vcf_split_h_rt                       Mapping time [$VCF_SPLIT_TIME]
+    -vshv|--vcf_split_h_vmem                     VCF split memory [$VCF_SPLIT_MEM]
+    -vshr|--vcf_split_h_rt                       VCF split time [$VCF_SPLIT_TIME]
     -vsl|--vcf_split_lines		                   Number of lines per split [$VCF_SPLIT_LINES]
 
 CREATE_BED_ANNOTATION
-    -cbahv|--create_bed_annotation_h_vmem        Mapping memory [$CREATE_BED_ANNOTATION_MEM]
-    -cbahr|--create_bed_annotation_h_rt          Mapping time [$CREATE_BED_ANNOTATION_TIME]
+    -cbahv|--create_bed_annotation_h_vmem        Create BED memory [$CREATE_BED_ANNOTATION_MEM]
+    -cbahr|--create_bed_annotation_h_rt          Create BED time [$CREATE_BED_ANNOTATION_TIME]
 
 BED_ANNOTATION
-    -bahv|--bad_annotation_h_vmem                Mapping memory [$BED_ANNOTATION_MEM]
-    -bahr|--bad_annotation_h_rt                  Mapping time [$BED_ANNOTATION_TIME]
+    -bahv|--bad_annotation_h_vmem                BED annotation memory [$BED_ANNOTATION_MEM]
+    -bahr|--bad_annotation_h_rt                  BED annotation time [$BED_ANNOTATION_TIME]
     -baf|--bed_annotation_files	                 Path to the directory with the feature bed files [$BED_ANNOTATION_FILES]
     -bas|--bed_annotation_script	               Path to get_closest_feature.py script [$BED_ANNOTATION_SCRIPT]
 
 BED_ANNOTATION MERGE
-    -bamhv|--bed_annotation_merge_h_vmem         Mapping memory [$BED_ANNOTATION_MERGE_MEM]
-    -bamhr|--bed_annotation_merge_h_rt           Mapping time [$BED_ANNOTATION_MERGE_TIME]
+    -bamhv|--bed_annotation_merge_h_vmem         Merge annotation memory [$BED_ANNOTATION_MERGE_MEM]
+    -bamhr|--bed_annotation_merge_h_rt           Merge annotation time [$BED_ANNOTATION_MERGE_TIME]
 
 RANDOM_FOREST
-    -rfhv|--rf_h_vmem                            Mapping memory [$RF_MEM]
-    -rfhr|--rf_h_rt                              Mapping time [$RF_TIME]
+    -rfhv|--rf_h_vmem                            Random forest memory [$RF_MEM]
+    -rfhr|--rf_h_rt                              Random forest time [$RF_TIME]
     -rffts|--rf_ft_script                        Path to create_features_table.pl script [$RF_CREATE_FEATURE_TABLE_SCRIPT]
     -rfs|--rf_script                             Path to run_randomForest.R script [$RF_SCRIPT]
     -rfps|--rf_p_script                          Path to add_predict_annotation.py script [$RF_ADD_PREDICT_SCRIPT]
 
 DB FILTER
-    -dbhv|--db_h_vmem                            Mapping memory [$DB_MEM]
-    -dbhr|--db_h_rt                              Mapping time [$DB_TIME]
+    -dbhv|--db_h_vmem                            DB filter memory [$DB_MEM]
+    -dbhr|--db_h_rt                              DB filter time [$DB_TIME]
     -dbf|--db_flank                              Database filter flank [$DB_FLANK]
 
 DB MERGE
-    -dbmhv|--db_merge_h_vmem                     Mapping memory [$DB_MERGE_MEM]
-    -dbmhr|--db_merge_h_rt                       Mapping time [$DB_MERGE_TIME]
+    -dbmhv|--db_merge_h_vmem                     Merge DB annotation memory [$DB_MERGE_MEM]
+    -dbmhr|--db_merge_h_rt                       Merge DB annotation time [$DB_MERGE_TIME]
 
 SHARC_FILTER
-    -sfhv|--sharc_filter_h_vmem                  Mapping memory [$SHARC_FILTER_MEM]
-    -sfhr|--sharc_filter_h_rt                    Mapping time [$SHARC_FILTER_TIME]
+    -sfhv|--sharc_filter_h_vmem                  SHARC Filter memory [$SHARC_FILTER_MEM]
+    -sfhr|--sharc_filter_h_rt                    Sharc Filter time [$SHARC_FILTER_TIME]
     -sfq|--sharc_filter_query                    SHARC Filter query [$SHARC_FILTER_QUERY]
 
 VCF_TO_FASTA
-    -v2fhv|--vcf_fasta_h_vmem                    Mapping memory [$VCF_FASTA_MEM]
-    -v2fhr|--vcf_fasta_h_rt                      Mapping time [$VCF_FASTA_TIME]
+    -v2fhv|--vcf_fasta_h_vmem                    VCF to FASTA memory [$VCF_FASTA_MEM]
+    -v2fhr|--vcf_fasta_h_rt                      VCF to FASTA time [$VCF_FASTA_TIME]
     -v2fo|--vcf_fasta_offset                     VCF to FASTA offset [$VCF_FASTA_OFFSET]
     -v2ff|--vcf_fasta_flank                      VCF to FASTA flank [$VCF_FASTA_FLANK]
     -v2fm|--vcf_fasta_mask                       VCF tot FASTA mask [$VCF_FASTA_MASK]
     -v2fs|--vcf_fasta_script                     Path to vcf_to_fasta.py [$VCF_FASTA_SCRIPT]
 
 PRIMER DESIGN
-    -pdhv|--primer_design_h_vmem                 Mapping memory [$PRIMER_DESIGN_MEM]
-    -pdhr|--primer_design_h_rt                   Mapping time [$PRIMER_DESIGN_TIME]
+    -pdhv|--primer_design_h_vmem                 Primer design memory [$PRIMER_DESIGN_MEM]
+    -pdhr|--primer_design_h_rt                   Primer design time [$PRIMER_DESIGN_TIME]
     -pdd|--primer_design_dir                     Path to primer3 directory [$PRIMER_DESIGN_DIR]
     -pdb|--primer_design_bindir                  Path to primer3 bin dir [$PRIMER_DESIGN_BINDIR]
     -pdpt|--primer_design_pcr_type               PCR type [$PRIMER_DESIGN_PCR_TYPE]
@@ -103,8 +103,8 @@ PRIMER DESIGN
     -pdm|--primer_design_mispriming              Path to mispriming [$PRIMER_DESIGN_MISPRIMING]
 
 VCF PRIMER FILTER
-    -vpfhv|--vcf_primer_filter_h_vmem            Mapping memory [$VCF_PRIMER_FILTER_MEM]
-    -vpfhr|--vcf_primer_filter_h_rt              Mapping time [$VCF_PRIMER_FILTER_TIME]
+    -vpfhv|--vcf_primer_filter_h_vmem            VCF Primer Filter memory [$VCF_PRIMER_FILTER_MEM]
+    -vpfhr|--vcf_primer_filter_h_rt              VCF Primer Filter time [$VCF_PRIMER_FILTER_TIME]
     -vpfs|--vcf_primer_filter_script             Path to vcf_primer_filter.py [$VCF_PRIMER_FILTER_SCRIPT]
 
 
@@ -1337,8 +1337,7 @@ cat << EOF > $CHECK_SHARC_SH
 #$ -l h_rt=$CHECK_SHARC_TIME
 #$ -e $CHECK_SHARC_ERR
 #$ -o $CHECK_SHARC_LOG
-#$ -m ea
-#$ -M $MAIL
+
 EOF
 
 if [ ! -z $VCF_PRIMER_FILTER_JOBNAME ]; then
@@ -1349,71 +1348,88 @@ fi
 
 cat << EOF >> $CHECK_SHARC_SH
 echo \`date\`: Running on \`uname -n\`
-touch $CHECK_SHARC_OUT
-
+CHECK_BOOL=true
+echo "------------------------------------------------" >> $CHECK_SHARC_OUT
+echo "\`date\`" >> $CHECK_SHARC_OUT
+echo "Qsub ID: $RAND" >> $CHECK_SHARC_OUT
+echo "Sample name: $OUTNAME" >> $CHECK_SHARC_OUT
 if [ -e $MAPPING_MERGE_OUT.done ]; then
     echo "Mapping: Done" >> $CHECK_SHARC_OUT
 else
     echo "Mapping: Fail" >> $CHECK_SHARC_OUT
+    CHECK_BOOL=false
 fi
 
 if [ -e $SV_OUT.done ]; then
     echo "SV calling: Done" >> $CHECK_SHARC_OUT
 else
     echo "SV calling: Fail" >> $CHECK_SHARC_OUT
+    CHECK_BOOL=false
 fi
 
 if [ -e $VCF_FILTER_OUT.done ]; then
     echo "VCF filter: Done" >> $CHECK_SHARC_OUT
 else
     echo "VCF filter: Fail" >> $CHECK_SHARC_OUT
+    CHECK_BOOL=false
 fi
 
 if [ -e $BED_ANNOTATION_MERGE_OUT.done ]; then
     echo "BED annotation: Done" >> $CHECK_SHARC_OUT
 else
     echo "BED annotation: Fail" >> $CHECK_SHARC_OUT
+    CHECK_BOOL=false
 fi
 
 if [ -e $RF_OUT.done ]; then
     echo "Random Forest: Done" >> $CHECK_SHARC_OUT
 else
     echo "Random Forest: Fail" >> $CHECK_SHARC_OUT
+    CHECK_BOOL=false
 fi
 
 if [ -e $DB_MERGE_OUT.done ]; then
     echo "DB filter: Done" >> $CHECK_SHARC_OUT
 else
     echo "DB filter: Fail" >> $CHECK_SHARC_OUT
+    CHECK_BOOL=false
 fi
 
 if [ -e $SHARC_FILTER_OUT.done ]; then
     echo "SHARC filter: Done" >> $CHECK_SHARC_OUT
 else
     echo "SHARC filter: Fail" >> $CHECK_SHARC_OUT
+    CHECK_BOOL=false
 fi
 
-if [ -e $VCF_FASTQ_OUT.done ]; then
+if [ -e $VCF_FASTA_OUT.done ]; then
     echo "VCF to FASTA: Done" >> $CHECK_SHARC_OUT
 else
     echo "VCF to FASTA: Fail" >> $CHECK_SHARC_OUT
+    CHECK_BOOL=false
 fi
 
 if [ -e $PRIMER_DESIGN_OUT.done ]; then
     echo "Primer design: Done" >> $CHECK_SHARC_OUT
 else
     echo "Primer design: Fail" >> $CHECK_SHARC_OUT
+    CHECK_BOOL=false
 fi
 
-if [ -e $VCF_PRIMER_FILTER.done ]; then
+if [ -e $VCF_PRIMER_FILTER_OUT.done ]; then
     echo "VCF primer filter: Done" >> $CHECK_SHARC_OUT
 else
     echo "VCF primer filter: Fail" >> $CHECK_SHARC_OUT
+    CHECK_BOOL=false
 fi
-touch $CHECK_SHARC_OUT.done
-
+if [ \$CHECK_BOOL = true ]; then 
+    touch $CHECK_SHARC_OUT.done
+fi
+tail -13 $CHECK_SHARC_OUT | mail -s 'SHARC_${OUTNAME}_${RAND}' $MAIL
 
 echo \`date\`: Done
+
+sleep 20
 EOF
 qsub $CHECK_SHARC_SH
 }

@@ -19,7 +19,7 @@ Optional parameters:
 POSITIONAL=()
 
 # DEFAULTS
-MINIMAP2='/hpc/cog_bioinf/kloosterman/tools/minimap2/minimap2'
+MINIMAP2='/hpc/cog_bioinf/kloosterman/tools/minimap2_v2.12/minimap2'
 THREADS=1
 REF='/hpc/cog_bioinf/GENOMES/Homo_sapiens.GRCh37.GATK.illumina/Homo_sapiens.GRCh37.GATK.illumina.fasta'
 SAMBAMBA='/hpc/local/CentOS7/cog_bioinf/sambamba_v0.6.5/sambamba'
@@ -87,7 +87,7 @@ $SAMBAMBA sort -m9G -t $THREADS --tmpdir=./ /dev/stdin \
 -o $OUTPUT
 
 if [ -e $OUTPUT ]; then
-    NUMBER_OF_READS_IN_FASTQ=$(grep "^@" $FASTQ | wc -l)
+    NUMBER_OF_READS_IN_FASTQ=$(grep "^@" $FASTQ | sort | uniq | wc -l)
     NUMBER_OF_READS_IN_BAM=$($SAMBAMBA view $OUTPUT | cut -f 1 | sort | uniq | wc -l)
     if [ "$NUMBER_OF_READS_IN_FASTQ" == "$NUMBER_OF_READS_IN_BAM" ]; then
         touch $OUTPUT.done
