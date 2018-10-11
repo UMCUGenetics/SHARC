@@ -14,6 +14,7 @@ GENERAL
     -sd|--sharc_dir                              Path to sharc directory [$SHARCDIR]
     -v|--venv		                                 Path to virtual env [$VENV]
     -o|--outputdir	                             Path to output directory [$OUTPUTDIR]
+    -dc|--dont_clean                             Don't clean up the mapping tmp dir [$DONT_CLEAN]
 
 MAPPING
     -mt|--mapping_threads	                       Number of threads [$MAPPING_THREADS]
@@ -79,7 +80,7 @@ DB MERGE
 
 SHARC_FILTER
     -sfhv|--sharc_filter_h_vmem                  SHARC Filter memory [$SHARC_FILTER_MEM]
-    -sfhr|--sharc_filter_h_rt                    Sharc Filter time [$SHARC_FILTER_TIME]
+    -sfhr|--sharc_filter_h_rt                    SHARC Filter time [$SHARC_FILTER_TIME]
     -sfq|--sharc_filter_query                    SHARC Filter query [$SHARC_FILTER_QUERY]
 
 VCF_TO_FASTA
@@ -87,7 +88,7 @@ VCF_TO_FASTA
     -v2fhr|--vcf_fasta_h_rt                      VCF to FASTA time [$VCF_FASTA_TIME]
     -v2fo|--vcf_fasta_offset                     VCF to FASTA offset [$VCF_FASTA_OFFSET]
     -v2ff|--vcf_fasta_flank                      VCF to FASTA flank [$VCF_FASTA_FLANK]
-    -v2fm|--vcf_fasta_mask                       VCF tot FASTA mask [$VCF_FASTA_MASK]
+    -v2fm|--vcf_fasta_mask                       VCF to FASTA mask [$VCF_FASTA_MASK]
     -v2fs|--vcf_fasta_script                     Path to vcf_to_fasta.py [$VCF_FASTA_SCRIPT]
 
 PRIMER DESIGN
@@ -122,6 +123,7 @@ SCRIPTSDIR=$SHARCDIR/scripts
 FILESDIR=$SHARCDIR/files
 OUTPUTDIR='./'
 SAMBAMBA='/hpc/local/CentOS7/cog_bioinf/sambamba_v0.6.5/sambamba'
+DONT_CLEAN=false
 
 # MAPPING DEFAULTS
 MAPPING_THREADS=1
@@ -261,6 +263,10 @@ do
     OUTPUTDIR="$2"
     shift # past argument
     shift # past value
+    ;;
+    -dc|--dont_clean)
+    DONT_CLEAN=true
+    shift # past argument
     ;;
 # MAPPING OPTIONS
     -mt|--mapping_threads)
@@ -1422,8 +1428,11 @@ else
     echo "VCF primer filter: Fail" >> $CHECK_SHARC_OUT
     CHECK_BOOL=false
 fi
-if [ \$CHECK_BOOL = true ]; then 
+if [ \$CHECK_BOOL = true ]; then
     touch $CHECK_SHARC_OUT.done
+    if [ $DONT_CLEAN = false ]; then
+      rm -rf $MAPPING_TMP_DIR
+    fi
 fi
 tail -13 $CHECK_SHARC_OUT | mail -s 'SHARC_${OUTNAME}_${RAND}' $MAIL
 
