@@ -61,6 +61,11 @@ do
     shift # past argument
     shift # past value
     ;;
+    -p|--parameters)
+    SETTINGS="$2"
+    shift # past argument
+    shift # past value
+    ;;
     -o|--output)
     OUTPUT="$2"
     shift # past argument

@@ -131,7 +131,7 @@ JOBNAMES=(`echo $HOLDJOBNAMES | sed 's/,/ /g'`)
 NUMBER_OF_SPLIT_FILES=$(ls -l $VCF_SPLIT_OUTPUTDIR/*.vcf | wc -l)
 i=1
 
-for BED in $BEDFILES/*.bed; do
+for BED in $BEDFILES/*.feature.bed; do
   BEDNAME=($(basename $BED | tr '.' ' '))
   BEDNAME=${BEDNAME[0]}
   BED_JOBNAME=${JOBNAMES[i]}

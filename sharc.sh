@@ -3,111 +3,115 @@
 usage() {
 echo "
 Required parameters:
-    -f|--fastqdir                                Path to fastq directory
-    -m|--mail                                    Email adress
-    -mc|--meancov                                Mean coverage
+    -f|--fastqdir                                        Path to fastq directory
+    -m|--mail                                            Email adress
 
 Optional parameters:
 
 GENERAL
-    -h|--help		                                 Shows help
-    -sd|--sharc_dir                              Path to sharc directory [$SHARCDIR]
-    -v|--venv		                                 Path to virtual env [$VENV]
-    -o|--outputdir	                             Path to output directory [$OUTPUTDIR]
-    -dc|--dont_clean                             Don't clean up the mapping tmp dir [$DONT_CLEAN]
+    -h|--help		                                         Shows help
+    -sd|--sharc_dir                                      Path to sharc directory [$SHARCDIR]
+    -v|--venv		                                         Path to virtual env [$VENV]
+    -o|--outputdir	                                     Path to output directory [$OUTPUTDIR]
+    -dc|--dont_clean                                     Don't clean up the mapping tmp dir [$DONT_CLEAN]
 
 MAPPING
-    -mt|--mapping_threads	                       Number of threads [$MAPPING_THREADS]
-    -mhv|--mapping_h_vmem                        Mapping memory [$MAPPING_MEM]
-    -mhr|--mapping_h_rt                          Mapping time [$MAPPING_TIME]
-    -mr|--mapping_ref		                         Path to reference fasta file [$MAPPING_REF]
-    -mm|--minimap2	                             Path to minimap2 [$MAPPING_MINIMAP2]
-    -mms|--minimap2_settings                     minimap2 settings [$MAPPING_MINIMAP2_SETTINGS]
-    -msb|--mapping_sambamba	                     Path to sambamba [$MAPPING_SAMBAMBA]
+    -mt|--mapping_threads	                               Number of threads [$MAPPING_THREADS]
+    -mhv|--mapping_h_vmem                                Mapping memory [$MAPPING_MEM]
+    -mm|--minimap2	                                     Path to minimap2 [$MAPPING_MINIMAP2]
+    -mms|--minimap2_settings                             Minimap2 settings [$MAPPING_MINIMAP2_SETTINGS]
+    -msb|--mapping_sambamba	                             Path to sambamba [$MAPPING_SAMBAMBA]
 
 MAPPING MERGE
-    -mmt|--mapping_merge_threads	               Number of threads [$MAPPING_MERGE_THREADS]
-    -mmhv|--mapping_merge_h_vmem                 Mapping merge memory [$MAPPING_MERGE_MEM]
-    -mmhr|--mapping_merge_h_rt                   Mapping merge time [$MAPPING_MERGE_TIME]
-    -mms|--mapping_merge_sambamba	               Path to sambamba [$MAPPING_MERGE_SAMBAMBA]
+    -mmt|--mapping_merge_threads	                       Number of threads [$MAPPING_MERGE_THREADS]
+    -mmhv|--mapping_merge_h_vmem                         Mapping merge memory [$MAPPING_MERGE_MEM]
+    -mmhr|--mapping_merge_h_rt                           Mapping merge time [$MAPPING_MERGE_TIME]
+    -mms|--mapping_merge_sambamba	                       Path to sambamba [$MAPPING_MERGE_SAMBAMBA]
+
+COVERAGE CALCULTATION
+    -cct|--coverage_calcultation_threads                 Number of threads [$COVERAGE_CALCULTATION_THREADS]
+    -cchv|--coverage_calcultation_h_vmem                 Coverage calcultation memory [$COVERAGE_CALCULTATION_MEM]
+    -cchr|--coverage_calcultation_h_rt                   Coverage calcultation time [$COVERAGE_CALCULTATION_TIME]
+    -ccs|--coverage_calcultation_sambamba                Path to sambamba [$COVERAGE_CALCULTATION_SAMBAMBA]
+    -ccb|--coverage_calcultation_bed                     Path to bed file [$COVERAGE_CALCULTATION_BED]
+    -ccss|--coverage_calcultation_sambamba_settings      Sambamba settings [$COVERAGE_CALCULTATION_SAMBAMBA_SETTINGS]
 
 SV_CALLING
-    -svt|--sv_threads                            Number of threads [$SV_THREADS]
-    -svhv|--sv_h_vmem                            SV calling memory [$SV_MEM]
-    -svhr|--sv_h_rt                              SV calling time [$SV_TIME]
-    -svc|--sv_config		                         Path to config file [$SV_CONFIG]
-    -svs|--sv_sambamba	                         Path to sambamba [$SV_SAMBAMBA]
+    -svt|--sv_threads                                    Number of threads [$SV_THREADS]
+    -svhv|--sv_h_vmem                                    SV calling memory [$SV_MEM]
+    -svhr|--sv_h_rt                                      SV calling time [$SV_TIME]
+    -svc|--sv_config		                                 Path to config file [$SV_CONFIG]
+    -svs|--sv_sambamba	                                 Path to sambamba [$SV_SAMBAMBA]
 
 VCF_FILTER
-    -vfhv|--vcf_filter_h_vmem                    VCF filter memory [$VCF_FILTER_MEM]
-    -vfhr|--vcf_filter_h_rt                      VCF filter time [$VCF_FILTER_TIME]
-    -vfq|--vcf_filter_query                      VCF Filter query [$VCF_FILTER_QUERY]
+    -vfhv|--vcf_filter_h_vmem                            VCF filter memory [$VCF_FILTER_MEM]
+    -vfhr|--vcf_filter_h_rt                              VCF filter time [$VCF_FILTER_TIME]
+    -vfq|--vcf_filter_query                              VCF Filter query [$VCF_FILTER_QUERY]
 
 VCF_SPLIT
-    -vshv|--vcf_split_h_vmem                     VCF split memory [$VCF_SPLIT_MEM]
-    -vshr|--vcf_split_h_rt                       VCF split time [$VCF_SPLIT_TIME]
-    -vsl|--vcf_split_lines		                   Number of lines per split [$VCF_SPLIT_LINES]
+    -vshv|--vcf_split_h_vmem                             VCF split memory [$VCF_SPLIT_MEM]
+    -vshr|--vcf_split_h_rt                               VCF split time [$VCF_SPLIT_TIME]
+    -vsl|--vcf_split_lines		                           Number of lines per split [$VCF_SPLIT_LINES]
 
 CREATE_BED_ANNOTATION
-    -cbahv|--create_bed_annotation_h_vmem        Create BED memory [$CREATE_BED_ANNOTATION_MEM]
-    -cbahr|--create_bed_annotation_h_rt          Create BED time [$CREATE_BED_ANNOTATION_TIME]
+    -cbahv|--create_bed_annotation_h_vmem                Create BED memory [$CREATE_BED_ANNOTATION_MEM]
+    -cbahr|--create_bed_annotation_h_rt                  Create BED time [$CREATE_BED_ANNOTATION_TIME]
 
 BED_ANNOTATION
-    -bahv|--bad_annotation_h_vmem                BED annotation memory [$BED_ANNOTATION_MEM]
-    -bahr|--bad_annotation_h_rt                  BED annotation time [$BED_ANNOTATION_TIME]
-    -baf|--bed_annotation_files	                 Path to the directory with the feature bed files [$BED_ANNOTATION_FILES]
-    -bas|--bed_annotation_script	               Path to get_closest_feature.py script [$BED_ANNOTATION_SCRIPT]
+    -bahv|--bad_annotation_h_vmem                        BED annotation memory [$BED_ANNOTATION_MEM]
+    -bahr|--bad_annotation_h_rt                          BED annotation time [$BED_ANNOTATION_TIME]
+    -baf|--bed_annotation_files	                         Path to the directory with the feature bed files [$BED_ANNOTATION_FILES]
+    -bas|--bed_annotation_script	                       Path to get_closest_feature.py script [$BED_ANNOTATION_SCRIPT]
 
 BED_ANNOTATION MERGE
-    -bamhv|--bed_annotation_merge_h_vmem         Merge annotation memory [$BED_ANNOTATION_MERGE_MEM]
-    -bamhr|--bed_annotation_merge_h_rt           Merge annotation time [$BED_ANNOTATION_MERGE_TIME]
+    -bamhv|--bed_annotation_merge_h_vmem                 Merge annotation memory [$BED_ANNOTATION_MERGE_MEM]
+    -bamhr|--bed_annotation_merge_h_rt                   Merge annotation time [$BED_ANNOTATION_MERGE_TIME]
 
 RANDOM_FOREST
-    -rfhv|--rf_h_vmem                            Random forest memory [$RF_MEM]
-    -rfhr|--rf_h_rt                              Random forest time [$RF_TIME]
-    -rffts|--rf_ft_script                        Path to create_features_table.pl script [$RF_CREATE_FEATURE_TABLE_SCRIPT]
-    -rfs|--rf_script                             Path to run_randomForest.R script [$RF_SCRIPT]
-    -rfps|--rf_p_script                          Path to add_predict_annotation.py script [$RF_ADD_PREDICT_SCRIPT]
+    -rfhv|--rf_h_vmem                                    Random forest memory [$RF_MEM]
+    -rfhr|--rf_h_rt                                      Random forest time [$RF_TIME]
+    -rffts|--rf_ft_script                                Path to create_features_table.pl script [$RF_CREATE_FEATURE_TABLE_SCRIPT]
+    -rfs|--rf_script                                     Path to run_randomForest.R script [$RF_SCRIPT]
+    -rfps|--rf_p_script                                  Path to add_predict_annotation.py script [$RF_ADD_PREDICT_SCRIPT]
 
 DB FILTER
-    -dbhv|--db_h_vmem                            DB filter memory [$DB_MEM]
-    -dbhr|--db_h_rt                              DB filter time [$DB_TIME]
-    -dbf|--db_flank                              Database filter flank [$DB_FLANK]
+    -dbhv|--db_h_vmem                                    DB filter memory [$DB_MEM]
+    -dbhr|--db_h_rt                                      DB filter time [$DB_TIME]
+    -dbf|--db_flank                                      Database filter flank [$DB_FLANK]
 
 DB MERGE
-    -dbmhv|--db_merge_h_vmem                     Merge DB annotation memory [$DB_MERGE_MEM]
-    -dbmhr|--db_merge_h_rt                       Merge DB annotation time [$DB_MERGE_TIME]
+    -dbmhv|--db_merge_h_vmem                             Merge DB annotation memory [$DB_MERGE_MEM]
+    -dbmhr|--db_merge_h_rt                               Merge DB annotation time [$DB_MERGE_TIME]
 
 SHARC_FILTER
-    -sfhv|--sharc_filter_h_vmem                  SHARC Filter memory [$SHARC_FILTER_MEM]
-    -sfhr|--sharc_filter_h_rt                    SHARC Filter time [$SHARC_FILTER_TIME]
-    -sfq|--sharc_filter_query                    SHARC Filter query [$SHARC_FILTER_QUERY]
+    -sfhv|--sharc_filter_h_vmem                          SHARC Filter memory [$SHARC_FILTER_MEM]
+    -sfhr|--sharc_filter_h_rt                            SHARC Filter time [$SHARC_FILTER_TIME]
+    -sfq|--sharc_filter_query                            SHARC Filter query [$SHARC_FILTER_QUERY]
 
 VCF_TO_FASTA
-    -v2fhv|--vcf_fasta_h_vmem                    VCF to FASTA memory [$VCF_FASTA_MEM]
-    -v2fhr|--vcf_fasta_h_rt                      VCF to FASTA time [$VCF_FASTA_TIME]
-    -v2fo|--vcf_fasta_offset                     VCF to FASTA offset [$VCF_FASTA_OFFSET]
-    -v2ff|--vcf_fasta_flank                      VCF to FASTA flank [$VCF_FASTA_FLANK]
-    -v2fm|--vcf_fasta_mask                       VCF to FASTA mask [$VCF_FASTA_MASK]
-    -v2fs|--vcf_fasta_script                     Path to vcf_to_fasta.py [$VCF_FASTA_SCRIPT]
+    -v2fhv|--vcf_fasta_h_vmem                            VCF to FASTA memory [$VCF_FASTA_MEM]
+    -v2fhr|--vcf_fasta_h_rt                              VCF to FASTA time [$VCF_FASTA_TIME]
+    -v2fo|--vcf_fasta_offset                             VCF to FASTA offset [$VCF_FASTA_OFFSET]
+    -v2ff|--vcf_fasta_flank                              VCF to FASTA flank [$VCF_FASTA_FLANK]
+    -v2fm|--vcf_fasta_mask                               VCF to FASTA mask [$VCF_FASTA_MASK]
+    -v2fs|--vcf_fasta_script                             Path to vcf_to_fasta.py [$VCF_FASTA_SCRIPT]
 
 PRIMER DESIGN
-    -pdhv|--primer_design_h_vmem                 Primer design memory [$PRIMER_DESIGN_MEM]
-    -pdhr|--primer_design_h_rt                   Primer design time [$PRIMER_DESIGN_TIME]
-    -pdd|--primer_design_dir                     Path to primer3 directory [$PRIMER_DESIGN_DIR]
-    -pdb|--primer_design_bindir                  Path to primer3 bin dir [$PRIMER_DESIGN_BINDIR]
-    -pdpt|--primer_design_pcr_type               PCR type [$PRIMER_DESIGN_PCR_TYPE]
-    -pdtp|--primer_design_tilling_params         Tilling params [$PRIMER_DESIGN_TILLING_PARAMS]
-    -pdp|--primer_design_psr                     PSR [$PRIMER_DESIGN_PSR]
-    -pgdp|--primer_design_guix_profile           Path to guix profile [$PRIMER_DESIGN_GUIX_PROFILE]
-    -pdpc|--primer_design_primer3_core           Path to primer3_core [$PRIMER_DESIGN_PRIMER3_CORE]
-    -pdm|--primer_design_mispriming              Path to mispriming [$PRIMER_DESIGN_MISPRIMING]
+    -pdhv|--primer_design_h_vmem                         Primer design memory [$PRIMER_DESIGN_MEM]
+    -pdhr|--primer_design_h_rt                           Primer design time [$PRIMER_DESIGN_TIME]
+    -pdd|--primer_design_dir                             Path to primer3 directory [$PRIMER_DESIGN_DIR]
+    -pdb|--primer_design_bindir                          Path to primer3 bin dir [$PRIMER_DESIGN_BINDIR]
+    -pdpt|--primer_design_pcr_type                       PCR type [$PRIMER_DESIGN_PCR_TYPE]
+    -pdtp|--primer_design_tilling_params                 Tilling params [$PRIMER_DESIGN_TILLING_PARAMS]
+    -pdp|--primer_design_psr                             PSR [$PRIMER_DESIGN_PSR]
+    -pgdp|--primer_design_guix_profile                   Path to guix profile [$PRIMER_DESIGN_GUIX_PROFILE]
+    -pdpc|--primer_design_primer3_core                   Path to primer3_core [$PRIMER_DESIGN_PRIMER3_CORE]
+    -pdm|--primer_design_mispriming                      Path to mispriming [$PRIMER_DESIGN_MISPRIMING]
 
 VCF PRIMER FILTER
-    -vpfhv|--vcf_primer_filter_h_vmem            VCF Primer Filter memory [$VCF_PRIMER_FILTER_MEM]
-    -vpfhr|--vcf_primer_filter_h_rt              VCF Primer Filter time [$VCF_PRIMER_FILTER_TIME]
-    -vpfs|--vcf_primer_filter_script             Path to vcf_primer_filter.py [$VCF_PRIMER_FILTER_SCRIPT]
-
+    -vpfhv|--vcf_primer_filter_h_vmem                    VCF Primer Filter memory [$VCF_PRIMER_FILTER_MEM]
+    -vpfhr|--vcf_primer_filter_h_rt                      VCF Primer Filter time [$VCF_PRIMER_FILTER_TIME]
+    -vpfs|--vcf_primer_filter_script                     Path to vcf_primer_filter.py [$VCF_PRIMER_FILTER_SCRIPT]
 
 "
 exit
@@ -140,6 +144,14 @@ MAPPING_MERGE_THREADS=8
 MAPPING_MERGE_MEM=10G
 MAPPING_MERGE_TIME=1:0:0
 MAPPING_MERGE_SAMBAMBA=$SAMBAMBA
+
+# COVERAGE CALCULTATION DEFAULTS
+COVERAGE_CALCULTATION_THREADS=8
+COVERAGE_CALCULTATION_MEM=20G
+COVERAGE_CALCULTATION_TIME=1:0:0
+COVERAGE_CALCULTATION_SAMBAMBA=$SAMBAMBA
+COVERAGE_CALCULTATION_BED=$FILESDIR/human_hg19.bed
+COVERAGE_CALCULTATION_SAMBAMBA_SETTINGS='base --min-coverage=0'
 
 # SV DEFAULTS
 SV_THREADS=8
@@ -239,11 +251,6 @@ do
     shift # past argument
     shift # past value
     ;;
-    -mc|--meancov)
-    MEANCOV="$2"
-    shift # past argument
-    shift # past value
-    ;;
 # GENERAL OPTIONS
     -h|--help)
     usage
@@ -322,6 +329,37 @@ do
     ;;
     -mms|--mapping_merge_sambamba)
     MAPPING_MERGE_SAMBAMBA="$2"
+    shift # past argument
+    shift # past value
+    ;;
+# COVERAGE CALCULTATION OPTIONS
+    -cct|--coverage_calcultation_threads)
+    COVERAGE_CALCULTATION_THREADS="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -cchv|--coverage_calcultation_h_vmem)
+    COVERAGE_CALCULTATION_MEM="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -cchr|--coverage_calcultation_h_rt)
+    COVERAGE_CALCULTATION_TIME="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -ccs|--coverage_calcultation_sambamba)
+    COVERAGE_CALCULTATION_SAMBAMBA="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -ccb|--coverage_calcultation_bed)
+    COVERAGE_CALCULTATION_BED="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -ccss|--coverage_calcultation_sambamba_settings)
+    COVERAGE_CALCULTATION_SAMBAMBA_SETTINGS="$2"
     shift # past argument
     shift # past value
     ;;
@@ -605,9 +643,6 @@ if [ -z $FASTQDIR ]; then
 elif [ -z $MAIL ]; then
   echo "Missing -m|--mail parameter"
   usage
-elif [ -z $MEANCOV ]; then
-  echo "Missing -mc|--meancov parameter"
-  usage
 fi
 
 FASTQDIR=$(readlink -f $FASTQDIR)
@@ -642,6 +677,12 @@ MAPPING_MERGE_SH=$JOBDIR/$MAPPING_MERGE_JOBNAME.sh
 MAPPING_MERGE_ERR=$LOGDIR/$MAPPING_MERGE_JOBNAME.err
 MAPPING_MERGE_LOG=$LOGDIR/$MAPPING_MERGE_JOBNAME.log
 MAPPING_MERGE_OUT=$MAPPING_DIR/$OUTNAME.sorted.bam
+
+COVERAGE_CALCULTATION_JOBNAME=$OUTNAME'_COVERAGECALCULATION_'$RAND
+COVERAGE_CALCULTATION_SH=$JOBDIR/$COVERAGE_CALCULTATION_JOBNAME.sh
+COVERAGE_CALCULTATION_ERR=$LOGDIR/$COVERAGE_CALCULTATION_JOBNAME.err
+COVERAGE_CALCULTATION_LOG=$LOGDIR/$COVERAGE_CALCULTATION_JOBNAME.log
+COVERAGE_CALCULTATION_OUT=${MAPPING_MERGE_OUT/.sorted.bam/.depth}
 
 SV_DIR=$OUTPUTDIR/sv/nanosv
 SV_TMP_DIR=$SV_DIR/tmp
@@ -720,7 +761,6 @@ VCF_PRIMER_FILTER_SH=$JOBDIR/$VCF_PRIMER_FILTER_JOBNAME.sh
 VCF_PRIMER_FILTER_ERR=$LOGDIR/$VCF_PRIMER_FILTER_JOBNAME.err
 VCF_PRIMER_FILTER_LOG=$LOGDIR/$VCF_PRIMER_FILTER_JOBNAME.log
 VCF_PRIMER_FILTER_OUT=$VCF_PRIMER_FILTER_OUTDIR/$(basename ${SHARC_FILTER_OUT/.vcf/.primers.vcf})
-
 
 CHECK_SHARC_OUTDIR=$OUTPUTDIR
 CHECK_SHARC_JOBNAME=$OUTNAME'_CHECKSHARC_'$RAND
@@ -801,7 +841,7 @@ if [ -e $FASTQDIR/fastq_\$ID.fastq ]; then
 	-t $MAPPING_THREADS \\
 	-m $MAPPING_MINIMAP2 \\
 	-r $MAPPING_REF \\
-  -p $MAPPING_MINIMAP2_SETTINGS \\
+  -p "$MAPPING_MINIMAP2_SETTINGS" \\
 	-s $MAPPING_SAMBAMBA \\
 	-o $MAPPING_TMP_DIR/\$ID.sorted.bam
     else
@@ -862,6 +902,44 @@ fi
 echo \`date\`: Done
 EOF
 qsub $MAPPING_MERGE_SH
+}
+
+coverage_calcultation() {
+cat << EOF > $COVERAGE_CALCULTATION_SH
+#!/bin/bash
+
+#$ -N $COVERAGE_CALCULTATION_JOBNAME
+#$ -cwd
+#$ -pe threaded $COVERAGE_CALCULTATION_THREADS
+#$ -l h_vmem=$COVERAGE_CALCULTATION_MEM
+#$ -l h_rt=$COVERAGE_CALCULTATION_TIME
+#$ -e $COVERAGE_CALCULTATION_ERR
+#$ -o $COVERAGE_CALCULTATION_LOG
+EOF
+
+if [ ! -z $MAPPING_MERGE_JOBNAME ]; then
+cat << EOF >> $COVERAGE_CALCULTATION_SH
+#$ -hold_jid $MAPPING_MERGE_JOBNAME
+EOF
+fi
+
+cat << EOF >> $COVERAGE_CALCULTATION_SH
+echo \`date\`: Running on \`uname -n\`
+
+if [ -e $MAPPING_MERGE_OUT.done ]; then
+    bash $STEPSDIR/calculate_coverage.sh -b $MAPPING_MERGE_OUT -t $COVERAGE_CALCULTATION_THREADS -s $COVERAGE_CALCULTATION_SAMBAMBA -bed $COVERAGE_CALCULTATION_BED -p "$COVERAGE_CALCULTATION_SAMBAMBA_SETTINGS" -o $COVERAGE_CALCULTATION_OUT
+    NUMBER_OF_LINES_FILE_1=\$(wc -l $COVERAGE_CALCULTATION_BED | grep -oP "(^\d+)")
+    NUMBER_OF_LINES_FILE_2=\$(wc -l $COVERAGE_CALCULTATION_OUT | grep -oP "(^\d+)")
+    NUMBER_OF_LINES_FILE_2=\$((NUMBER_OF_LINES_FILE_2-2))
+
+    if [ "\$NUMBER_OF_LINES_FILE_1" == "\$NUMBER_OF_LINES_FILE_2" ]; then
+        touch $COVERAGE_CALCULTATION_OUT.done
+    fi
+fi
+
+echo \`date\`: Done
+EOF
+qsub $COVERAGE_CALCULTATION_SH
 }
 
 sv() {
@@ -950,8 +1028,8 @@ echo \`date\`: Running on \`uname -n\`
 
 if [ -e $VCF_FILTER_OUT.done ]; then
     bash $STEPSDIR/vcf_split.sh -v $VCF_FILTER_OUT -l $VCF_SPLIT_LINES -o $VCF_SPLIT_OUTDIR
-    NUMBER_OF_LINES_VCF_1=\$(wc -l $VCF_FILTER_OUT | grep -oP "(\d+)")
-    NUMBER_OF_LINES_VCF_2=\$(cat $VCF_SPLIT_OUTDIR/*.vcf | wc -l | grep -oP "(\d+)")
+    NUMBER_OF_LINES_VCF_1=\$(wc -l $VCF_FILTER_OUT | grep -oP "(^\d+)")
+    NUMBER_OF_LINES_VCF_2=\$(cat $VCF_SPLIT_OUTDIR/*.vcf | wc -l | grep -oP "(^\d+)")
 
     if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
         touch $VCF_SPLIT_OUT.done
@@ -964,7 +1042,7 @@ qsub $VCF_SPLIT_SH
 }
 
 create_bed_annotation_jobs() {
-for BED in $BED_ANNOTATION_FILES/*.bed; do
+for BED in $BED_ANNOTATION_FILES/*.feature.bed; do
     BEDNAME=($(basename $BED | tr '.' ' '))
     BEDNAME=${BEDNAME[0]}
     BED_ANNOTATION_JOBNAME=$OUTNAME'_'$BEDNAME'_'$RAND
@@ -1001,7 +1079,7 @@ qsub $CREATE_BED_ANNOTATION_SH
 
 annotation_merge() {
 PASTE_CMD="paste <(paste <(grep -v \"^#\" $VCF_FILTER_OUT | sort -k3n | cut -f -8)"
-for BED in $BED_ANNOTATION_FILES/*; do
+for BED in $BED_ANNOTATION_FILES/*.feature.bed; do
     BEDNAME=($(basename $BED | tr '.' ' '))
     BEDNAME=${BEDNAME[0]}
     PASTE_CMD=$PASTE_CMD" <(cat $VCF_SPLIT_OUTDIR/*.$BEDNAME.vcf | grep -v \"^#\" | sort -k3n | cut -f 8 | rev | cut -f 1 -d ';' | rev)"
@@ -1035,8 +1113,8 @@ if [ "\$NUMBER_OF_SPLIT_FILES" == "\$NUMBER_OF_DONE_FILES" ]; then
     $PASTE_CMD
 fi
 
-NUMBER_OF_LINES_VCF_1=\$(wc -l $VCF_FILTER_OUT | grep -oP "(\d+)")
-NUMBER_OF_LINES_VCF_2=\$(wc -l $BED_ANNOTATION_MERGE_OUT | grep -oP "(\d+)")
+NUMBER_OF_LINES_VCF_1=\$(wc -l $VCF_FILTER_OUT | grep -oP "(^\d+)")
+NUMBER_OF_LINES_VCF_2=\$(wc -l $BED_ANNOTATION_MERGE_OUT | grep -oP "(^\d+)")
 
 if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
     touch $BED_ANNOTATION_MERGE_OUT.done
@@ -1059,9 +1137,9 @@ cat << EOF > $RF_SH
 #$ -o $RF_LOG
 EOF
 
-if [ ! -z $BED_ANNOTATION_MERGE_JOBNAME ]; then
+if [ ! -z $BED_ANNOTATION_MERGE_JOBNAME ] && [ ! -z $COVERAGE_CALCULTATION_JOBNAME ]; then
 cat << EOF >> $RF_SH
-#$ -hold_jid $BED_ANNOTATION_MERGE_JOBNAME
+#$ -hold_jid $BED_ANNOTATION_MERGE_JOBNAME,$COVERAGE_CALCULTATION_JOBNAME
 EOF
 fi
 
@@ -1069,10 +1147,14 @@ cat << EOF >> $RF_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $BED_ANNOTATION_MERGE_OUT.done ]; then
-    bash $STEPSDIR/randomForest.sh -v $BED_ANNOTATION_MERGE_OUT -m $MEANCOV -o $RF_OUT -d $RF_OUTDIR -ft $RF_CREATE_FEATURE_TABLE_SCRIPT -rf $RF_SCRIPT -ap $RF_ADD_PREDICT_SCRIPT
+    MEANCOV=\$(head -n 1 $COVERAGE_CALCULTATION_OUT | cut -f 2 -d'=' | grep -oP "(^\d+)")
+    if [ \$MEANCOV -eq 0 ]; then
+      MEANCOV=1
+    fi
+    bash $STEPSDIR/randomForest.sh -v $BED_ANNOTATION_MERGE_OUT -m \$MEANCOV -o $RF_OUT -d $RF_OUTDIR -ft $RF_CREATE_FEATURE_TABLE_SCRIPT -rf $RF_SCRIPT -ap $RF_ADD_PREDICT_SCRIPT
 
-    NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $BED_ANNOTATION_MERGE_OUT | wc -l | grep -oP "(\d+)")
-    NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $RF_OUT | wc -l | grep -oP "(\d+)")
+    NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $BED_ANNOTATION_MERGE_OUT | wc -l | grep -oP "(^\d+)")
+    NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $RF_OUT | wc -l | grep -oP "(^\d+)")
 
     if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
         touch $RF_OUT.done
@@ -1169,8 +1251,8 @@ grep "^#" $RF_OUT > $DB_MERGE_OUT
 $PASTE_CMD >> $DB_MERGE_OUT
 
 if [ -e $RF_OUT.done ]; then
-  NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $RF_OUT | wc -l | grep -oP "(\d+)")
-  NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $DB_MERGE_OUT | wc -l | grep -oP "(\d+)")
+  NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $RF_OUT | wc -l | grep -oP "(^\d+)")
+  NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $DB_MERGE_OUT | wc -l | grep -oP "(^\d+)")
 
   if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
       touch $DB_MERGE_OUT.done
@@ -1366,6 +1448,13 @@ else
     CHECK_BOOL=false
 fi
 
+if [ -e $COVERAGE_CALCULTATION_OUT.done ]; then
+    echo "Coverage calculation: Done" >> $CHECK_SHARC_OUT
+else
+  echo "Coverage calculation: Fail" >> $CHECK_SHARC_OUT
+  CHECK_BOOL=false
+fi
+
 if [ -e $SV_OUT.done ]; then
     echo "SV calling: Done" >> $CHECK_SHARC_OUT
 else
@@ -1447,6 +1536,9 @@ prepare
 if [ ! -e $MAPPING_MERGE_OUT.done ]; then
     mapping
     mapping_merge
+fi
+if [ ! -e $COVERAGE_CALCULTATION_OUT.done ]; then
+    coverage_calcultation
 fi
 if [ ! -e $SV_OUT.done ]; then
     sv
