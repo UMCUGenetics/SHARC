@@ -2,7 +2,7 @@ import json, requests
 import vcf as pyvcf
 import argparse
 
-server = "https://rest.ensembl.org"
+server = "https://grch37.rest.ensembl.org"
 
 parser = argparse.ArgumentParser()
 parser = argparse.ArgumentParser(description='Put here a description.')
@@ -17,7 +17,7 @@ flank = args.flank
 mask = args.mask
 
 def mask_seq( chr, start, end, strand, seq ):
-    ext = "/overlap/region/human/"+str(chr)+":"+str(start)+"-"+str(end)+":"+str(strand)+"?coord_system_version=GRCh37;feature=variation"
+    ext = "/overlap/region/human/"+str(chr)+":"+str(start)+"-"+str(end)+":"+str(strand)+"?feature=variation"
     request = requests.get(server+ext, headers={ "Content-Type" : "application/json"})
     data = json.loads(request.text)
 
@@ -32,7 +32,7 @@ def mask_seq( chr, start, end, strand, seq ):
 
 
 def get_seq(chr, start, end, strand):
-    ext = "/sequence/region/human/"+str(chr)+":"+str(start)+"-"+str(end)+":"+str(strand)+"?coord_system_version=GRCh37"
+    ext = "/sequence/region/human/"+str(chr)+":"+str(start)+"-"+str(end)+":"+str(strand)+""
     request = requests.get(server+ext, headers={ "Content-Type" : "application/json"})
     data = json.loads(request.text)
     seq = data['seq']
