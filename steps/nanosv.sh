@@ -4,7 +4,7 @@ usage() {
 echo "
 Required parameters:
     -b|--bam		Path to sorted bam file
-    
+
 Optional parameters:
     -h|--help		Shows help
     -t|--threads	Number of threads [$THREADS]
@@ -21,7 +21,7 @@ POSITIONAL=()
 THREADS=1
 SAMBAMBA='/hpc/local/CentOS7/cog_bioinf/sambamba_v0.6.5/sambamba'
 OUTPUT='/dev/stdout'
-VENV='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/NanoSV/bin/activate'
+VENV='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/venv/bin/activate'
 CONFIG='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/NanoSV/config_NanoSV_SHARC.ini'
 
 
@@ -53,12 +53,12 @@ do
     VENV="$2"
     shift # past argument
     shift # past value
-    ;;    
+    ;;
     -c|--config)
     CONFIG="$2"
     shift # past argument
     shift # past value
-    ;;    
+    ;;
     -o|--output)
     OUTPUT="$2"
     shift # past argument
