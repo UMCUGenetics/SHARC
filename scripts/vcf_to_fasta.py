@@ -35,7 +35,6 @@ def mask_seq( chr, start, end, strand, seq ):
 def get_seq(chr, start, end, strand):
     ext = "/info/assembly/homo_sapiens/"+str(chr)
     request = requests.get(server+ext, headers={ "Content-Type" : "application/json"})
-    #sys.stderr.write(str(request.text)+"\n")
     data = json.loads(request.text)
     chrlength = data['length']
 
@@ -109,14 +108,12 @@ def alt_convert( record ):
     if orientation is None or remoteOrientation is None:
         sys.stderr.write( "\tFailed to convert orientation"+"\n" )
         record = False
-        # sys.exit()
     else:
         record.ALT = [ pyvcf.model._Breakend( record.CHROM, record.INFO['END'], orientation, remoteOrientation, record.REF, True ) ]
     return( record )
 
 vcf_reader = pyvcf.Reader(open(vcf, 'r'))
 for record in vcf_reader:
-    # if ( isinstance(record.ALT[0], pyvcf.model._SV) and not "INS" in str(record.ALT[0]) ) or ( isinstance( record.ALT[0], pyvcf.model._Substitution ) and len(record.ALT[0]) < len(record.REF) ):
     sys.stderr.write( str(record) )
     if isinstance(record.ALT[0], pyvcf.model._SV) or isinstance( record.ALT[0], pyvcf.model._Substitution ):
         record = alt_convert( record )
