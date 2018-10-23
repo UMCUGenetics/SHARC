@@ -1372,9 +1372,10 @@ cat << EOF >> $PRIMER_DESIGN_SH
 EOF
 fi
 cat << EOF >> $PRIMER_DESIGN_SH
-
-  touch $PRIMER_DESIGN_OUT.done
   grep -v "FAILED" $PRIMER_DESIGN_TMP_DIR/primers.txt > $PRIMER_DESIGN_OUT
+  paste <(cat $PRIMER_DESIGN_OUT) <(grep "PRODUCT SIZE" $PRIMER_DESIGN_ERR | grep -oP "\d+$") > $PRIMER_DESIGN_OUT.tmp && mv $PRIMER_DESIGN_OUT.tmp $PRIMER_DESIGN_OUT
+  touch $PRIMER_DESIGN_OUT.done
+
 fi
 
 cd $OUTPUTDIR
