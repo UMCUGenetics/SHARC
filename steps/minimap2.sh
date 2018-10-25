@@ -96,6 +96,8 @@ if [ -e $OUTPUT ]; then
     NUMBER_OF_READS_IN_BAM=$($SAMBAMBA view $OUTPUT | cut -f 1 | sort | uniq | wc -l)
     if [ "$NUMBER_OF_READS_IN_FASTQ" == "$NUMBER_OF_READS_IN_BAM" ]; then
         touch $OUTPUT.done
+    else
+        echo "Number of reads in the fastq file ($NUMBER_OF_READS_IN_FASTQ) is different than the number of reads in the bam file ($NUMBER_OF_READS_IN_BAM)" >&2
     fi
 fi
 

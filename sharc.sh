@@ -896,7 +896,10 @@ if [ ! -e $MAPPING_MERGE_OUT.done ]; then
     NUMBER_OF_READS_IN_MERGED_BAM=\$($MAPPING_SAMBAMBA view $MAPPING_MERGE_OUT | cut -f 1 | sort | uniq | wc -l)
     if [ "\$NUMBER_OF_READS_IN_BAMS" == "\$NUMBER_OF_READS_IN_MERGED_BAM" ]; then
 	     touch $MAPPING_MERGE_OUT.done
+    else
+      echo "The number of reads in the tmp bam files (\$NUMBER_OF_READS_IN_BAMS) is different than the number of reads in the merged bam file (\$NUMBER_OF_READS_IN_MERGED_BAM)" >&2
     fi
+
 fi
 
 echo \`date\`: Done
@@ -934,6 +937,8 @@ if [ -e $MAPPING_MERGE_OUT.done ]; then
 
     if [ "\$NUMBER_OF_LINES_FILE_1" == "\$NUMBER_OF_LINES_FILE_2" ]; then
         touch $COVERAGE_CALCULTATION_OUT.done
+    else
+      echo "The number of lines in the bed file (\$NUMBER_OF_LINES_FILE_1) is different than the number of lines in the coverage file (\$NUMBER_OF_LINES_FILE_2)" >&2
     fi
 fi
 
@@ -1033,6 +1038,8 @@ if [ -e $VCF_FILTER_OUT.done ]; then
 
     if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
         touch $VCF_SPLIT_OUT.done
+    else
+        echo "The number of lines in the original vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the splitted vcf files (\$NUMBER_OF_LINES_VCF_2)" >&2
     fi
 fi
 
@@ -1118,6 +1125,8 @@ NUMBER_OF_LINES_VCF_2=\$(wc -l $BED_ANNOTATION_MERGE_OUT | grep -oP "(^\d+)")
 
 if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
     touch $BED_ANNOTATION_MERGE_OUT.done
+else
+    echo "The number of lines in the original vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the annotated vcf file (\$NUMBER_OF_LINES_VCF_2)" >&2
 fi
 
 echo \`date\`: Done
@@ -1158,6 +1167,8 @@ if [ -e $BED_ANNOTATION_MERGE_OUT.done ]; then
 
     if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
         touch $RF_OUT.done
+    else
+        echo "The number of lines in the annotated vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the random forest vcf file (\$NUMBER_OF_LINES_VCF_2)" >&2
     fi
 fi
 
@@ -1256,6 +1267,8 @@ if [ -e $RF_OUT.done ]; then
 
   if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
       touch $DB_MERGE_OUT.done
+  else
+      echo "The number of lines in the random forest vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the db merged vcf file (\$NUMBER_OF_LINES_VCF_2)" >&2
   fi
 fi
 
