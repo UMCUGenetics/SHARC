@@ -135,7 +135,7 @@ MAPPING_MEM=20G
 MAPPING_TIME=1:0:0
 MAPPING_REF='/hpc/cog_bioinf/GENOMES/Homo_sapiens.GRCh37.GATK.illumina/Homo_sapiens.GRCh37.GATK.illumina.fasta'
 MAPPING_MINIMAP2='/hpc/cog_bioinf/kloosterman/tools/minimap2_v2.12/minimap2'
-MAPPING_MINIMAP2_SETTINGS='-a --MD'
+MAPPING_MINIMAP2_SETTINGS='-x map-ont -a --MD'
 #MAPPING_MINIMAP2_SETTINGS='-a --MD --no-long-join -r50'
 MAPPING_SAMBAMBA=$SAMBAMBA
 

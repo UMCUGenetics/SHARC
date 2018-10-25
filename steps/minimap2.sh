@@ -24,7 +24,7 @@ THREADS=1
 REF='/hpc/cog_bioinf/GENOMES/Homo_sapiens.GRCh37.GATK.illumina/Homo_sapiens.GRCh37.GATK.illumina.fasta'
 SAMBAMBA='/hpc/local/CentOS7/cog_bioinf/sambamba_v0.6.5/sambamba'
 OUTPUT='/dev/stdout'
-SETTINGS='-a --MD'
+SETTINGS='-x map-ont -a --MD'
 #SETTINGS='-a --MD --no-long-join -r50'
 
 while [[ $# -gt 0 ]]
