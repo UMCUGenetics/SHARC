@@ -17,6 +17,12 @@ Optional parameters:
 
 POSITIONAL=()
 
+#DEFAULT
+SCRIPT="/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/gene_annotation_ICGC.py"
+OUTPUT="/dev/stdout"
+FLANK=200
+SUPPORT=0.05
+
 while [[ $# -gt 0 ]]
 do
     key="$1"
@@ -63,3 +69,21 @@ do
     esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
+
+if [ -z $VCF ]; then
+    echo "Missing -v|--vcf parameter"
+    usage
+    exit
+elif [ -z $TYPE ]; then
+    echo "Missing -c|--cancer_type parameter"
+    usage
+    exit
+fi
+
+echo `date`: Running on `uname -n`
+
+##### I USED PYTHON 3.6.1 ... NOT SURE IF IT WORKS ON PYTHON 2
+
+#module load python 3.6.1
+python $SCRIPT -c $TYPE -f $FLANK -s $SUPPORT -o $OUTPUT $VCF
+#module load python 2
