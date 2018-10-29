@@ -187,7 +187,7 @@ BED_ANNOTATION_MERGE_TIME=0:5:0
 # RANDOM_FOREST DEFAULTS
 RF_MEM=2G
 RF_TIME=0:5:0
-RF_CREATE_FEATURE_TABLE_SCRIPT=$SCRIPTSDIR/create_features_table.pl
+RF_CREATE_FEATURE_TABLE_SCRIPT=$SCRIPTSDIR/create_features_table.py
 RF_SCRIPT=$SCRIPTSDIR/run_randomForest.R
 RF_ADD_PREDICT_SCRIPT=$SCRIPTSDIR/add_predict_annotation.py
 
@@ -1258,10 +1258,10 @@ fi
 cat << EOF >> $DB_MERGE_SH
 echo \`date\`: Running on \`uname -n\`
 
-grep "^#" $RF_OUT > $DB_MERGE_OUT
-$PASTE_CMD >> $DB_MERGE_OUT
-
 if [ -e $RF_OUT.done ]; then
+  grep "^#" $RF_OUT > $DB_MERGE_OUT
+  $PASTE_CMD >> $DB_MERGE_OUT
+
   NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $RF_OUT | wc -l | grep -oP "(^\d+)")
   NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $DB_MERGE_OUT | wc -l | grep -oP "(^\d+)")
 
