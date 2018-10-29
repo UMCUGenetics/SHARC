@@ -13,6 +13,7 @@ GENERAL
     -sd|--sharc_dir                                      Path to sharc directory [$SHARCDIR]
     -v|--venv		                                         Path to virtual env [$VENV]
     -o|--outputdir	                                     Path to output directory [$OUTPUTDIR]
+    -sm|--sample_name                                    Name of the sample[$(basename $OUTPUTDIR)]
     -dc|--dont_clean                                     Don't clean up the mapping tmp dir [$DONT_CLEAN]
 
 MAPPING
@@ -268,6 +269,11 @@ do
     ;;
     -o|--outputdir)
     OUTPUTDIR="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -sm|--sample_name)
+    OUTNAME="$2"
     shift # past argument
     shift # past value
     ;;
@@ -661,7 +667,14 @@ OUTPUTDIR=$(readlink -f $OUTPUTDIR)
 JOBDIR=$OUTPUTDIR/jobs
 LOGDIR=$OUTPUTDIR/logs
 
-OUTNAME=$(basename $OUTPUTDIR)
+if [ ! $OUTNAME ]; then
+  if [ "$(head -n 1 $FASTQDIR/fastq_0.fastq | cut -d " " -f 3 | cut -d "=" -f 1)" == "sampleid" ]; then
+    OUTNAME=$(head -n 1 $FASTQDIR/fastq_0.fastq | cut -d " " -f 3 | cut -d "=" -f 2)
+  else
+    OUTNAME=$(basename $FASTQDIR)
+  fi
+fi
+
 RAND=$(cat /dev/urandom | tr -cd 'a-f0-9' | head -c 5)
 NUMBER_OF_FASTQ_FILES=$(ls -l $FASTQDIR/*.fastq | wc -l)
 
