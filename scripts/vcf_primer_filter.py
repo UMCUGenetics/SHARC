@@ -15,7 +15,6 @@ with(open(primers_file, 'r')) as p:
     for line in p:
         line = line.rstrip()
         columns = line.split("\t")
-        #if len(columns) == 6:
         primers[columns[0]] = 1
 
 vcf_reader = pyvcf.Reader(open(vcf, 'r'))
