@@ -669,7 +669,7 @@ LOGDIR=$OUTPUTDIR/logs
 
 if [ ! $OUTNAME ]; then
   if [ "$(head -n 1 $FASTQDIR/fastq_0.fastq | cut -d " " -f 3 | cut -d "=" -f 1)" == "sampleid" ]; then
-    OUTNAME=$(head -n 1 $FASTQDIR/fastq_0.fastq | cut -d " " -f 3 | cut -d "=" -f 2)
+    OUTNAME="$(head -n 1 $FASTQDIR/fastq_0.fastq | cut -d " " -f 3 | cut -d "=" -f 2)"
   else
     OUTNAME=$(basename $FASTQDIR)
   fi
@@ -856,6 +856,7 @@ if [ -e $FASTQDIR/fastq_\$ID.fastq ]; then
 	-r $MAPPING_REF \\
   -p "$MAPPING_MINIMAP2_SETTINGS" \\
 	-s $MAPPING_SAMBAMBA \\
+  -n $OUTNAME \\
 	-o $MAPPING_TMP_DIR/\$ID.sorted.bam
     else
 	echo $MAPPING_TMP_DIR/\$ID.sorted.bam already exists
