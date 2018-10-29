@@ -14,9 +14,10 @@ import argparse
 parser = argparse.ArgumentParser()
 parser = argparse.ArgumentParser(description='Put here a description.')
 parser.add_argument('vcf', help='VCF file')
+parser.add_argument('-c', '--cancertype', type=str, help='Primary site of cancer', required=True)
+parser.add_argument('-o', '--output', type=str, help='VCF output file', required=True)
 parser.add_argument('-f', '--flank', default=200, type=int, help='Flank [default: 200]')
 parser.add_argument('-s', '--support', default=0.01, type=float, help='Minimal percentage of cancer patients supporting the mutated gene [default: 0.01]')
-parser.add_argument('-c', '--cancertype', type=str, help='Primary site of cancer', required=True)
 args = parser.parse_args()
 
 #############################################   CONVERT DIFFERENT VCF SV NOTATIONS TO bracket notations N[Chr:pos[   #############################################
