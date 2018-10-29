@@ -397,10 +397,12 @@ def vcf_annotate_tcga_genes_overlap(INPUT_VCF, OUTPUT_VCF, ICGC_GENES, REGIONS):
 
 #############################################   RUNNING CODE   #############################################
 VCF_IN=args.vcf
+
 if args.output:
     VCF_GENE_SELECTED=args.output
 else:
     VCF_GENE_SELECTED=VCF_IN.replace(".vcf", "_ICGC_annotation.vcf")
+
 FLANK=args.flank
 MIN_SUPPORT=args.support
 CANCERTYPE=args.cancertype
