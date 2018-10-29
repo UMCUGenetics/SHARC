@@ -1155,7 +1155,7 @@ fi
 cat << EOF >> $RF_SH
 echo \`date\`: Running on \`uname -n\`
 
-if [ -e $BED_ANNOTATION_MERGE_OUT.done ]; then
+if [ -e $BED_ANNOTATION_MERGE_OUT.done ] && [ -e $COVERAGE_CALCULTATION_OUT.done ]; then
     MEANCOV=\$(head -n 1 $COVERAGE_CALCULTATION_OUT | cut -f 2 -d'=' | grep -oP "(^\d+)")
     if [ \$MEANCOV -eq 0 ]; then
       MEANCOV=1
