@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import vcf as pyvcf
 import argparse
 

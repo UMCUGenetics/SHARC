@@ -1,9 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Oct  8 14:59:36 2018
-
-@author:  sdeblank
-"""
+#!/usr/bin/python
 
 import requests
 import json
