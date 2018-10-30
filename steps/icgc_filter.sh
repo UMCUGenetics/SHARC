@@ -12,6 +12,7 @@ Optional parameters:
     -o|--output     VCF output file [$OUTPUT]
     -f|--flank      Added region around BND to compare to genes [$FLANK]
     -p|--support    Minimal fraction of patients needed to annotate as cancer gene [$SUPPORT]
+    -e|--venv       Path to virtual environment[$VENV]
 "
 }
 
@@ -55,6 +56,11 @@ do
     ;;
     -p|--support)
     SUPPORT="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -e|--venv)
+    VENV="$2"
     shift # past argument
     shift # past value
     ;;
