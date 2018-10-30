@@ -128,7 +128,7 @@ VCF PRIMER FILTER
     -vpfs|--vcf_primer_filter_script                     Path to vcf_primer_filter.py [$VCF_PRIMER_FILTER_SCRIPT]
 
 PRIMER_RANKING
-     -rphv|primer_ranking_h_vmem                          Primer ranking memory [$PRIMER_RANKING_MEM]
+    -rphv|primer_ranking_h_vmem                          Primer ranking memory [$PRIMER_RANKING_MEM]
     -rphr|primer_ranking_h_rt                            Primer ranking time [$PRIMER_RANKING_TIME]
     -rps|primer_ranking_script                           Path to primer ranking.py [$PRIMER_RANKING_SCRIPT]
 
