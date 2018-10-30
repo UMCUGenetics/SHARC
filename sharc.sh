@@ -1568,8 +1568,8 @@ if [ ! -e $VCF_FILTER_OUT.done ]; then
   vcf_filter
 fi
 if [ ! -e $BED_ANNOTATION_MERGE_OUT.done ]; then
-  #vcf_split
-  #create_bed_annotation_jobs
+  vcf_split
+  create_bed_annotation_jobs
   annotation_merge
 fi
 if [ ! -e $RF_OUT.done ]; then
