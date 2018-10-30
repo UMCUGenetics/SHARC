@@ -100,7 +100,8 @@ if [ ! $SAMPLE ]; then
   fi
 fi
 
-FASTQ_ID=${FASTQ#*_}
+FASTQ_ID=$(basename $FASTQ)
+FASTQ_ID=${FASTQ_ID#*_}
 FASTQ_ID=${FASTQ_ID%.fastq}
 
 SETTINGS="$SETTINGS -R '@RG\tID:$FASTQ_ID\tSM:$SAMPLE'"
