@@ -13,7 +13,7 @@ GENERAL
     -sd|--sharc_dir                                      Path to sharc directory [$SHARCDIR]
     -v|--venv		                                         Path to virtual env [$VENV]
     -o|--outputdir	                                     Path to output directory [$OUTPUTDIR]
-    -sm|--sample_name                                    Name of the sample[$(basename $OUTPUTDIR)]
+    -sm|--sample_name                                    Name of the sample [From FASTQ or OUTPUTDIR ]
     -dc|--dont_clean                                     Don't clean up the mapping tmp dir [$DONT_CLEAN]
 
 MAPPING
@@ -718,7 +718,7 @@ if [ ! $OUTNAME ]; then
   if [ "$(head -n 1 $FASTQDIR/fastq_0.fastq | cut -d " " -f 3 | cut -d "=" -f 1)" == "sampleid" ]; then
     OUTNAME="$(head -n 1 $FASTQDIR/fastq_0.fastq | cut -d " " -f 3 | cut -d "=" -f 2)"
   else
-    OUTNAME=$(basename $FASTQDIR)
+    OUTNAME=$(basename $OUTPUTDIR)
   fi
 fi
 
@@ -1382,7 +1382,7 @@ icgc_filter() {
 cat << EOF > $ICGC_FILTER_SH
 #!/bin/bash
 
-#$ -N $ICGC_filter_JOBNAME
+#$ -N $ICGC_FILTER_JOBNAME
 #$ -cwd
 #$ -l h_vmem=$ICGC_FILTER_MEM
 #$ -l h_rt=$ICGC_FILTER_TIME
@@ -1400,8 +1400,15 @@ cat << EOF >> $ICGC_FILTER_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $SHARC_FILTER_OUT.done ]; then
-    bash $STEPSDIR/icgc_filter.sh -v $SHARC_FILTER_OUT -s $ICGC_FILTER_SCRIPT -c $ICGC_FILTER_CANCER_TYPE -f $ICGC_FILTER_FLANK -p $ICGC_FILTER_SUPPORT -o $VCF_SPLIT_OUTDIR
-    touch $ICGC_FILTER_OUT.done
+    bash $STEPSDIR/icgc_filter.sh -v $SHARC_FILTER_OUT -s $ICGC_FILTER_SCRIPT -c $ICGC_FILTER_CANCER_TYPE -f $ICGC_FILTER_FLANK -p $ICGC_FILTER_SUPPORT -o $ICGC_FILTER_OUT
+    NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $SHARC_FILTER_OUT | wc -l | grep -oP "(^\d+)")
+    NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $ICGC_FILTER_OUT | wc -l | grep -oP "(^\d+)")
+
+    if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
+        touch $ICGC_FILTER_OUT.done
+    else
+        echo "The number of lines in the SHARC vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the ICGC file (\$NUMBER_OF_LINES_VCF_2)" >&2
+    fi
 fi
 
 echo \`date\`: Done
@@ -1421,24 +1428,24 @@ cat << EOF > $VCF_FASTA_SH
 #$ -o $VCF_FASTA_LOG
 EOF
 
-if [ ! -z $SHARC_FILTER_JOBNAME ]; then
+if [ ! -z $ICGC_FILTER_JOBNAME ]; then
 cat << EOF >> $VCF_FASTA_SH
-#$ -hold_jid $SHARC_FILTER_JOBNAME
+#$ -hold_jid $ICGC_FILTER_JOBNAME
 EOF
 fi
 
 cat << EOF >> $VCF_FASTA_SH
 echo \`date\`: Running on \`uname -n\`
 
-if [ -e $SHARC_FILTER_OUT.done ]; then
+if [ -e $ICGC_FILTER_OUT.done ]; then
 EOF
 if [ $VCF_FASTA_MARK = true ]; then
 cat << EOF >> $VCF_FASTA_SH
-    bash $STEPSDIR/vcf_fasta.sh -v $SHARC_FILTER_OUT -vff $VCF_FASTA_FLANK -vfo $VCF_FASTA_OFFSET -vfs $VCF_FASTA_SCRIPT -vfm -o $VCF_FASTA_OUT
+    bash $STEPSDIR/vcf_fasta.sh -v $ICGC_FILTER_OUT -vff $VCF_FASTA_FLANK -vfo $VCF_FASTA_OFFSET -vfs $VCF_FASTA_SCRIPT -vfm -o $VCF_FASTA_OUT
 EOF
 else
 cat << EOF >> $VCF_FASTA_SH
-    bash $STEPSDIR/vcf_fasta.sh -v $SHARC_FILTER_OUT -vff $VCF_FASTA_FLANK -vfo $VCF_FASTA_OFFSET -vfs $VCF_FASTA_SCRIPT -o $VCF_FASTA_OUT
+    bash $STEPSDIR/vcf_fasta.sh -v $ICGC_FILTER_OUT -vff $VCF_FASTA_FLANK -vfo $VCF_FASTA_OFFSET -vfs $VCF_FASTA_SCRIPT -o $VCF_FASTA_OUT
 EOF
 fi
 cat << EOF >> $VCF_FASTA_SH
@@ -1618,6 +1625,13 @@ else
     CHECK_BOOL=false
 fi
 
+if [ -e $ICGC_FILTER_OUT.done ]; then
+    echo "ICGC filter: Done" >> $CHECK_SHARC_OUT
+else
+    echo "ICGC filter: Fail" >> $CHECK_SHARC_OUT
+    CHECK_BOOL=false
+fi
+
 if [ -e $VCF_FASTA_OUT.done ]; then
     echo "VCF to FASTA: Done" >> $CHECK_SHARC_OUT
 else
@@ -1644,7 +1658,7 @@ if [ \$CHECK_BOOL = true ]; then
       rm -rf $MAPPING_TMP_DIR
     fi
 fi
-tail -13 $CHECK_SHARC_OUT | mail -s 'SHARC_${OUTNAME}_${RAND}' $MAIL
+tail -14 $CHECK_SHARC_OUT | mail -s 'SHARC_${OUTNAME}_${RAND}' $MAIL
 
 echo \`date\`: Done
 
@@ -1681,6 +1695,9 @@ if [ ! -e $DB_MERGE_OUT.done ]; then
 fi
 if [ ! -e $SHARC_FILTER_OUT.done ]; then
   sharc_filter
+fi
+if [ ! -e $ICGC_FILTER_OUT.done ]; then
+  icgc_filter
 fi
 if [ ! -e $VCF_FASTA_OUT.done ]; then
   vcf_fasta

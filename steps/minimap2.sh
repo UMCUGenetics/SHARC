@@ -103,7 +103,7 @@ fi
 FASTQ_ID=${FASTQ#*_}
 FASTQ_ID=${FASTQ_ID%.fastq}
 
-SETTINGS="$SETTINGS -R @RG\tID:$FASTQ_ID\tSM:$SAMPLE"
+SETTINGS="$SETTINGS -R '@RG\tID:$FASTQ_ID\tSM:$SAMPLE'"
 
 $MINIMAP2 -t $THREADS $SETTINGS $REF $FASTQ | \
 $SAMBAMBA view -h -S --format=bam -t 8 /dev/stdin | \
