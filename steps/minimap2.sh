@@ -106,10 +106,13 @@ FASTQ_ID=${FASTQ_ID%.fastq}
 
 SETTINGS="$SETTINGS -R '@RG\tID:$FASTQ_ID\tSM:$SAMPLE'"
 
-$MINIMAP2 -t $THREADS $SETTINGS $REF $FASTQ | \
+CMD="$MINIMAP2 -t $THREADS $SETTINGS $REF $FASTQ | \
 $SAMBAMBA view -h -S --format=bam -t 8 /dev/stdin | \
 $SAMBAMBA sort -m9G -t $THREADS --tmpdir=./ /dev/stdin \
--o $OUTPUT
+-o $OUTPUT"
+echo $CMD
+
+eval $CMD
 
 if [ -e $OUTPUT ]; then
     NUMBER_OF_READS_IN_FASTQ=$(grep "^@" $FASTQ | sort | uniq | wc -l)
