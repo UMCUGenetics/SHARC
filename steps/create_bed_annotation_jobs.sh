@@ -11,6 +11,7 @@ Required parameters:
     -b|--bedscript		Path to get_closest_feature.py
     -i|--jobid  Job id
     -m|--mail   Mail
+    -e|--venv   Path to virtual env of NanoSV [$VENV]
 
 Optional parameters:
     -h|--help		Shows help
@@ -58,6 +59,11 @@ do
     ;;
     -m|--mail)
     MAIL="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -e|--venv)
+    VENV="$2"
     shift # past argument
     shift # past value
     ;;
@@ -109,6 +115,10 @@ elif [ -z $BED_SCRIPT ]; then
     exit
 elif [ -z $MAIL ]; then
     echo "Missing -m|--mail parameter"
+    usage
+    exit
+elif [ -z $VENV ]; then
+    echo "Missing -e|--venv parameter"
     usage
     exit
 elif [ -z $JOBID ]; then
@@ -163,6 +173,7 @@ if [ -e $BED_IN ]; then
 	      -v $BED_IN \\
         -b $BED \\
         -s $BED_SCRIPT \\
+        -e $VENV \\
         -o $BED_OUT
     else
 	     echo $BED_OUT already exists

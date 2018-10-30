@@ -10,6 +10,7 @@ Optional parameters:
     -h|--help		Shows help
     -s|--script		Path to python script [$SCRIPT]
     -o|--output		Path to vcf output file [$OUTPUT]
+    -e|--venv   Path to virtual env of NanoSV [$VENV]
 "
 }
 
@@ -18,6 +19,7 @@ POSITIONAL=()
 # DEFAULTS
 SCRIPT='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/get_closest_feature.py'
 OUTPUT='/dev/stdout'
+VENV='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/venv/bin/activate'
 
 while [[ $# -gt 0 ]]
 do
@@ -40,6 +42,11 @@ do
     ;;
     -s|--script)
     SCRIPT="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -e|--venv)
+    VENV="$2"
     shift # past argument
     shift # past value
     ;;
@@ -67,6 +74,8 @@ elif [ -z $BED ]; then
 fi
 
 echo `date`: Running on `uname -n`
+
+. $VENV
 
 grep '^#' $VCF > $OUTPUT
 python $SCRIPT $BED $VCF >> $OUTPUT
