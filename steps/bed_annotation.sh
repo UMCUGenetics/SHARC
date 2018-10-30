@@ -5,7 +5,7 @@ echo "
 Required parameters:
     -v|--vcf		Path to vcf file
     -b|--bed		Path to feature bed file
-    
+
 Optional parameters:
     -h|--help		Shows help
     -s|--script		Path to python script [$SCRIPT]
@@ -72,8 +72,8 @@ grep '^#' $VCF > $OUTPUT
 python $SCRIPT $BED $VCF >> $OUTPUT
 
 if [ -e $OUTPUT ]; then
-    NUMBER_OF_LINES_IN_VCF=$(wc -l $VCF | grep -oP "(\d+)")
-    NUMBER_OF_LINES_IN_SPLIT=$(wc -l $OUTPUT | grep -oP "(\d+)")
+    NUMBER_OF_LINES_IN_VCF=$(grep -v "^#" $VCF | wc -l | grep -oP "(\d+)")
+    NUMBER_OF_LINES_IN_SPLIT=$(grep -v "^#" $OUTPUT | wc -l | grep -oP "(\d+)")
     if [ "$NUMBER_OF_LINES_IN_VCF" == "$NUMBER_OF_LINES_IN_SPLIT" ]; then
         touch $OUTPUT.done
     fi

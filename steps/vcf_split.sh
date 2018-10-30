@@ -57,7 +57,8 @@ fi
 
 echo `date`: Running on `uname -n`
 
-AWK="awk 'NR%$LINES==1 { file = \"$OUTPUTDIR/\" int(NR/$LINES)+1 \".vcf\" } { print > file }' $VCF"
+HEADER=$(grep "^#" $VCF)
+AWK="grep -v \"^#\" $VCF | awk -v HEADER=\"\$HEADER\" 'NR%$LINES==1 { file = \"$OUTPUTDIR/\" int(NR/$LINES)+1 \".vcf\"; print HEADER > file } { print > file }'"
 eval $AWK
 
 echo `date`: Done

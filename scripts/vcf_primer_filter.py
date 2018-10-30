@@ -15,8 +15,7 @@ with(open(primers_file, 'r')) as p:
     for line in p:
         line = line.rstrip()
         columns = line.split("\t")
-        if len(columns) == 5:
-            primers[columns[0]] = 1
+        primers[columns[0]] = 1
 
 vcf_reader = pyvcf.Reader(open(vcf, 'r'))
 vcf_writer = pyvcf.Writer(open('/dev/stdout', 'w'), vcf_reader)

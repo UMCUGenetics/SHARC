@@ -19,7 +19,7 @@ Optional parameters:
 POSITIONAL=()
 
 # DEFAULTS
-CREATE_FEATURE_TABLE_SCRIPT='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/create_features_table.pl'
+CREATE_FEATURE_TABLE_SCRIPT='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/create_features_table.py'
 RANDOM_FOREST_SCRIPT='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/run_randomForest.R'
 ADD_PREDICT_SCRIPT='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/add_predict_annotation.py'
 OUTPUT='/dev/stdout'

@@ -157,7 +157,7 @@ MAPPING_MERGE_SAMBAMBA=$SAMBAMBA
 # COVERAGE CALCULTATION DEFAULTS
 COVERAGE_CALCULTATION_THREADS=8
 COVERAGE_CALCULTATION_MEM=20G
-COVERAGE_CALCULTATION_TIME=1:0:0
+COVERAGE_CALCULTATION_TIME=2:0:0
 COVERAGE_CALCULTATION_SAMBAMBA=$SAMBAMBA
 COVERAGE_CALCULTATION_BED=$FILESDIR/human_hg19.bed
 COVERAGE_CALCULTATION_SAMBAMBA_SETTINGS='base --min-coverage=0'
@@ -196,7 +196,7 @@ BED_ANNOTATION_MERGE_TIME=0:5:0
 # RANDOM_FOREST DEFAULTS
 RF_MEM=2G
 RF_TIME=0:5:0
-RF_CREATE_FEATURE_TABLE_SCRIPT=$SCRIPTSDIR/create_features_table.pl
+RF_CREATE_FEATURE_TABLE_SCRIPT=$SCRIPTSDIR/create_features_table.py
 RF_SCRIPT=$SCRIPTSDIR/run_randomForest.R
 RF_ADD_PREDICT_SCRIPT=$SCRIPTSDIR/add_predict_annotation.py
 
@@ -1183,12 +1183,13 @@ echo \`date\`: Running on \`uname -n\`
 NUMBER_OF_SPLIT_FILES=\$(ls -l $VCF_SPLIT_OUTDIR/*.*.vcf | wc -l)
 NUMBER_OF_DONE_FILES=\$(ls -l $VCF_SPLIT_OUTDIR/*.done | wc -l)
 if [ "\$NUMBER_OF_SPLIT_FILES" == "\$NUMBER_OF_DONE_FILES" ]; then
-    grep "^#" $VCF_FILTER_OUT > $BED_ANNOTATION_MERGE_OUT
+    HEADERS=\$(cat $VCF_SPLIT_OUTDIR/1.*.vcf | grep "^#" | grep "_DISTANCE")
+    grep "^#" $VCF_FILTER_OUT | awk -v headers="\$HEADERS" '/^##FORMAT/ && !modif { print headers; modif=1 } {print}' > $BED_ANNOTATION_MERGE_OUT
     $PASTE_CMD
 fi
 
-NUMBER_OF_LINES_VCF_1=\$(wc -l $VCF_FILTER_OUT | grep -oP "(^\d+)")
-NUMBER_OF_LINES_VCF_2=\$(wc -l $BED_ANNOTATION_MERGE_OUT | grep -oP "(^\d+)")
+NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $VCF_FILTER_OUT | wc -l | grep -oP "(^\d+)")
+NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $BED_ANNOTATION_MERGE_OUT | wc -l | grep -oP "(^\d+)")
 
 if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
     touch $BED_ANNOTATION_MERGE_OUT.done
@@ -1222,7 +1223,7 @@ fi
 cat << EOF >> $RF_SH
 echo \`date\`: Running on \`uname -n\`
 
-if [ -e $BED_ANNOTATION_MERGE_OUT.done ]; then
+if [ -e $BED_ANNOTATION_MERGE_OUT.done ] && [ -e $COVERAGE_CALCULTATION_OUT.done ]; then
     MEANCOV=\$(head -n 1 $COVERAGE_CALCULTATION_OUT | cut -f 2 -d'=' | grep -oP "(^\d+)")
     if [ \$MEANCOV -eq 0 ]; then
       MEANCOV=1
@@ -1325,10 +1326,12 @@ fi
 cat << EOF >> $DB_MERGE_SH
 echo \`date\`: Running on \`uname -n\`
 
-grep "^#" $RF_OUT > $DB_MERGE_OUT
-$PASTE_CMD >> $DB_MERGE_OUT
-
 if [ -e $RF_OUT.done ]; then
+  HEADERS=\$(cat $DB_OUTDIR/*.vcf | grep "^##INFO" | grep "DB_")
+  grep "^#" $RF_OUT | awk -v headers="\$HEADERS" '/^##FORMAT/ && !modif { print headers; modif=1 } {print}' > $DB_MERGE_OUT
+
+  $PASTE_CMD >> $DB_MERGE_OUT
+
   NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $RF_OUT | wc -l | grep -oP "(^\d+)")
   NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $DB_MERGE_OUT | wc -l | grep -oP "(^\d+)")
 
@@ -1519,7 +1522,13 @@ echo \`date\`: Running on \`uname -n\`
 
 if [ -e $PRIMER_DESIGN_OUT.done ]; then
     bash $STEPSDIR/vcf_primer_filter.sh -v $SHARC_FILTER_OUT -p $PRIMER_DESIGN_OUT -o $VCF_PRIMER_FILTER_OUT -s $VCF_PRIMER_FILTER_SCRIPT
-    touch $VCF_PRIMER_FILTER_OUT.done
+    NUMBER_OF_LINES_PRIMER=\$(cat $PRIMER_DESIGN_OUT | wc -l | grep -oP "(^\d+)")
+    NUMBER_OF_LINES_VCF=\$(grep -v "^#" $VCF_PRIMER_FILTER_OUT | wc -l | grep -oP "(^\d+)")
+    if [ "\$NUMBER_OF_LINES_PRIMER" == "\$NUMBER_OF_LINES_VCF" ]; then
+        touch $VCF_PRIMER_FILTER_OUT.done
+    else
+        echo "The number of lines in the primer file (\$NUMBER_OF_LINES_PRIMER) is different than the number of lines in the SHARC.primer.vcf file (\$NUMBER_OF_LINES_VCF)" >&2
+    fi
 fi
 
 echo \`date\`: Done

@@ -1,5 +1,7 @@
+#!/usr/bin/python
 
 import sys
+import vcf as pyvcf
 
 ids = dict()
 
@@ -12,21 +14,10 @@ with(open(predict,'r')) as p:
 		id, label = line.split("\t")
 		ids[id] = label
 
-with(open(vcf_file,'r')) as vcf:
-	for line in vcf:
-		line = line.rstrip()
-		columns = line.split("\t")
-		if line.startswith("##"):
-			print(line)
-		elif line.startswith("#"):
-			print("##INFO=<ID=PREDICT_LABEL,Number=1,Type=Integer,Description=\"Predict label of the random forest\">")
-			print(line)
-		else:			
-			if columns[2] in ids:
-				label = ids[columns[2]]
-				columns[7] = "PREDICT_LABEL="+label+";"+columns[7]
-			else:
-				columns[7] = "PREDICT_LABEL="+"NA"+";"+columns[7]
-		
-			print("\t".join(columns))
-			
+vcf_reader = pyvcf.Reader(open(vcf_file,'r'))
+vcf_reader.infos['PREDICT_LABEL']=pyvcf.parser._Info('PREDICT_LABEL', 1, "Integer", "Predict label of the random forest", False, False)
+vcf_writer = pyvcf.Writer(open('/dev/stdout','w'),vcf_reader)
+for record in vcf_reader:
+	if record.ID in ids:
+		record.INFO['PREDICT_LABEL']=ids[record.ID]
+	vcf_writer.write_record(record)
