@@ -98,7 +98,7 @@ echo `date`: Running on `uname -n`
 
 . $VENV
 
-perl $CREATE_FEATURE_TABLE_SCRIPT $VCF > $OUTDIR/features_table.txt
+python $CREATE_FEATURE_TABLE_SCRIPT $VCF > $OUTDIR/features_table.txt
 
 Rscript $RANDOM_FOREST_SCRIPT $OUTDIR/features_table.txt $MEANCOV
 
