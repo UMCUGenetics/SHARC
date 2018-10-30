@@ -1260,7 +1260,9 @@ cat << EOF >> $DB_MERGE_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $RF_OUT.done ]; then
-  grep "^#" $RF_OUT > $DB_MERGE_OUT
+  HEADERS=\$(cat $DB_OUTDIR/*.vcf | grep "^##INFO" | grep "DB_")
+  grep "^#" $RF_OUT | awk -v headers="\$HEADERS" '/^##FORMAT/ && !modif { print headers; modif=1 } {print}' > $DB_MERGE_OUT
+
   $PASTE_CMD >> $DB_MERGE_OUT
 
   NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $RF_OUT | wc -l | grep -oP "(^\d+)")
