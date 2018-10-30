@@ -89,6 +89,14 @@ SHARC_FILTER
     -sfhr|--sharc_filter_h_rt                            SHARC Filter time [$SHARC_FILTER_TIME]
     -sfq|--sharc_filter_query                            SHARC Filter query [$SHARC_FILTER_QUERY]
 
+ICGC_FILTER
+    -ifhv|icgc_filter_h_vmem                             ICGC filter memory [$ICGC_FILTER_MEM]
+    -ifhr|icgc_filter_h_rt                               ICGC filter time [$ICGC_FILTER_TIME]
+    -ifc|icgc_filter_cancer_type                         ICGC filter cancer type [$ICGC_FILTER_CANCER_TYPE]
+    -iff|icgc_filter_flank                               ICGC filter flank [$ICGC_FILTER_FLANK]
+    -ifp|icgc_filter_support                             ICGC filter support [$ICGC_FILTER_SUPPORT]
+    -ifs|icgc_filter_script                              Path to Gene_annotation_ICGC.py [$ICGC_FILTER_SCRIPT]
+
 VCF_TO_FASTA
     -v2fhv|--vcf_fasta_h_vmem                            VCF to FASTA memory [$VCF_FASTA_MEM]
     -v2fhr|--vcf_fasta_h_rt                              VCF to FASTA time [$VCF_FASTA_TIME]
@@ -206,6 +214,14 @@ DB_MERGE_TIME=0:5:0
 SHARC_FILTER_MEM=2G
 SHARC_FILTER_TIME=0:5:0
 SHARC_FILTER_QUERY='grep "PREDICT_LABEL=1" | grep -v "SHARCDBFILTER" | grep -v "REFDBFILTER"'
+
+#ICGC FILTER DEFAULTS
+ICGC_FILTER_MEM=10G
+ICGC_FILTER_TIME=0:10:0
+ICGC_FILTER_CANCER_TYPE="Prostate"
+ICGC_FILTER_FLANK=200
+ICGC_FILTER_SUPPORT=0.05
+ICGC_FILTER_SCRIPT=$SCRIPTSDIR/gene_annotation_ICGC.py
 
 # VCF_FASTA_DEFAULTS
 VCF_FASTA_MEM=2G
@@ -539,6 +555,37 @@ do
     shift # past argument
     shift # past value
     ;;
+# ICGC_FILTER OPTIONS
+    -ifhv|--icgc_filter_h_vmem)
+    ICGC_FILTER_MEM="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -ifhr|--icgc_filter_h_rt)
+    ICGC_FILTER_TIME="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -ifc|--icgc_filter_cancer_type)
+    ICGC_FILTER_CANCER_TYPE="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -iff|--icgc_filter_flank)
+    ICGC_FILTER_FLANK="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -ifp|--icgc_filter_support)
+    ICGC_FILTER_SUPPORT="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -ifs|--icgc_filter_script)
+    ICGC_FILTER_SCRIPT="$2"
+    shift # past argument
+    shift # past value
+    ;;
 # VCF_FASTA OPTIONS
     -v2fhv|--vcf_fasta_h_vmem)
     VCF_FASTA_MEM="$2"
@@ -751,14 +798,20 @@ SHARC_FILTER_JOBNAME=$OUTNAME'_SHARCFILTER_'$RAND
 SHARC_FILTER_SH=$JOBDIR/$SHARC_FILTER_JOBNAME.sh
 SHARC_FILTER_ERR=$LOGDIR/$SHARC_FILTER_JOBNAME.err
 SHARC_FILTER_LOG=$LOGDIR/$SHARC_FILTER_JOBNAME.log
-SHARC_FILTER_OUT=$SV_DIR/$(basename ${SV_OUT/.vcf/.SHARC.vcf})
+SHARC_FILTER_OUT=$SV_TMP_DIR/$(basename ${SV_OUT/.vcf/.SHARC.vcf})
+
+ICGC_FILTER_JOBNAME=$OUTNAME'_ICGCFILTER_'$RAND
+ICGC_FILTER_SH=$JOBDIR/$ICGC_FILTER_JOBNAME.sh
+ICGC_FILTER_ERR=$LOGDIR/$ICGC_FILTER_JOBNAME.err
+ICGC_FILTER_LOG=$LOGDIR/$ICGC_FILTER_JOBNAME.log
+ICGC_FILTER_OUT=$SV_DIR/$(basename ${SHARC_FILTER_OUT/.vcf/.ICGC.vcf})
 
 VCF_FASTA_OUTDIR=$OUTPUTDIR/primers
 VCF_FASTA_JOBNAME=$OUTNAME'_VCFFASTA_'$RAND
 VCF_FASTA_SH=$JOBDIR/$VCF_FASTA_JOBNAME.sh
 VCF_FASTA_ERR=$LOGDIR/$VCF_FASTA_JOBNAME.err
 VCF_FASTA_LOG=$LOGDIR/$VCF_FASTA_JOBNAME.log
-VCF_FASTA_OUT=$VCF_FASTA_OUTDIR/$(basename ${SHARC_FILTER_OUT/.vcf/.fasta})
+VCF_FASTA_OUT=$VCF_FASTA_OUTDIR/$(basename ${ICGC_FILTER_OUT/.vcf/.fasta})
 
 PRIMER_DESIGN_OUTDIR=$OUTPUTDIR/primers
 PRIMER_DESIGN_TMP_DIR=$PRIMER_DESIGN_OUTDIR/tmp
@@ -1320,6 +1373,37 @@ fi
 echo \`date\`: Done
 EOF
 qsub $SHARC_FILTER_SH
+}
+
+icgc_filter() {
+cat << EOF > $ICGC_FILTER_SH
+#!/bin/bash
+
+#$ -N $ICGC_filter_JOBNAME
+#$ -cwd
+#$ -l h_vmem=$ICGC_FILTER_MEM
+#$ -l h_rt=$ICGC_FILTER_TIME
+#$ -e $ICGC_FILTER_ERR
+#$ -o $ICGC_FILTER_LOG
+EOF
+
+if [ ! -z $SHARC_FILTER_JOBNAME ]; then
+cat << EOF >> $ICGC_FILTER_SH
+#$ -hold_jid $SHARC_FILTER_JOBNAME
+EOF
+fi
+
+cat << EOF >> $ICGC_FILTER_SH
+echo \`date\`: Running on \`uname -n\`
+
+if [ -e $SHARC_FILTER_OUT.done ]; then
+    bash $STEPSDIR/icgc_filter.sh -v $SHARC_FILTER_OUT -s $ICGC_FILTER_SCRIPT -c $ICGC_FILTER_CANCER_TYPE -f $ICGC_FILTER_FLANK -p $ICGC_FILTER_SUPPORT -o $VCF_SPLIT_OUTDIR
+    touch $ICGC_FILTER_OUT.done
+fi
+
+echo \`date\`: Done
+EOF
+qsub $ICGC_FILTER_SH
 }
 
 vcf_fasta() {
