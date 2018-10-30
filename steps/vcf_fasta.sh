@@ -11,6 +11,7 @@ Optional parameters:
     -vfs|--vcf_fasta_script   Path to vcf_to_fasta.py script [$VCF_FASTA_SCRIPT]
     -vfo|--offset   Offset [$OFFSET]
     -vfm|--mask   Mask [$MASK]
+    -e|--venv   Path to virtual env of NanoSV [$VENV]
     -o|--output Fasta output file [$OUTPUT]
 "
 }
@@ -23,6 +24,7 @@ OFFSET=0
 MASK=false
 OUTPUT='/dev/stdout'
 VCF_FASTA_SCRIPT='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/vcf_to_fasta.py'
+VENV='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/venv/bin/activate'
 
 while [[ $# -gt 0 ]]
 do
@@ -57,6 +59,11 @@ do
     shift # past argument
     shift # past value
     ;;
+    -e|--venv)
+    VENV="$2"
+    shift # past argument
+    shift # past value
+    ;;
     -o|--output)
     OUTPUT="$2"
     shift # past argument
@@ -76,6 +83,8 @@ if [ -z $VCF ]; then
 fi
 
 echo `date`: Running on `uname -n`
+
+. $VENV
 
 if [ $MASK = true ]; then
   python $VCF_FASTA_SCRIPT -o $OFFSET -f $FLANK -m $VCF > $OUTPUT
