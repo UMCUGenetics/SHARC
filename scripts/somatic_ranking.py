@@ -79,12 +79,12 @@ with open(VCF, "r") as input:
 
 with open(VCF, "r") as vcf_input, open(RANKED_VCF, "w") as vcf_output:
     VCF_READ2=pyvcf.Reader(vcf_input)
-    VCF_READ2.infos['RANK']=pyvcf.parser._Info('RANK', 1, "Integer", "Ranking based on icgc database, SV length and read depth", "NanoSV", "X")
+    VCF_READ2.infos['SHARC_RANK']=pyvcf.parser._Info('SHARC_RANK', 1, "Integer", "Ranking based on icgc database, SV length and read depth", "NanoSV", "X")
     VCF_WRITER=pyvcf.Writer(vcf_output, VCF_READ2, lineterminator='\n')
     for record in VCF_READ2:
         for rank, primer in enumerate(SCORE):
             print (str(primer["ID"]) + "\t" + str(primer["TYPE"]) + "\t" + str(primer["ICGC_SCORE"]) + "\t" + str(primer["SVLEN"]) + "\n")
             RANK=rank+1
             if str(record.ID) == str(primer["ID"]):
-                record.INFO["RANK"]=RANK
+                record.INFO["SHARC_RANK"]=RANK
         VCF_WRITER.write_record(record)
