@@ -148,7 +148,7 @@ MAPPING_MERGE_SAMBAMBA=$SAMBAMBA
 # COVERAGE CALCULTATION DEFAULTS
 COVERAGE_CALCULTATION_THREADS=8
 COVERAGE_CALCULTATION_MEM=20G
-COVERAGE_CALCULTATION_TIME=1:0:0
+COVERAGE_CALCULTATION_TIME=2:0:0
 COVERAGE_CALCULTATION_SAMBAMBA=$SAMBAMBA
 COVERAGE_CALCULTATION_BED=$FILESDIR/human_hg19.bed
 COVERAGE_CALCULTATION_SAMBAMBA_SETTINGS='base --min-coverage=0'
@@ -1116,12 +1116,13 @@ echo \`date\`: Running on \`uname -n\`
 NUMBER_OF_SPLIT_FILES=\$(ls -l $VCF_SPLIT_OUTDIR/*.*.vcf | wc -l)
 NUMBER_OF_DONE_FILES=\$(ls -l $VCF_SPLIT_OUTDIR/*.done | wc -l)
 if [ "\$NUMBER_OF_SPLIT_FILES" == "\$NUMBER_OF_DONE_FILES" ]; then
-    grep "^#" $VCF_FILTER_OUT > $BED_ANNOTATION_MERGE_OUT
+    HEADERS=\$(cat $VCF_SPLIT_OUTDIR/1.*.vcf | grep "^#" | grep "_DISTANCE")
+    grep "^#" $VCF_FILTER_OUT | awk -v headers="\$HEADERS" '/^##FORMAT/ && !modif { print headers; modif=1 } {print}' > $BED_ANNOTATION_MERGE_OUT
     $PASTE_CMD
 fi
 
-NUMBER_OF_LINES_VCF_1=\$(wc -l $VCF_FILTER_OUT | grep -oP "(^\d+)")
-NUMBER_OF_LINES_VCF_2=\$(wc -l $BED_ANNOTATION_MERGE_OUT | grep -oP "(^\d+)")
+NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $VCF_FILTER_OUT | wc -l | grep -oP "(^\d+)")
+NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $BED_ANNOTATION_MERGE_OUT | wc -l | grep -oP "(^\d+)")
 
 if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
     touch $BED_ANNOTATION_MERGE_OUT.done
@@ -1567,8 +1568,8 @@ if [ ! -e $VCF_FILTER_OUT.done ]; then
   vcf_filter
 fi
 if [ ! -e $BED_ANNOTATION_MERGE_OUT.done ]; then
-  vcf_split
-  create_bed_annotation_jobs
+  #vcf_split
+  #create_bed_annotation_jobs
   annotation_merge
 fi
 if [ ! -e $RF_OUT.done ]; then
