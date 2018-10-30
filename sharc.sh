@@ -1100,8 +1100,8 @@ echo \`date\`: Running on \`uname -n\`
 
 if [ -e $VCF_FILTER_OUT.done ]; then
     bash $STEPSDIR/vcf_split.sh -v $VCF_FILTER_OUT -l $VCF_SPLIT_LINES -o $VCF_SPLIT_OUTDIR
-    NUMBER_OF_LINES_VCF_1=\$(wc -l $VCF_FILTER_OUT | grep -oP "(^\d+)")
-    NUMBER_OF_LINES_VCF_2=\$(cat $VCF_SPLIT_OUTDIR/*.vcf | wc -l | grep -oP "(^\d+)")
+    NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $VCF_FILTER_OUT | wc -l | grep -oP "(^\d+)")
+    NUMBER_OF_LINES_VCF_2=\$(cat $VCF_SPLIT_OUTDIR/*.vcf | grep -v "^#" | wc -l | grep -oP "(^\d+)")
 
     if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
         touch $VCF_SPLIT_OUT.done
