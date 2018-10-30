@@ -98,9 +98,9 @@ ICGC_FILTER
     -ifs|icgc_filter_script                              Path to gene_annotation_ICGC.py [$ICGC_FILTER_SCRIPT]
 
 SOMATIC_RANKING
-    -srhv|somatic_ranking_h_vmem                             ICGC filter memory [$ICGC_FILTER_MEM]
-    -srhr|somatic_ranking_h_rt                               ICGC filter time [$ICGC_FILTER_TIME]
-    -srs|somatic_ranking_script                              Path to somatic_ranking.py [$ICGC_FILTER_SCRIPT]
+    -srhv|somatic_ranking_h_vmem                         Somatic ranking memory [$ICGC_FILTER_MEM]
+    -srhr|somatic_ranking_h_rt                           Somatic ranking time [$ICGC_FILTER_TIME]
+    -srs|somatic_ranking_script                          Path to somatic_ranking.py [$ICGC_FILTER_SCRIPT]
 
 VCF_TO_FASTA
     -v2fhv|--vcf_fasta_h_vmem                            VCF to FASTA memory [$VCF_FASTA_MEM]
@@ -1778,7 +1778,7 @@ if [ ! -e $ICGC_FILTER_OUT.done ]; then
   icgc_filter
 fi
 if [ ! -e $SOMATIC_RANKING_OUT.done ]; then
-  icgc_filter
+  somatic_ranking
 fi
 if [ ! -e $VCF_FASTA_OUT.done ]; then
   vcf_fasta
