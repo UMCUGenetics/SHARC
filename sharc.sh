@@ -1528,7 +1528,7 @@ cat << EOF >> $VCF_PRIMER_FILTER_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $PRIMER_DESIGN_OUT.done ]; then
-    bash $STEPSDIR/vcf_primer_filter.sh -v $SHARC_FILTER_OUT -p $PRIMER_DESIGN_OUT -o $VCF_PRIMER_FILTER_OUT -s $VCF_PRIMER_FILTER_SCRIPT
+    bash $STEPSDIR/vcf_primer_filter.sh -v $ICGC_FILTER_OUT -p $PRIMER_DESIGN_OUT -o $VCF_PRIMER_FILTER_OUT -s $VCF_PRIMER_FILTER_SCRIPT
     NUMBER_OF_LINES_PRIMER=\$(cat $PRIMER_DESIGN_OUT | wc -l | grep -oP "(^\d+)")
     NUMBER_OF_LINES_VCF=\$(grep -v "^#" $VCF_PRIMER_FILTER_OUT | wc -l | grep -oP "(^\d+)")
     if [ "\$NUMBER_OF_LINES_PRIMER" == "\$NUMBER_OF_LINES_VCF" ]; then
