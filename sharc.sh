@@ -127,6 +127,12 @@ VCF PRIMER FILTER
     -vpfhr|--vcf_primer_filter_h_rt                      VCF Primer Filter time [$VCF_PRIMER_FILTER_TIME]
     -vpfs|--vcf_primer_filter_script                     Path to vcf_primer_filter.py [$VCF_PRIMER_FILTER_SCRIPT]
 
+PRIMER_RANKING
+-rphv|primer_ranking_h_vmem                         Primer ranking memory [$PRIMER_RANKING_MEM]
+-rphr|primer_ranking_h_rt                           Primer ranking time [$PRIMER_RANKING_TIME]
+-rps|primer_ranking_script                          Path to primer ranking.py [$PRIMER_RANKING_SCRIPT]
+
+
 "
 exit
 }
@@ -258,6 +264,11 @@ PRIMER_DESIGN_MISPRIMING=$PRIMER_DESIGN_DIR/repbase/current/empty.ref
 VCF_PRIMER_FILTER_MEM=2G
 VCF_PRIMER_FILTER_TIME=0:5:0
 VCF_PRIMER_FILTER_SCRIPT=$SCRIPTSDIR/vcf_primer_filter.py
+
+# PRIMER_RANKING DEFAULTS
+PRIMER_RANKING_MEM=1G
+PRIMER_RANKING_TIME=0:5:0
+PRIMER_RANKING_SCRIPT=$SCRIPTSDIR/primer_ranking.py
 
 # CHECK_SHARC FILTER DEFAULTS
 CHECK_SHARC_MEM=1G
@@ -709,6 +720,22 @@ do
     shift # past argument
     shift # past value
     ;;
+# PRIMER_RANKING OPTIONS
+    -prhv|--primer_ranking_h_vmem)
+    PRIMER_RANKING_MEM="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -prhr|--primer_ranking_h_rt)
+    PRIMER_RANKING_TIME="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -prs|--primer_ranking_script)
+    PRIMER_RANKING_SCRIPT="$2"
+    shift # past argument
+    shift # past value
+    ;;
     *)    # unknown option
     POSITIONAL+=("$1") # save it in an array for later
     shift # past argument
@@ -858,7 +885,13 @@ VCF_PRIMER_FILTER_JOBNAME=$OUTNAME'_VCFPRIMERFILTER_'$RAND
 VCF_PRIMER_FILTER_SH=$JOBDIR/$VCF_PRIMER_FILTER_JOBNAME.sh
 VCF_PRIMER_FILTER_ERR=$LOGDIR/$VCF_PRIMER_FILTER_JOBNAME.err
 VCF_PRIMER_FILTER_LOG=$LOGDIR/$VCF_PRIMER_FILTER_JOBNAME.log
-VCF_PRIMER_FILTER_OUT=$VCF_PRIMER_FILTER_OUTDIR/$(basename ${ICGC_FILTER_OUT/.vcf/.primers.vcf})
+VCF_PRIMER_FILTER_OUT=$VCF_PRIMER_FILTER_OUTDIR/$(basename ${SOMATIC_RANKING_OUT/.vcf/.primers.vcf})
+
+PRIMER_RANKING_JOBNAME=$OUTNAME'_PRIMERRANKING_'$RAND
+PRIMER_RANKING_SH=$JOBDIR/$PRIMER_RANKING_JOBNAME.sh
+PRIMER_RANKING_ERR=$LOGDIR/$PRIMER_RANKING_JOBNAME.err
+PRIMER_RANKING_LOG=$LOGDIR/$PRIMER_RANKING_JOBNAME.log
+PRIMER_RANKING_OUT=$PRIMER_DESIGN_OUTDIR/$(basename ${PRIMER_DESIGN_OUT/.primers/.ranked.primers})
 
 CHECK_SHARC_OUTDIR=$OUTPUTDIR
 CHECK_SHARC_JOBNAME=$OUTNAME'_CHECKSHARC_'$RAND
@@ -1432,7 +1465,7 @@ cat << EOF >> $ICGC_FILTER_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $SHARC_FILTER_OUT.done ]; then
-    bash $STEPSDIR/icgc_filter.sh -v $SHARC_FILTER_OUT -s $ICGC_FILTER_SCRIPT -c $ICGC_FILTER_CANCER_TYPE -f $ICGC_FILTER_FLANK -p $ICGC_FILTER_SUPPORT -o $ICGC_FILTER_OUT -e VENV
+    bash $STEPSDIR/icgc_filter.sh -v $SHARC_FILTER_OUT -s $ICGC_FILTER_SCRIPT -c $ICGC_FILTER_CANCER_TYPE -f $ICGC_FILTER_FLANK -p $ICGC_FILTER_SUPPORT -o $ICGC_FILTER_OUT -e $VENV
     NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $SHARC_FILTER_OUT | wc -l | grep -oP "(^\d+)")
     NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $ICGC_FILTER_OUT | wc -l | grep -oP "(^\d+)")
 
@@ -1614,6 +1647,45 @@ EOF
 qsub $VCF_PRIMER_FILTER_SH
 }
 
+primer_ranking() {
+cat << EOF > $PRIMER_RANKING_SH
+#!/bin/bash
+
+#$ -N $PRIMER_RANKING_JOBNAME
+#$ -cwd
+#$ -l h_vmem=$PRIMER_RANKING_MEM
+#$ -l h_rt=$PRIMER_RANKING_TIME
+#$ -e $PRIMER_RANKING_ERR
+#$ -o $PRIMER_RANKING_LOG
+EOF
+
+if [ ! -z $VCF_PRIMER_FILTER_JOBNAME ]; then
+cat << EOF >> $PRIMER_RANKING_SH
+#$ -hold_jid $VCF_PRIMER_FILTER_JOBNAME
+EOF
+fi
+
+cat << EOF >> $PRIMER_RANKING_SH
+echo \`date\`: Running on \`uname -n\`
+
+if [ -e $VCF_PRIMER_FILTER_OUT.done ]; then
+    bash $STEPSDIR/primer_ranking.sh -v $VCF_PRIMER_FILTER_OUT -p $PRIMER_DESIGN_OUT -o $PRIMER_RANKING_OUT -e $VENV
+
+    NUMBER_OF_PRIMERS_1=\$(wc -l $PRIMER_FILTER_OUT | grep -oP "(^\d+)")
+    NUMBER_OF_PRIMERS_2=\$(wc -l $PRIMER_RANKING_OUT | grep -oP "(^\d+)")
+
+    if [ "\$NUMBER_OF_PRIMERS_1" == "\$NUMBER_OF_PRIMERS_2" ]; then
+        touch $ICGC_FILTER_OUT.done
+    else
+        echo "The number of lines in the unranked primers file (\$NUMBER_OF_PRIMERS_1) is different than the number of lines in the ranked primers file (\$NUMBER_OF_PRIMERS_2)" >&2
+    fi
+fi
+
+echo \`date\`: Done
+EOF
+qsub $PRIMER_RANKING_SH
+}
+
 check_SHARC() {
 cat << EOF > $CHECK_SHARC_SH
 #!/bin/bash
@@ -1730,6 +1802,14 @@ else
     echo "VCF primer filter: Fail" >> $CHECK_SHARC_OUT
     CHECK_BOOL=false
 fi
+
+if [ -e $PRIMER_RANKING_OUT.done ]; then
+    echo "Primer ranking: Done" >> $CHECK_SHARC_OUT
+else
+    echo "Primer ranking: Fail" >> $CHECK_SHARC_OUT
+    CHECK_BOOL=false
+fi
+
 if [ \$CHECK_BOOL = true ]; then
     touch $CHECK_SHARC_OUT.done
     if [ $DONT_CLEAN = false ]; then
@@ -1788,6 +1868,9 @@ if [ ! -e $PRIMER_DESIGN_OUT.done ]; then
 fi
 if [ ! -e $VCF_PRIMER_FILTER_OUT.done ]; then
   vcf_primer_filter
+fi
+if [ ! -e $PRIMER_RANKING_OUT.done ]; then
+  primer_ranking
 fi
 if [ ! -e $CHECK_SHARC_OUT.done ]; then
   check_SHARC

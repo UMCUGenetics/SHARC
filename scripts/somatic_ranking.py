@@ -5,7 +5,7 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser = argparse.ArgumentParser(description='Put here a description.')
-parser.add_argument('-v', '--vcf', type=str, help='VCF output file', required=True)
+parser.add_argument('-v', '--vcf', type=str, help='VCF input file', required=True)
 parser.add_argument('-o', '--output', type=str, help='VCF output file', required=True)
 args = parser.parse_args()
 

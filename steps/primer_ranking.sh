@@ -4,11 +4,12 @@ usage() {
 echo "
 Required parameters:
     -v|--vcf		    Path to vcf file
+    -p|--primers    Path to primers file
 
 Optional parameters:
     -h|--help       Shows help
-    -s|--script     Path to vcf_primer_filter.py [$SCRIPT]
-    -o|--output     VCF output file [$OUTPUT]
+    -s|--script     Path to rank_primers.py [$SCRIPT]
+    -o|--output     Primers output file [$OUTPUT]
     -e|--venv       Path to virtual environment[$VENV]
 "
 }
@@ -16,7 +17,7 @@ Optional parameters:
 POSITIONAL=()
 
 #DEFAULT
-SCRIPT="/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/vcf_rank_somatic.py"
+SCRIPT="/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/primer_ranking.py"
 VENV='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/venv/bin/activate'
 OUTPUT="/dev/stdout"
 
@@ -31,6 +32,11 @@ do
     ;;
     -v|--vcf)
     VCF="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -p|--primers)
+    PRIMERS="$2"
     shift # past argument
     shift # past value
     ;;
@@ -59,8 +65,14 @@ if [ -z $VCF ]; then
     exit
 fi
 
+if [ -z $PRIMERS ]; then
+    echo "Missing -p|--primers parameter"
+    usage
+    exit
+fi
+
 echo `date`: Running on `uname -n`
 
 . $VENV
 
-python $SCRIPT -v $VCF -o $OUTPUT
+python $SCRIPT -v $VCF -p $PRIMERS -o $OUTPUT
