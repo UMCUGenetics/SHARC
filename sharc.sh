@@ -95,7 +95,12 @@ ICGC_FILTER
     -ifc|icgc_filter_cancer_type                         ICGC filter cancer type [$ICGC_FILTER_CANCER_TYPE]
     -iff|icgc_filter_flank                               ICGC filter flank [$ICGC_FILTER_FLANK]
     -ifp|icgc_filter_support                             ICGC filter support [$ICGC_FILTER_SUPPORT]
-    -ifs|icgc_filter_script                              Path to Gene_annotation_ICGC.py [$ICGC_FILTER_SCRIPT]
+    -ifs|icgc_filter_script                              Path to gene_annotation_ICGC.py [$ICGC_FILTER_SCRIPT]
+
+SOMATIC_RANKING
+    -srhv|somatic_ranking_h_vmem                             ICGC filter memory [$ICGC_FILTER_MEM]
+    -srhr|somatic_ranking_h_rt                               ICGC filter time [$ICGC_FILTER_TIME]
+    -srs|somatic_ranking_script                              Path to somatic_ranking.py [$ICGC_FILTER_SCRIPT]
 
 VCF_TO_FASTA
     -v2fhv|--vcf_fasta_h_vmem                            VCF to FASTA memory [$VCF_FASTA_MEM]
@@ -222,6 +227,11 @@ ICGC_FILTER_CANCER_TYPE="Prostate"
 ICGC_FILTER_FLANK=200
 ICGC_FILTER_SUPPORT=0.05
 ICGC_FILTER_SCRIPT=$SCRIPTSDIR/gene_annotation_ICGC.py
+
+#SOMATIC_RANKING VCF_FASTA_DEFAULTS
+SOMATIC_RANKING_MEM=2G
+SOMATIC_RANKING_TIME=0:5:0
+SOMATIC_RANKING_SCRIPT=$SCRIPTSDIR/somatic_ranking.py
 
 # VCF_FASTA_DEFAULTS
 VCF_FASTA_MEM=2G
@@ -586,6 +596,22 @@ do
     shift # past argument
     shift # past value
     ;;
+# SOMATIC_RANKING OPTIONS
+    -srhv|--somatic_ranking_h_vmem)
+    SOMATIC_RANKING_MEM="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -srhr|--somatic_ranking_h_rt)
+    SOMATIC_RANKING_TIME="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -srs|--somatic_ranking_script)
+    SOMATIC_RANKING_SCRIPT="$2"
+    shift # past argument
+    shift # past value
+    ;;
 # VCF_FASTA OPTIONS
     -v2fhv|--vcf_fasta_h_vmem)
     VCF_FASTA_MEM="$2"
@@ -804,14 +830,20 @@ ICGC_FILTER_JOBNAME=$OUTNAME'_ICGCFILTER_'$RAND
 ICGC_FILTER_SH=$JOBDIR/$ICGC_FILTER_JOBNAME.sh
 ICGC_FILTER_ERR=$LOGDIR/$ICGC_FILTER_JOBNAME.err
 ICGC_FILTER_LOG=$LOGDIR/$ICGC_FILTER_JOBNAME.log
-ICGC_FILTER_OUT=$SV_DIR/$(basename ${SHARC_FILTER_OUT/.vcf/.ICGC.vcf})
+ICGC_FILTER_OUT=$SV_TMP_DIR/$(basename ${SHARC_FILTER_OUT/.vcf/.ICGC.vcf})
+
+SOMATIC_RANKING_JOBNAME=$OUTNAME'_SOMATICRANKING_'$RAND
+SOMATIC_RANKING_SH=$JOBDIR/$SOMATIC_RANKING_JOBNAME.sh
+SOMATIC_RANKING_ERR=$LOGDIR/$SOMATIC_RANKING_JOBNAME.err
+SOMATIC_RANKING_LOG=$LOGDIR/$SOMATIC_RANKING_JOBNAME.log
+SOMATIC_RANKING_OUT=$SV_DIR/$(basename ${ICGC_FILTER_OUT/.vcf/.ranked.vcf})
 
 VCF_FASTA_OUTDIR=$OUTPUTDIR/primers
 VCF_FASTA_JOBNAME=$OUTNAME'_VCFFASTA_'$RAND
 VCF_FASTA_SH=$JOBDIR/$VCF_FASTA_JOBNAME.sh
 VCF_FASTA_ERR=$LOGDIR/$VCF_FASTA_JOBNAME.err
 VCF_FASTA_LOG=$LOGDIR/$VCF_FASTA_JOBNAME.log
-VCF_FASTA_OUT=$VCF_FASTA_OUTDIR/$(basename ${ICGC_FILTER_OUT/.vcf/.fasta})
+VCF_FASTA_OUT=$VCF_FASTA_OUTDIR/$(basename ${SOMATIC_RANKING_OUT/.vcf/.fasta})
 
 PRIMER_DESIGN_OUTDIR=$OUTPUTDIR/primers
 PRIMER_DESIGN_TMP_DIR=$PRIMER_DESIGN_OUTDIR/tmp
@@ -1400,7 +1432,7 @@ cat << EOF >> $ICGC_FILTER_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $SHARC_FILTER_OUT.done ]; then
-    bash $STEPSDIR/icgc_filter.sh -v $SHARC_FILTER_OUT -s $ICGC_FILTER_SCRIPT -c $ICGC_FILTER_CANCER_TYPE -f $ICGC_FILTER_FLANK -p $ICGC_FILTER_SUPPORT -o $ICGC_FILTER_OUT
+    bash $STEPSDIR/icgc_filter.sh -v $SHARC_FILTER_OUT -s $ICGC_FILTER_SCRIPT -c $ICGC_FILTER_CANCER_TYPE -f $ICGC_FILTER_FLANK -p $ICGC_FILTER_SUPPORT -o $ICGC_FILTER_OUT -e VENV
     NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $SHARC_FILTER_OUT | wc -l | grep -oP "(^\d+)")
     NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $ICGC_FILTER_OUT | wc -l | grep -oP "(^\d+)")
 
@@ -1414,6 +1446,45 @@ fi
 echo \`date\`: Done
 EOF
 qsub $ICGC_FILTER_SH
+}
+
+somatic_ranking() {
+cat << EOF > $SOMATIC_RANKING_SH
+#!/bin/bash
+
+#$ -N $SOMATIC_RANKING_JOBNAME
+#$ -cwd
+#$ -l h_vmem=$SOMATIC_RANKING_MEM
+#$ -l h_rt=$SOMATIC_RANKING_TIME
+#$ -e $SOMATIC_RANKING_ERR
+#$ -o $SOMATIC_RANKING_LOG
+EOF
+
+if [ ! -z $ICGC_FILTER_JOBNAME ]; then
+cat << EOF >> $SOMATIC_RANKING_SH
+#$ -hold_jid $ICGC_FILTER_JOBNAME
+EOF
+fi
+
+cat << EOF >> $SOMATIC_RANKING_SH
+echo \`date\`: Running on \`uname -n\`
+
+if [ -e $ICGC_FILTER_OUT.done ]; then
+    bash $STEPSDIR/somatic_ranking.sh -v $ICGC_FILTER_OUT -s $SOMATIC_RANKING_SCRIPT -o $SOMATIC_RANKING_OUT -e $VENV
+
+    NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $ICGC_FILTER_OUT | wc -l | grep -oP "(^\d+)")
+    NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $SOMATIC_RANKING_OUT | wc -l | grep -oP "(^\d+)")
+
+    if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
+        touch $SOMATIC_RANKING_OUT.done
+    else
+        echo "The number of lines in the ICGC vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the Ranking file (\$NUMBER_OF_LINES_VCF_2)" >&2
+    fi
+fi
+
+echo \`date\`: Done
+EOF
+qsub $SOMATIC_RANKING_SH
 }
 
 vcf_fasta() {
@@ -1430,22 +1501,22 @@ EOF
 
 if [ ! -z $ICGC_FILTER_JOBNAME ]; then
 cat << EOF >> $VCF_FASTA_SH
-#$ -hold_jid $ICGC_FILTER_JOBNAME
+#$ -hold_jid $SOMATIC_RANKING_JOBNAME
 EOF
 fi
 
 cat << EOF >> $VCF_FASTA_SH
 echo \`date\`: Running on \`uname -n\`
 
-if [ -e $ICGC_FILTER_OUT.done ]; then
+if [ -e $SOMATIC_RANKING_OUT.done ]; then
 EOF
 if [ $VCF_FASTA_MARK = true ]; then
 cat << EOF >> $VCF_FASTA_SH
-    bash $STEPSDIR/vcf_fasta.sh -v $ICGC_FILTER_OUT -vff $VCF_FASTA_FLANK -vfo $VCF_FASTA_OFFSET -vfs $VCF_FASTA_SCRIPT -vfm -o $VCF_FASTA_OUT -e $VENV
+    bash $STEPSDIR/vcf_fasta.sh -v $SOMATIC_RANKING_OUT -vff $VCF_FASTA_FLANK -vfo $VCF_FASTA_OFFSET -vfs $VCF_FASTA_SCRIPT -vfm -o $VCF_FASTA_OUT -e $VENV
 EOF
 else
 cat << EOF >> $VCF_FASTA_SH
-    bash $STEPSDIR/vcf_fasta.sh -v $ICGC_FILTER_OUT -vff $VCF_FASTA_FLANK -vfo $VCF_FASTA_OFFSET -vfs $VCF_FASTA_SCRIPT -o $VCF_FASTA_OUT -e $VENV
+    bash $STEPSDIR/vcf_fasta.sh -v $SOMATIC_RANKING_OUT -vff $VCF_FASTA_FLANK -vfo $VCF_FASTA_OFFSET -vfs $VCF_FASTA_SCRIPT -o $VCF_FASTA_OUT -e $VENV
 EOF
 fi
 cat << EOF >> $VCF_FASTA_SH
@@ -1528,7 +1599,7 @@ cat << EOF >> $VCF_PRIMER_FILTER_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $PRIMER_DESIGN_OUT.done ]; then
-    bash $STEPSDIR/vcf_primer_filter.sh -v $ICGC_FILTER_OUT -p $PRIMER_DESIGN_OUT -o $VCF_PRIMER_FILTER_OUT -s $VCF_PRIMER_FILTER_SCRIPT
+    bash $STEPSDIR/vcf_primer_filter.sh -v $SOMATIC_RANKING_OUT -p $PRIMER_DESIGN_OUT -o $VCF_PRIMER_FILTER_OUT -s $VCF_PRIMER_FILTER_SCRIPT
     NUMBER_OF_LINES_PRIMER=\$(cat $PRIMER_DESIGN_OUT | wc -l | grep -oP "(^\d+)")
     NUMBER_OF_LINES_VCF=\$(grep -v "^#" $VCF_PRIMER_FILTER_OUT | wc -l | grep -oP "(^\d+)")
     if [ "\$NUMBER_OF_LINES_PRIMER" == "\$NUMBER_OF_LINES_VCF" ]; then
@@ -1632,6 +1703,13 @@ else
     CHECK_BOOL=false
 fi
 
+if [ -e $SOMATIC_RANKING_OUT.done ]; then
+    echo "Somatic ranking: Done" >> $CHECK_SHARC_OUT
+else
+    echo "Somatic ranking: Fail" >> $CHECK_SHARC_OUT
+    CHECK_BOOL=false
+fi
+
 if [ -e $VCF_FASTA_OUT.done ]; then
     echo "VCF to FASTA: Done" >> $CHECK_SHARC_OUT
 else
@@ -1697,6 +1775,9 @@ if [ ! -e $SHARC_FILTER_OUT.done ]; then
   sharc_filter
 fi
 if [ ! -e $ICGC_FILTER_OUT.done ]; then
+  icgc_filter
+fi
+if [ ! -e $SOMATIC_RANKING_OUT.done ]; then
   icgc_filter
 fi
 if [ ! -e $VCF_FASTA_OUT.done ]; then

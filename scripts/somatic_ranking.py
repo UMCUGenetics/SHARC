@@ -5,17 +5,12 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser = argparse.ArgumentParser(description='Put here a description.')
-parser.add_argument('-pi', '--primer_input', type=str, help='Primer output file')
-parser.add_argument('-po', '--primer_output', type=str, help='Primer output file')
-parser.add_argument('-vi', '--vcf_input', type=str, help='VCF output file', required=True)
-parser.add_argument('-vo', '--vcf_output', type=str, help='VCF output file', required=True)
+parser.add_argument('-v', '--vcf', type=str, help='VCF output file', required=True)
+parser.add_argument('-o', '--output', type=str, help='VCF output file', required=True)
 args = parser.parse_args()
 
-VCF=args.vcf_input
-RANKED_VCF=args.vcf_output
-
-PRIMERS=args.primer_input
-RANKED_PRIMERS=args.primer_output
+VCF=args.vcf
+RANKED_VCF=args.output
 
 with open(VCF, "r") as input:
     VCF_READ=pyvcf.Reader(input)
