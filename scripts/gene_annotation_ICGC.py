@@ -396,6 +396,7 @@ VCF_GENE_SELECTED=args.output
 FLANK=args.flank
 MIN_SUPPORT=args.support
 CANCERTYPE=args.cancertype
+CANCERTYPE=CANCERTYPE.capitalize()
 
 REGIONS=regions_from_vcf(VCF_IN)
 OVERLAP=overlap_ENSEMBLE(REGIONS)
