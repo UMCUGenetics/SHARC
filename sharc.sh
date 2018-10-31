@@ -5,6 +5,7 @@ echo "
 Required parameters:
     -f|--fastqdir                                        Path to fastq directory
     -m|--mail                                            Email adress
+    -c|--cancer_type                                     Cancer type used in ICGC database
 
 Optional parameters:
 
@@ -94,7 +95,6 @@ SHARC_FILTER
 ICGC_FILTER
     -ifhv|--icgc_filter_h_vmem                           ICGC filter memory [$ICGC_FILTER_MEM]
     -ifhr|--icgc_filter_h_rt                             ICGC filter time [$ICGC_FILTER_TIME]
-    -ifc|--icgc_filter_cancer_type                       ICGC filter cancer type [$ICGC_FILTER_CANCER_TYPE]
     -iff|--icgc_filter_flank                             ICGC filter flank [$ICGC_FILTER_FLANK]
     -ifp|--icgc_filter_support                           ICGC filter support [$ICGC_FILTER_SUPPORT]
     -ifs|--icgc_filter_script                            Path to Gene_annotation_ICGC.py [$ICGC_FILTER_SCRIPT]
@@ -230,7 +230,6 @@ SHARC_FILTER_QUERY='grep "PREDICT_LABEL=1" | grep -v "SHARCDBFILTER" | grep -v "
 #ICGC FILTER DEFAULTS
 ICGC_FILTER_MEM=10G
 ICGC_FILTER_TIME=0:10:0
-ICGC_FILTER_CANCER_TYPE="Prostate"
 ICGC_FILTER_FLANK=200
 ICGC_FILTER_SUPPORT=0.05
 ICGC_FILTER_SCRIPT=$SCRIPTSDIR/gene_annotation_ICGC.py
@@ -287,6 +286,11 @@ do
     ;;
     -m|--mail)
     MAIL="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -c|--cancer_type)
+    ICGC_FILTER_CANCER_TYPE="$2"
     shift # past argument
     shift # past value
     ;;
@@ -585,11 +589,6 @@ do
     ;;
     -ifhr|--icgc_filter_h_rt)
     ICGC_FILTER_TIME="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    -ifc|--icgc_filter_cancer_type)
-    ICGC_FILTER_CANCER_TYPE="$2"
     shift # past argument
     shift # past value
     ;;
