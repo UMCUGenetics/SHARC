@@ -1662,7 +1662,7 @@ if [ -e $VCF_PRIMER_FILTER_OUT.done ]; then
     NUMBER_OF_PRIMERS_1=\$(wc -l $PRIMER_FILTER_OUT | grep -oP "(^\d+)")
     NUMBER_OF_PRIMERS_2=\$(wc -l $PRIMER_RANKING_OUT | grep -oP "(^\d+)")
     if [ "\$NUMBER_OF_PRIMERS_1" == "\$NUMBER_OF_PRIMERS_2" ]; then
-        touch $ICGC_FILTER_OUT.done
+        touch $PRIMER_RANKING_OUT.done
     else
         echo "The number of lines in the unranked primers file (\$NUMBER_OF_PRIMERS_1) is different than the number of lines in the ranked primers file (\$NUMBER_OF_PRIMERS_2)" >&2
     fi
