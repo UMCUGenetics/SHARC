@@ -745,7 +745,7 @@ do
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 if [ -z $FASTQDIR ]; then
-  echo "Missing -f|--fastq parameter"
+  echo "Missing -f|--fastqdir parameter"
   usage
 elif [ -z $MAIL ]; then
   echo "Missing -m|--mail parameter"
