@@ -862,7 +862,7 @@ SOMATIC_RANKING_JOBNAME=$OUTNAME'_SOMATICRANKING_'$RAND
 SOMATIC_RANKING_SH=$JOBDIR/$SOMATIC_RANKING_JOBNAME.sh
 SOMATIC_RANKING_ERR=$LOGDIR/$SOMATIC_RANKING_JOBNAME.err
 SOMATIC_RANKING_LOG=$LOGDIR/$SOMATIC_RANKING_JOBNAME.log
-SOMATIC_RANKING_OUT=$SV_DIR/$(basename ${ICGC_FILTER_OUT/.vcf/.ranked.vcf})
+SOMATIC_RANKING_OUT=$SV_DIR/$(basename ${ICGC_FILTER_OUT/.vcf/.SHARC_RANK.vcf})
 
 VCF_FASTA_OUTDIR=$OUTPUTDIR/primers
 VCF_FASTA_JOBNAME=$OUTNAME'_VCFFASTA_'$RAND
@@ -1244,21 +1244,23 @@ fi
 cat << EOF >> $BED_ANNOTATION_MERGE_SH
 echo \`date\`: Running on \`uname -n\`
 
-NUMBER_OF_SPLIT_FILES=\$(ls -l $VCF_SPLIT_OUTDIR/*.*.vcf | wc -l)
-NUMBER_OF_DONE_FILES=\$(ls -l $VCF_SPLIT_OUTDIR/*.done | wc -l)
-if [ "\$NUMBER_OF_SPLIT_FILES" == "\$NUMBER_OF_DONE_FILES" ]; then
-    HEADERS=\$(cat $VCF_SPLIT_OUTDIR/1.*.vcf | grep "^#" | grep "_DISTANCE")
-    grep "^#" $VCF_FILTER_OUT | awk -v headers="\$HEADERS" '/^##FORMAT/ && !modif { print headers; modif=1 } {print}' > $BED_ANNOTATION_MERGE_OUT
-    $PASTE_CMD
-fi
+if [ -e $VCF_SPLIT_OUT.done ]; then
+  NUMBER_OF_SPLIT_FILES=\$(ls -l $VCF_SPLIT_OUTDIR/*.*.vcf | wc -l)
+  NUMBER_OF_DONE_FILES=\$(ls -l $VCF_SPLIT_OUTDIR/*.done | wc -l)
+  if [ "\$NUMBER_OF_SPLIT_FILES" == "\$NUMBER_OF_DONE_FILES" ]; then
+      HEADERS=\$(cat $VCF_SPLIT_OUTDIR/1.*.vcf | grep "^#" | grep "_DISTANCE")
+      grep "^#" $VCF_FILTER_OUT | awk -v headers="\$HEADERS" '/^##FORMAT/ && !modif { print headers; modif=1 } {print}' > $BED_ANNOTATION_MERGE_OUT
+      $PASTE_CMD
+  fi
 
-NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $VCF_FILTER_OUT | wc -l | grep -oP "(^\d+)")
-NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $BED_ANNOTATION_MERGE_OUT | wc -l | grep -oP "(^\d+)")
+  NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $VCF_FILTER_OUT | wc -l | grep -oP "(^\d+)")
+  NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $BED_ANNOTATION_MERGE_OUT | wc -l | grep -oP "(^\d+)")
 
-if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
-    touch $BED_ANNOTATION_MERGE_OUT.done
-else
-    echo "The number of lines in the original vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the annotated vcf file (\$NUMBER_OF_LINES_VCF_2)" >&2
+  if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
+      touch $BED_ANNOTATION_MERGE_OUT.done
+  else
+      echo "The number of lines in the original vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the annotated vcf file (\$NUMBER_OF_LINES_VCF_2)" >&2
+  fi
 fi
 
 echo \`date\`: Done
@@ -1685,9 +1687,9 @@ cat << EOF > $CHECK_SHARC_SH
 
 EOF
 
-if [ ! -z $VCF_PRIMER_FILTER_JOBNAME ]; then
+if [ ! -z $VCF_PRIMER_FILTER_JOBNAME ] && [ ! -z $PRIMER_RANKING_SH ]; then
 cat << EOF >> $CHECK_SHARC_SH
-#$ -hold_jid $VCF_PRIMER_FILTER_JOBNAME
+#$ -hold_jid $VCF_PRIMER_FILTER_JOBNAME,$PRIMER_RANKING_SH
 EOF
 fi
 
