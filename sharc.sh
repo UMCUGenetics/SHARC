@@ -9,40 +9,41 @@ Required parameters:
 Optional parameters:
 
 GENERAL
-    -h|--help		                                         Shows help
+    -h|--help                                            Shows help
     -sd|--sharc_dir                                      Path to sharc directory [$SHARCDIR]
-    -v|--venv		                                         Path to virtual env [$VENV]
-    -o|--outputdir	                                     Path to output directory [$OUTPUTDIR]
+    -v|--venv                                            Path to virtual env [$VENV]
+    -o|--outputdir                                       Path to output directory [$OUTPUTDIR]
     -sm|--sample_name                                    Name of the sample [From FASTQ or OUTPUTDIR ]
-    -dc|--dont_clean                                     Don't clean up the mapping tmp dir [$DONT_CLEAN]
+    -dc|--dont_clean                                     Don't clean up the mapping tmp dir []
 
 MAPPING
-    -mt|--mapping_threads	                               Number of threads [$MAPPING_THREADS]
+    -mt|--mapping_threads                                Number of threads [$MAPPING_THREADS]
+    -mhr|--mapping_h_rt                                  Mapping time [$MAPPING_TIME]
     -mhv|--mapping_h_vmem                                Mapping memory [$MAPPING_MEM]
-    -mm|--minimap2	                                     Path to minimap2 [$MAPPING_MINIMAP2]
+    -mm|--minimap2                                       Path to minimap2 [$MAPPING_MINIMAP2]
     -mms|--minimap2_settings                             Minimap2 settings [$MAPPING_MINIMAP2_SETTINGS]
-    -msb|--mapping_sambamba	                             Path to sambamba [$MAPPING_SAMBAMBA]
+    -msb|--mapping_sambamba                              Path to sambamba [$MAPPING_SAMBAMBA]
 
 MAPPING MERGE
-    -mmt|--mapping_merge_threads	                       Number of threads [$MAPPING_MERGE_THREADS]
+    -mmt|--mapping_merge_threads                         Number of threads [$MAPPING_MERGE_THREADS]
     -mmhv|--mapping_merge_h_vmem                         Mapping merge memory [$MAPPING_MERGE_MEM]
     -mmhr|--mapping_merge_h_rt                           Mapping merge time [$MAPPING_MERGE_TIME]
-    -mmsb|--mapping_merge_sambamba	                     Path to sambamba [$MAPPING_MERGE_SAMBAMBA]
+    -mmsb|--mapping_merge_sambamba                       Path to sambamba [$MAPPING_MERGE_SAMBAMBA]
 
 COVERAGE CALCULATION
-    -cct|--coverage_calculation_threads                 Number of threads [$COVERAGE_CALCULATION_THREADS]
-    -cchv|--coverage_calculation_h_vmem                 Coverage calculation memory [$COVERAGE_CALCULATION_MEM]
-    -cchr|--coverage_calculation_h_rt                   Coverage calculation time [$COVERAGE_CALCULATION_TIME]
-    -ccs|--coverage_calculation_sambamba                Path to sambamba [$COVERAGE_CALCULATION_SAMBAMBA]
-    -ccb|--coverage_calculation_bed                     Path to bed file [$COVERAGE_CALCULATION_BED]
-    -ccss|--coverage_calculation_sambamba_settings      Sambamba settings [$COVERAGE_CALCULATION_SAMBAMBA_SETTINGS]
+    -cct|--coverage_calculation_threads                  Number of threads [$COVERAGE_CALCULATION_THREADS]
+    -cchv|--coverage_calculation_h_vmem                  Coverage calculation memory [$COVERAGE_CALCULATION_MEM]
+    -cchr|--coverage_calculation_h_rt                    Coverage calculation time [$COVERAGE_CALCULATION_TIME]
+    -ccs|--coverage_calculation_sambamba                 Path to sambamba [$COVERAGE_CALCULATION_SAMBAMBA]
+    -ccb|--coverage_calculation_bed                      Path to bed file [$COVERAGE_CALCULATION_BED]
+    -ccss|--coverage_calculation_sambamba_settings       Sambamba settings [$COVERAGE_CALCULATION_SAMBAMBA_SETTINGS]
 
 SV_CALLING
     -svt|--sv_threads                                    Number of threads [$SV_THREADS]
     -svhv|--sv_h_vmem                                    SV calling memory [$SV_MEM]
     -svhr|--sv_h_rt                                      SV calling time [$SV_TIME]
-    -svc|--sv_config		                                 Path to config file [$SV_CONFIG]
-    -svs|--sv_sambamba	                                 Path to sambamba [$SV_SAMBAMBA]
+    -svc|--sv_config                                     Path to config file [$SV_CONFIG]
+    -svs|--sv_sambamba                                   Path to sambamba [$SV_SAMBAMBA]
 
 VCF_FILTER
     -vfhv|--vcf_filter_h_vmem                            VCF filter memory [$VCF_FILTER_MEM]
@@ -52,7 +53,7 @@ VCF_FILTER
 VCF_SPLIT
     -vshv|--vcf_split_h_vmem                             VCF split memory [$VCF_SPLIT_MEM]
     -vshr|--vcf_split_h_rt                               VCF split time [$VCF_SPLIT_TIME]
-    -vsl|--vcf_split_lines		                           Number of lines per split [$VCF_SPLIT_LINES]
+    -vsl|--vcf_split_lines                               Number of lines per split [$VCF_SPLIT_LINES]
 
 CREATE_BED_ANNOTATION
     -cbahv|--create_bed_annotation_h_vmem                Create BED memory [$CREATE_BED_ANNOTATION_MEM]
@@ -61,8 +62,8 @@ CREATE_BED_ANNOTATION
 BED_ANNOTATION
     -bahv|--bad_annotation_h_vmem                        BED annotation memory [$BED_ANNOTATION_MEM]
     -bahr|--bad_annotation_h_rt                          BED annotation time [$BED_ANNOTATION_TIME]
-    -baf|--bed_annotation_files	                         Path to the directory with the feature bed files [$BED_ANNOTATION_FILES]
-    -bas|--bed_annotation_script	                       Path to get_closest_feature.py script [$BED_ANNOTATION_SCRIPT]
+    -baf|--bed_annotation_files                          Path to the directory with the feature bed files [$BED_ANNOTATION_FILES]
+    -bas|--bed_annotation_script                         Path to get_closest_feature.py script [$BED_ANNOTATION_SCRIPT]
 
 BED_ANNOTATION MERGE
     -bamhv|--bed_annotation_merge_h_vmem                 Merge annotation memory [$BED_ANNOTATION_MERGE_MEM]
