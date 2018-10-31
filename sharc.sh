@@ -776,7 +776,7 @@ if [ ! $OUTNAME ]; then
   fi
 fi
 
-RAND=$(cat /dev/urandom | tr -cd 'a-f0-9' | head -c 5)
+RAND=$(cat /dev/urandom | tr -cd 'a-zA-Z0-9' | head -c 5)
 NUMBER_OF_FASTQ_FILES=$(ls -l $FASTQDIR/*.fastq | wc -l)
 
 MAPPING_DIR=$OUTPUTDIR/mapping/minimap2
