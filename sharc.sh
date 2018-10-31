@@ -745,7 +745,7 @@ do
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 if [ -z $FASTQDIR ]; then
-  echo "Missing -f|--fastq parameter"
+  echo "Missing -f|--fastqdir parameter"
   usage
 elif [ -z $MAIL ]; then
   echo "Missing -m|--mail parameter"
@@ -776,7 +776,7 @@ if [ ! $OUTNAME ]; then
   fi
 fi
 
-RAND=$(cat /dev/urandom | tr -cd 'a-f0-9' | head -c 5)
+RAND=$(cat /dev/urandom | tr -cd 'a-zA-Z0-9' | head -c 5)
 NUMBER_OF_FASTQ_FILES=$(ls -l $FASTQDIR/*.fastq | wc -l)
 
 MAPPING_DIR=$OUTPUTDIR/mapping/minimap2
@@ -1802,7 +1802,7 @@ if [ \$CHECK_BOOL = true ]; then
       rm -rf $MAPPING_TMP_DIR
     fi
 fi
-tail -16 $CHECK_SHARC_OUT | mail -s 'SHARC_${OUTNAME}_${RAND}' $MAIL
+tac $CHECK_SHARC_OUT | sed '/^Qsub/q' | tac | mail -s 'SHARC_${OUTNAME}_${RAND}' $MAIL
 
 echo \`date\`: Done
 
