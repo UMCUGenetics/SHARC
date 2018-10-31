@@ -1802,7 +1802,7 @@ if [ \$CHECK_BOOL = true ]; then
       rm -rf $MAPPING_TMP_DIR
     fi
 fi
-tail -16 $CHECK_SHARC_OUT | mail -s 'SHARC_${OUTNAME}_${RAND}' $MAIL
+tac $CHECK_SHARC_OUT | sed '/^Qsub/q' | tac | mail -s 'SHARC_${OUTNAME}_${RAND}' $MAIL
 
 echo \`date\`: Done
 
