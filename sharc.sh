@@ -1659,7 +1659,7 @@ cat << EOF >> $PRIMER_RANKING_SH
 echo \`date\`: Running on \`uname -n\`
 if [ -e $VCF_PRIMER_FILTER_OUT.done ]; then
     bash $STEPSDIR/primer_ranking.sh -v $SOMATIC_RANKING_OUT -p $PRIMER_DESIGN_OUT -o $PRIMER_RANKING_OUT -e $VENV
-    NUMBER_OF_PRIMERS_1=\$(wc -l $PRIMER_FILTER_OUT | grep -oP "(^\d+)")
+    NUMBER_OF_PRIMERS_1=\$(wc -l $PRIMER_DESIGN_OUT | grep -oP "(^\d+)")
     NUMBER_OF_PRIMERS_2=\$(wc -l $PRIMER_RANKING_OUT | grep -oP "(^\d+)")
     if [ "\$NUMBER_OF_PRIMERS_1" == "\$NUMBER_OF_PRIMERS_2" ]; then
         touch $PRIMER_RANKING_OUT.done

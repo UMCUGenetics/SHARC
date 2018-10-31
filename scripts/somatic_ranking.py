@@ -36,7 +36,6 @@ with open(VCF, "r") as input:
         else:
             record_info["TYPE"]=record.ALT[0]
 
-        print (record.INFO["ICGC_SCORE"])
         record_info["ICGC_SCORE"]=record.INFO['ICGC_SCORE']
         primers.append(record_info)
 

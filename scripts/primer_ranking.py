@@ -31,7 +31,7 @@ with open(PRIMERS, "r") as input:
 
 with open(OUTPUT, "w") as output:
     for primer_id in PRIMER_RANKING:
-        print(primer_id)
         for primer in lines:
             if primer[1] == primer_id:
+                print(primer_id)
                 output.write(primer[0])
