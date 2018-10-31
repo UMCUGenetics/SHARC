@@ -3,27 +3,26 @@
 usage() {
 echo "
 Required parameters:
-    -v|--vcf		Path to vcf file
+    -v|--vcf		    Path to vcf file
+    -c|--cancer_type  Cancer type examined
 
 Optional parameters:
-    -h|--help     Shows help
-    -vff|--flank		Flank [$FLANK]
-    -vfs|--vcf_fasta_script   Path to vcf_to_fasta.py script [$VCF_FASTA_SCRIPT]
-    -vfo|--offset   Offset [$OFFSET]
-    -vfm|--mask   Mask [$MASK]
-    -e|--venv   Path to virtual env of NanoSV [$VENV]
-    -o|--output Fasta output file [$OUTPUT]
+    -h|--help       Shows help
+    -s|--script     Path to vcf_primer_filter.py [$SCRIPT]
+    -o|--output     VCF output file [$OUTPUT]
+    -f|--flank      Added region around BND to compare to genes [$FLANK]
+    -p|--support    Minimal fraction of patients needed to annotate as cancer gene [$SUPPORT]
+    -e|--venv       Path to virtual environment[$VENV]
 "
 }
 
 POSITIONAL=()
 
-# DEFAULTS
+#DEFAULT
+SCRIPT="/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/gene_annotation_ICGC.py"
+OUTPUT="/dev/stdout"
 FLANK=200
-OFFSET=0
-MASK=false
-OUTPUT='/dev/stdout'
-VCF_FASTA_SCRIPT='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/vcf_to_fasta.py'
+SUPPORT=0.05
 VENV='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/venv/bin/activate'
 
 while [[ $# -gt 0 ]]
@@ -40,22 +39,23 @@ do
     shift # past argument
     shift # past value
     ;;
-    -vff|--flank)
+    -c|--cancer_type)
+    TYPE="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -s|--script)
+    SCRIPT="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -f|--flank)
     FLANK="$2"
     shift # past argument
     shift # past value
     ;;
-    -vfo|--offset)
-    OFFSET="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    -vfm|--mask)
-    MASK=true
-    shift # past argument
-    ;;
-    -vfs|--vcf_fasta_script)
-    VCF_FASTA_SCRIPT="$2"
+    -p|--support)
+    SUPPORT="$2"
     shift # past argument
     shift # past value
     ;;
@@ -76,8 +76,13 @@ do
     esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
+
 if [ -z $VCF ]; then
     echo "Missing -v|--vcf parameter"
+    usage
+    exit
+elif [ -z $TYPE ]; then
+    echo "Missing -c|--cancer_type parameter"
     usage
     exit
 fi
@@ -86,10 +91,4 @@ echo `date`: Running on `uname -n`
 
 . $VENV
 
-if [ $MASK = true ]; then
-  python $VCF_FASTA_SCRIPT -o $OFFSET -f $FLANK -m $VCF > $OUTPUT
-else
-  python $VCF_FASTA_SCRIPT -o $OFFSET -f $FLANK $VCF > $OUTPUT
-fi
-
-echo `date`: Done
+python $SCRIPT -c $TYPE -f $FLANK -s $SUPPORT -o $OUTPUT $VCF

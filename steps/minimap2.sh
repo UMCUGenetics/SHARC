@@ -12,6 +12,7 @@ Optional parameters:
     -r|--ref		      Path to reference fasta file [$REF]
     -p|--parameters   Minimap2 parameters [$SETTINGS]
     -s|--sambamba	    Path to sambamba [$SAMBAMBA]
+    -n|--sample_name  Sample name [$SAMPLE]
     -o|--output		    Path to sorted bam output file [$OUTPUT]
 "
 }
@@ -66,6 +67,11 @@ do
     shift # past argument
     shift # past value
     ;;
+    -n|--sample_name)
+    SAMPLE="$2"
+    shift # past argument
+    shift # past value
+    ;;
     -o|--output)
     OUTPUT="$2"
     shift # past argument
@@ -85,11 +91,28 @@ if [ -z $FASTQ ]; then
 fi
 
 echo `date`: Running on `uname -n`
+if [ ! $SAMPLE ]; then
+  if [ "$(head -n 1 $FASTQ | cut -d " " -f 3 | cut -d "=" -f 1)" == "sampleid" ]; then
+    SAMPLE=$(head -n 1 $FASTQ | cut -d " " -f 3 | cut -d "=" -f 2)
+  else
+    echo "No sample name found in fastq file - Please manually enter a sample name"
+    exit
+  fi
+fi
 
-$MINIMAP2 -t $THREADS $SETTINGS $REF $FASTQ | \
+FASTQ_ID=$(basename $FASTQ)
+FASTQ_ID=${FASTQ_ID#*_}
+FASTQ_ID=${FASTQ_ID%.fastq}
+
+SETTINGS="$SETTINGS -R '@RG\tID:$FASTQ_ID\tSM:$SAMPLE'"
+
+CMD="$MINIMAP2 -t $THREADS $SETTINGS $REF $FASTQ | \
 $SAMBAMBA view -h -S --format=bam -t 8 /dev/stdin | \
 $SAMBAMBA sort -m9G -t $THREADS --tmpdir=./ /dev/stdin \
--o $OUTPUT
+-o $OUTPUT"
+echo $CMD
+
+eval $CMD
 
 if [ -e $OUTPUT ]; then
     NUMBER_OF_READS_IN_FASTQ=$(grep "^@" $FASTQ | sort | uniq | wc -l)

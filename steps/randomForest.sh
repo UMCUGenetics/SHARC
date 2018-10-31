@@ -10,6 +10,7 @@ Optional parameters:
     -h|--help		Shows help
     -o|--output		Path to vcf output file [$OUTPUT]
     -d|--outdir		Path to output directory [$OUTDIR]
+    -e|--venv   Path to virtual env of NanoSV [$VENV]
     -ft|--ft_script Path to create_features_table.pl script [$CREATE_FEATURE_TABLE_SCRIPT]
     -rf|--rf_script Path to run_randomForest.R script [$RANDOM_FOREST_SCRIPT]
     -ap|--ap_script Path to add_predict_annotation.py script [$ADD_PREDICT_SCRIPT]
@@ -24,6 +25,7 @@ RANDOM_FOREST_SCRIPT='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/r
 ADD_PREDICT_SCRIPT='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/add_predict_annotation.py'
 OUTPUT='/dev/stdout'
 OUTDIR='./'
+VENV='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/venv/bin/activate'
 
 while [[ $# -gt 0 ]]
 do
@@ -51,6 +53,11 @@ do
     ;;
     -o|--output)
     OUTPUT="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -e|--venv)
+    VENV="$2"
     shift # past argument
     shift # past value
     ;;
@@ -89,7 +96,9 @@ fi
 
 echo `date`: Running on `uname -n`
 
-perl $CREATE_FEATURE_TABLE_SCRIPT $VCF > $OUTDIR/features_table.txt
+. $VENV
+
+python $CREATE_FEATURE_TABLE_SCRIPT $VCF > $OUTDIR/features_table.txt
 
 Rscript $RANDOM_FOREST_SCRIPT $OUTDIR/features_table.txt $MEANCOV
 

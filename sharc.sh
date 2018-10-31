@@ -13,6 +13,7 @@ GENERAL
     -sd|--sharc_dir                                      Path to sharc directory [$SHARCDIR]
     -v|--venv		                                         Path to virtual env [$VENV]
     -o|--outputdir	                                     Path to output directory [$OUTPUTDIR]
+    -sm|--sample_name                                    Name of the sample [From FASTQ or OUTPUTDIR ]
     -dc|--dont_clean                                     Don't clean up the mapping tmp dir [$DONT_CLEAN]
 
 MAPPING
@@ -26,15 +27,15 @@ MAPPING MERGE
     -mmt|--mapping_merge_threads	                       Number of threads [$MAPPING_MERGE_THREADS]
     -mmhv|--mapping_merge_h_vmem                         Mapping merge memory [$MAPPING_MERGE_MEM]
     -mmhr|--mapping_merge_h_rt                           Mapping merge time [$MAPPING_MERGE_TIME]
-    -mms|--mapping_merge_sambamba	                       Path to sambamba [$MAPPING_MERGE_SAMBAMBA]
+    -mmsb|--mapping_merge_sambamba	                     Path to sambamba [$MAPPING_MERGE_SAMBAMBA]
 
-COVERAGE CALCULTATION
-    -cct|--coverage_calcultation_threads                 Number of threads [$COVERAGE_CALCULTATION_THREADS]
-    -cchv|--coverage_calcultation_h_vmem                 Coverage calcultation memory [$COVERAGE_CALCULTATION_MEM]
-    -cchr|--coverage_calcultation_h_rt                   Coverage calcultation time [$COVERAGE_CALCULTATION_TIME]
-    -ccs|--coverage_calcultation_sambamba                Path to sambamba [$COVERAGE_CALCULTATION_SAMBAMBA]
-    -ccb|--coverage_calcultation_bed                     Path to bed file [$COVERAGE_CALCULTATION_BED]
-    -ccss|--coverage_calcultation_sambamba_settings      Sambamba settings [$COVERAGE_CALCULTATION_SAMBAMBA_SETTINGS]
+COVERAGE CALCULATION
+    -cct|--coverage_calculation_threads                 Number of threads [$COVERAGE_CALCULATION_THREADS]
+    -cchv|--coverage_calculation_h_vmem                 Coverage calculation memory [$COVERAGE_CALCULATION_MEM]
+    -cchr|--coverage_calculation_h_rt                   Coverage calculation time [$COVERAGE_CALCULATION_TIME]
+    -ccs|--coverage_calculation_sambamba                Path to sambamba [$COVERAGE_CALCULATION_SAMBAMBA]
+    -ccb|--coverage_calculation_bed                     Path to bed file [$COVERAGE_CALCULATION_BED]
+    -ccss|--coverage_calculation_sambamba_settings      Sambamba settings [$COVERAGE_CALCULATION_SAMBAMBA_SETTINGS]
 
 SV_CALLING
     -svt|--sv_threads                                    Number of threads [$SV_THREADS]
@@ -88,6 +89,19 @@ SHARC_FILTER
     -sfhr|--sharc_filter_h_rt                            SHARC Filter time [$SHARC_FILTER_TIME]
     -sfq|--sharc_filter_query                            SHARC Filter query [$SHARC_FILTER_QUERY]
 
+ICGC_FILTER
+    -ifhv|icgc_filter_h_vmem                             ICGC filter memory [$ICGC_FILTER_MEM]
+    -ifhr|icgc_filter_h_rt                               ICGC filter time [$ICGC_FILTER_TIME]
+    -ifc|icgc_filter_cancer_type                         ICGC filter cancer type [$ICGC_FILTER_CANCER_TYPE]
+    -iff|icgc_filter_flank                               ICGC filter flank [$ICGC_FILTER_FLANK]
+    -ifp|icgc_filter_support                             ICGC filter support [$ICGC_FILTER_SUPPORT]
+    -ifs|icgc_filter_script                              Path to Gene_annotation_ICGC.py [$ICGC_FILTER_SCRIPT]
+
+SOMATIC_RANKING
+    -srhv|somatic_ranking_h_vmem                         Somatic ranking memory [$ICGC_FILTER_MEM]
+    -srhr|somatic_ranking_h_rt                           Somatic ranking time [$ICGC_FILTER_TIME]
+    -srs|somatic_ranking_script                          Path to somatic_ranking.py [$ICGC_FILTER_SCRIPT]
+
 VCF_TO_FASTA
     -v2fhv|--vcf_fasta_h_vmem                            VCF to FASTA memory [$VCF_FASTA_MEM]
     -v2fhr|--vcf_fasta_h_rt                              VCF to FASTA time [$VCF_FASTA_TIME]
@@ -104,7 +118,7 @@ PRIMER DESIGN
     -pdpt|--primer_design_pcr_type                       PCR type [$PRIMER_DESIGN_PCR_TYPE]
     -pdtp|--primer_design_tilling_params                 Tilling params [$PRIMER_DESIGN_TILLING_PARAMS]
     -pdp|--primer_design_psr                             PSR [$PRIMER_DESIGN_PSR]
-    -pgdp|--primer_design_guix_profile                   Path to guix profile [$PRIMER_DESIGN_GUIX_PROFILE]
+    -pdgp|--primer_design_guix_profile                   Path to guix profile [$PRIMER_DESIGN_GUIX_PROFILE]
     -pdpc|--primer_design_primer3_core                   Path to primer3_core [$PRIMER_DESIGN_PRIMER3_CORE]
     -pdm|--primer_design_mispriming                      Path to mispriming [$PRIMER_DESIGN_MISPRIMING]
 
@@ -112,6 +126,11 @@ VCF PRIMER FILTER
     -vpfhv|--vcf_primer_filter_h_vmem                    VCF Primer Filter memory [$VCF_PRIMER_FILTER_MEM]
     -vpfhr|--vcf_primer_filter_h_rt                      VCF Primer Filter time [$VCF_PRIMER_FILTER_TIME]
     -vpfs|--vcf_primer_filter_script                     Path to vcf_primer_filter.py [$VCF_PRIMER_FILTER_SCRIPT]
+
+PRIMER_RANKING
+    -rphv|primer_ranking_h_vmem                          Primer ranking memory [$PRIMER_RANKING_MEM]
+    -rphr|primer_ranking_h_rt                            Primer ranking time [$PRIMER_RANKING_TIME]
+    -rps|primer_ranking_script                           Path to primer ranking.py [$PRIMER_RANKING_SCRIPT]
 
 "
 exit
@@ -145,13 +164,13 @@ MAPPING_MERGE_MEM=10G
 MAPPING_MERGE_TIME=1:0:0
 MAPPING_MERGE_SAMBAMBA=$SAMBAMBA
 
-# COVERAGE CALCULTATION DEFAULTS
-COVERAGE_CALCULTATION_THREADS=8
-COVERAGE_CALCULTATION_MEM=20G
-COVERAGE_CALCULTATION_TIME=2:0:0
-COVERAGE_CALCULTATION_SAMBAMBA=$SAMBAMBA
-COVERAGE_CALCULTATION_BED=$FILESDIR/human_hg19.bed
-COVERAGE_CALCULTATION_SAMBAMBA_SETTINGS='base --min-coverage=0'
+# COVERAGE CALCULATION DEFAULTS
+COVERAGE_CALCULATION_THREADS=8
+COVERAGE_CALCULATION_MEM=20G
+COVERAGE_CALCULATION_TIME=2:0:0
+COVERAGE_CALCULATION_SAMBAMBA=$SAMBAMBA
+COVERAGE_CALCULATION_BED=$FILESDIR/human_hg19.bed
+COVERAGE_CALCULATION_SAMBAMBA_SETTINGS='base --min-coverage=0'
 
 # SV DEFAULTS
 SV_THREADS=8
@@ -206,6 +225,19 @@ SHARC_FILTER_MEM=2G
 SHARC_FILTER_TIME=0:5:0
 SHARC_FILTER_QUERY='grep "PREDICT_LABEL=1" | grep -v "SHARCDBFILTER" | grep -v "REFDBFILTER"'
 
+#ICGC FILTER DEFAULTS
+ICGC_FILTER_MEM=10G
+ICGC_FILTER_TIME=0:10:0
+ICGC_FILTER_CANCER_TYPE="Prostate"
+ICGC_FILTER_FLANK=200
+ICGC_FILTER_SUPPORT=0.05
+ICGC_FILTER_SCRIPT=$SCRIPTSDIR/gene_annotation_ICGC.py
+
+#SOMATIC_RANKING VCF_FASTA_DEFAULTS
+SOMATIC_RANKING_MEM=2G
+SOMATIC_RANKING_TIME=0:5:0
+SOMATIC_RANKING_SCRIPT=$SCRIPTSDIR/somatic_ranking.py
+
 # VCF_FASTA_DEFAULTS
 VCF_FASTA_MEM=2G
 VCF_FASTA_TIME=0:5:0
@@ -231,6 +263,11 @@ PRIMER_DESIGN_MISPRIMING=$PRIMER_DESIGN_DIR/repbase/current/empty.ref
 VCF_PRIMER_FILTER_MEM=2G
 VCF_PRIMER_FILTER_TIME=0:5:0
 VCF_PRIMER_FILTER_SCRIPT=$SCRIPTSDIR/vcf_primer_filter.py
+
+# PRIMER_RANKING DEFAULTS
+PRIMER_RANKING_MEM=1G
+PRIMER_RANKING_TIME=0:5:0
+PRIMER_RANKING_SCRIPT=$SCRIPTSDIR/primer_ranking.py
 
 # CHECK_SHARC FILTER DEFAULTS
 CHECK_SHARC_MEM=1G
@@ -271,6 +308,11 @@ do
     shift # past argument
     shift # past value
     ;;
+    -sm|--sample_name)
+    OUTNAME="$2"
+    shift # past argument
+    shift # past value
+    ;;
     -dc|--dont_clean)
     DONT_CLEAN=true
     shift # past argument
@@ -301,7 +343,7 @@ do
     shift # past argument
     shift # past value
     ;;
-    -ms|--mapping_sambamba)
+    -msb|--mapping_sambamba)
     MAPPING_SAMBAMBA="$2"
     shift # past argument
     shift # past value
@@ -327,39 +369,39 @@ do
     shift # past argument
     shift # past value
     ;;
-    -mms|--mapping_merge_sambamba)
+    -mmsb|--mapping_merge_sambamba)
     MAPPING_MERGE_SAMBAMBA="$2"
     shift # past argument
     shift # past value
     ;;
-# COVERAGE CALCULTATION OPTIONS
-    -cct|--coverage_calcultation_threads)
-    COVERAGE_CALCULTATION_THREADS="$2"
+# COVERAGE CALCULATION OPTIONS
+    -cct|--coverage_calculation_threads)
+    COVERAGE_CALCULATION_THREADS="$2"
     shift # past argument
     shift # past value
     ;;
-    -cchv|--coverage_calcultation_h_vmem)
-    COVERAGE_CALCULTATION_MEM="$2"
+    -cchv|--coverage_calculation_h_vmem)
+    COVERAGE_CALCULATION_MEM="$2"
     shift # past argument
     shift # past value
     ;;
-    -cchr|--coverage_calcultation_h_rt)
-    COVERAGE_CALCULTATION_TIME="$2"
+    -cchr|--coverage_calculation_h_rt)
+    COVERAGE_CALCULATION_TIME="$2"
     shift # past argument
     shift # past value
     ;;
-    -ccs|--coverage_calcultation_sambamba)
-    COVERAGE_CALCULTATION_SAMBAMBA="$2"
+    -ccs|--coverage_calculation_sambamba)
+    COVERAGE_CALCULATION_SAMBAMBA="$2"
     shift # past argument
     shift # past value
     ;;
-    -ccb|--coverage_calcultation_bed)
-    COVERAGE_CALCULTATION_BED="$2"
+    -ccb|--coverage_calculation_bed)
+    COVERAGE_CALCULATION_BED="$2"
     shift # past argument
     shift # past value
     ;;
-    -ccss|--coverage_calcultation_sambamba_settings)
-    COVERAGE_CALCULTATION_SAMBAMBA_SETTINGS="$2"
+    -ccss|--coverage_calculation_sambamba_settings)
+    COVERAGE_CALCULATION_SAMBAMBA_SETTINGS="$2"
     shift # past argument
     shift # past value
     ;;
@@ -533,6 +575,53 @@ do
     shift # past argument
     shift # past value
     ;;
+# ICGC_FILTER OPTIONS
+    -ifhv|--icgc_filter_h_vmem)
+    ICGC_FILTER_MEM="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -ifhr|--icgc_filter_h_rt)
+    ICGC_FILTER_TIME="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -ifc|--icgc_filter_cancer_type)
+    ICGC_FILTER_CANCER_TYPE="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -iff|--icgc_filter_flank)
+    ICGC_FILTER_FLANK="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -ifp|--icgc_filter_support)
+    ICGC_FILTER_SUPPORT="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -ifs|--icgc_filter_script)
+    ICGC_FILTER_SCRIPT="$2"
+    shift # past argument
+    shift # past value
+    ;;
+# SOMATIC_RANKING OPTIONS
+    -srhv|--somatic_ranking_h_vmem)
+    SOMATIC_RANKING_MEM="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -srhr|--somatic_ranking_h_rt)
+    SOMATIC_RANKING_TIME="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -srs|--somatic_ranking_script)
+    SOMATIC_RANKING_SCRIPT="$2"
+    shift # past argument
+    shift # past value
+    ;;
 # VCF_FASTA OPTIONS
     -v2fhv|--vcf_fasta_h_vmem)
     VCF_FASTA_MEM="$2"
@@ -634,6 +723,22 @@ do
     POSITIONAL+=("$1") # save it in an array for later
     shift # past argument
     ;;
+# PRIMER_RANKING OPTIONS
+    -prhv|--primer_ranking_h_vmem)
+    PRIMER_RANKING_MEM="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -prhr|--primer_ranking_h_rt)
+    PRIMER_RANKING_TIME="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -prs|--primer_ranking_script)
+    PRIMER_RANKING_SCRIPT="$2"
+    shift # past argument
+    shift # past value
+    ;;
     esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
@@ -661,7 +766,14 @@ OUTPUTDIR=$(readlink -f $OUTPUTDIR)
 JOBDIR=$OUTPUTDIR/jobs
 LOGDIR=$OUTPUTDIR/logs
 
-OUTNAME=$(basename $OUTPUTDIR)
+if [ ! $OUTNAME ]; then
+  if [ "$(head -n 1 $FASTQDIR/fastq_0.fastq | cut -d " " -f 3 | cut -d "=" -f 1)" == "sampleid" ]; then
+    OUTNAME="$(head -n 1 $FASTQDIR/fastq_0.fastq | cut -d " " -f 3 | cut -d "=" -f 2)"
+  else
+    OUTNAME=$(basename $OUTPUTDIR)
+  fi
+fi
+
 RAND=$(cat /dev/urandom | tr -cd 'a-f0-9' | head -c 5)
 NUMBER_OF_FASTQ_FILES=$(ls -l $FASTQDIR/*.fastq | wc -l)
 
@@ -678,11 +790,11 @@ MAPPING_MERGE_ERR=$LOGDIR/$MAPPING_MERGE_JOBNAME.err
 MAPPING_MERGE_LOG=$LOGDIR/$MAPPING_MERGE_JOBNAME.log
 MAPPING_MERGE_OUT=$MAPPING_DIR/$OUTNAME.sorted.bam
 
-COVERAGE_CALCULTATION_JOBNAME=$OUTNAME'_COVERAGECALCULATION_'$RAND
-COVERAGE_CALCULTATION_SH=$JOBDIR/$COVERAGE_CALCULTATION_JOBNAME.sh
-COVERAGE_CALCULTATION_ERR=$LOGDIR/$COVERAGE_CALCULTATION_JOBNAME.err
-COVERAGE_CALCULTATION_LOG=$LOGDIR/$COVERAGE_CALCULTATION_JOBNAME.log
-COVERAGE_CALCULTATION_OUT=${MAPPING_MERGE_OUT/.sorted.bam/.depth}
+COVERAGE_CALCULATION_JOBNAME=$OUTNAME'_COVERAGECALCULATION_'$RAND
+COVERAGE_CALCULATION_SH=$JOBDIR/$COVERAGE_CALCULATION_JOBNAME.sh
+COVERAGE_CALCULATION_ERR=$LOGDIR/$COVERAGE_CALCULATION_JOBNAME.err
+COVERAGE_CALCULATION_LOG=$LOGDIR/$COVERAGE_CALCULATION_JOBNAME.log
+COVERAGE_CALCULATION_OUT=${MAPPING_MERGE_OUT/.sorted.bam/.depth}
 
 SV_DIR=$OUTPUTDIR/sv/nanosv
 SV_TMP_DIR=$SV_DIR/tmp
@@ -738,14 +850,26 @@ SHARC_FILTER_JOBNAME=$OUTNAME'_SHARCFILTER_'$RAND
 SHARC_FILTER_SH=$JOBDIR/$SHARC_FILTER_JOBNAME.sh
 SHARC_FILTER_ERR=$LOGDIR/$SHARC_FILTER_JOBNAME.err
 SHARC_FILTER_LOG=$LOGDIR/$SHARC_FILTER_JOBNAME.log
-SHARC_FILTER_OUT=$SV_DIR/$(basename ${SV_OUT/.vcf/.SHARC.vcf})
+SHARC_FILTER_OUT=$SV_TMP_DIR/$(basename ${SV_OUT/.vcf/.SHARC.vcf})
+
+ICGC_FILTER_JOBNAME=$OUTNAME'_ICGCFILTER_'$RAND
+ICGC_FILTER_SH=$JOBDIR/$ICGC_FILTER_JOBNAME.sh
+ICGC_FILTER_ERR=$LOGDIR/$ICGC_FILTER_JOBNAME.err
+ICGC_FILTER_LOG=$LOGDIR/$ICGC_FILTER_JOBNAME.log
+ICGC_FILTER_OUT=$SV_TMP_DIR/$(basename ${SHARC_FILTER_OUT/.vcf/.ICGC.vcf})
+
+SOMATIC_RANKING_JOBNAME=$OUTNAME'_SOMATICRANKING_'$RAND
+SOMATIC_RANKING_SH=$JOBDIR/$SOMATIC_RANKING_JOBNAME.sh
+SOMATIC_RANKING_ERR=$LOGDIR/$SOMATIC_RANKING_JOBNAME.err
+SOMATIC_RANKING_LOG=$LOGDIR/$SOMATIC_RANKING_JOBNAME.log
+SOMATIC_RANKING_OUT=$SV_DIR/$(basename ${ICGC_FILTER_OUT/.vcf/.SHARC_RANK.vcf})
 
 VCF_FASTA_OUTDIR=$OUTPUTDIR/primers
 VCF_FASTA_JOBNAME=$OUTNAME'_VCFFASTA_'$RAND
 VCF_FASTA_SH=$JOBDIR/$VCF_FASTA_JOBNAME.sh
 VCF_FASTA_ERR=$LOGDIR/$VCF_FASTA_JOBNAME.err
 VCF_FASTA_LOG=$LOGDIR/$VCF_FASTA_JOBNAME.log
-VCF_FASTA_OUT=$VCF_FASTA_OUTDIR/$(basename ${SHARC_FILTER_OUT/.vcf/.fasta})
+VCF_FASTA_OUT=$VCF_FASTA_OUTDIR/$(basename ${SOMATIC_RANKING_OUT/.vcf/.fasta})
 
 PRIMER_DESIGN_OUTDIR=$OUTPUTDIR/primers
 PRIMER_DESIGN_TMP_DIR=$PRIMER_DESIGN_OUTDIR/tmp
@@ -760,7 +884,13 @@ VCF_PRIMER_FILTER_JOBNAME=$OUTNAME'_VCFPRIMERFILTER_'$RAND
 VCF_PRIMER_FILTER_SH=$JOBDIR/$VCF_PRIMER_FILTER_JOBNAME.sh
 VCF_PRIMER_FILTER_ERR=$LOGDIR/$VCF_PRIMER_FILTER_JOBNAME.err
 VCF_PRIMER_FILTER_LOG=$LOGDIR/$VCF_PRIMER_FILTER_JOBNAME.log
-VCF_PRIMER_FILTER_OUT=$VCF_PRIMER_FILTER_OUTDIR/$(basename ${SHARC_FILTER_OUT/.vcf/.primers.vcf})
+VCF_PRIMER_FILTER_OUT=$VCF_PRIMER_FILTER_OUTDIR/$(basename ${SOMATIC_RANKING_OUT/.vcf/.primers.vcf})
+
+PRIMER_RANKING_JOBNAME=$OUTNAME'_PRIMERRANKING_'$RAND
+PRIMER_RANKING_SH=$JOBDIR/$PRIMER_RANKING_JOBNAME.sh
+PRIMER_RANKING_ERR=$LOGDIR/$PRIMER_RANKING_JOBNAME.err
+PRIMER_RANKING_LOG=$LOGDIR/$PRIMER_RANKING_JOBNAME.log
+PRIMER_RANKING_OUT=$PRIMER_DESIGN_OUTDIR/$(basename ${PRIMER_DESIGN_OUT/.primers/.ranked.primers})
 
 CHECK_SHARC_OUTDIR=$OUTPUTDIR
 CHECK_SHARC_JOBNAME=$OUTNAME'_CHECKSHARC_'$RAND
@@ -843,6 +973,7 @@ if [ -e $FASTQDIR/fastq_\$ID.fastq ]; then
 	-r $MAPPING_REF \\
   -p "$MAPPING_MINIMAP2_SETTINGS" \\
 	-s $MAPPING_SAMBAMBA \\
+  -n $OUTNAME \\
 	-o $MAPPING_TMP_DIR/\$ID.sorted.bam
     else
 	echo $MAPPING_TMP_DIR/\$ID.sorted.bam already exists
@@ -907,36 +1038,36 @@ EOF
 qsub $MAPPING_MERGE_SH
 }
 
-coverage_calcultation() {
-cat << EOF > $COVERAGE_CALCULTATION_SH
+coverage_calculation() {
+cat << EOF > $COVERAGE_CALCULATION_SH
 #!/bin/bash
 
-#$ -N $COVERAGE_CALCULTATION_JOBNAME
+#$ -N $COVERAGE_CALCULATION_JOBNAME
 #$ -cwd
-#$ -pe threaded $COVERAGE_CALCULTATION_THREADS
-#$ -l h_vmem=$COVERAGE_CALCULTATION_MEM
-#$ -l h_rt=$COVERAGE_CALCULTATION_TIME
-#$ -e $COVERAGE_CALCULTATION_ERR
-#$ -o $COVERAGE_CALCULTATION_LOG
+#$ -pe threaded $COVERAGE_CALCULATION_THREADS
+#$ -l h_vmem=$COVERAGE_CALCULATION_MEM
+#$ -l h_rt=$COVERAGE_CALCULATION_TIME
+#$ -e $COVERAGE_CALCULATION_ERR
+#$ -o $COVERAGE_CALCULATION_LOG
 EOF
 
 if [ ! -z $MAPPING_MERGE_JOBNAME ]; then
-cat << EOF >> $COVERAGE_CALCULTATION_SH
+cat << EOF >> $COVERAGE_CALCULATION_SH
 #$ -hold_jid $MAPPING_MERGE_JOBNAME
 EOF
 fi
 
-cat << EOF >> $COVERAGE_CALCULTATION_SH
+cat << EOF >> $COVERAGE_CALCULATION_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $MAPPING_MERGE_OUT.done ]; then
-    bash $STEPSDIR/calculate_coverage.sh -b $MAPPING_MERGE_OUT -t $COVERAGE_CALCULTATION_THREADS -s $COVERAGE_CALCULTATION_SAMBAMBA -bed $COVERAGE_CALCULTATION_BED -p "$COVERAGE_CALCULTATION_SAMBAMBA_SETTINGS" -o $COVERAGE_CALCULTATION_OUT
-    NUMBER_OF_LINES_FILE_1=\$(wc -l $COVERAGE_CALCULTATION_BED | grep -oP "(^\d+)")
-    NUMBER_OF_LINES_FILE_2=\$(wc -l $COVERAGE_CALCULTATION_OUT | grep -oP "(^\d+)")
+    bash $STEPSDIR/calculate_coverage.sh -b $MAPPING_MERGE_OUT -t $COVERAGE_CALCULATION_THREADS -s $COVERAGE_CALCULATION_SAMBAMBA -bed $COVERAGE_CALCULATION_BED -p "$COVERAGE_CALCULATION_SAMBAMBA_SETTINGS" -o $COVERAGE_CALCULATION_OUT
+    NUMBER_OF_LINES_FILE_1=\$(wc -l $COVERAGE_CALCULATION_BED | grep -oP "(^\d+)")
+    NUMBER_OF_LINES_FILE_2=\$(wc -l $COVERAGE_CALCULATION_OUT | grep -oP "(^\d+)")
     NUMBER_OF_LINES_FILE_2=\$((NUMBER_OF_LINES_FILE_2-2))
 
     if [ "\$NUMBER_OF_LINES_FILE_1" == "\$NUMBER_OF_LINES_FILE_2" ]; then
-        touch $COVERAGE_CALCULTATION_OUT.done
+        touch $COVERAGE_CALCULATION_OUT.done
     else
       echo "The number of lines in the bed file (\$NUMBER_OF_LINES_FILE_1) is different than the number of lines in the coverage file (\$NUMBER_OF_LINES_FILE_2)" >&2
     fi
@@ -944,7 +1075,7 @@ fi
 
 echo \`date\`: Done
 EOF
-qsub $COVERAGE_CALCULTATION_SH
+qsub $COVERAGE_CALCULATION_SH
 }
 
 sv() {
@@ -1033,8 +1164,8 @@ echo \`date\`: Running on \`uname -n\`
 
 if [ -e $VCF_FILTER_OUT.done ]; then
     bash $STEPSDIR/vcf_split.sh -v $VCF_FILTER_OUT -l $VCF_SPLIT_LINES -o $VCF_SPLIT_OUTDIR
-    NUMBER_OF_LINES_VCF_1=\$(wc -l $VCF_FILTER_OUT | grep -oP "(^\d+)")
-    NUMBER_OF_LINES_VCF_2=\$(cat $VCF_SPLIT_OUTDIR/*.vcf | wc -l | grep -oP "(^\d+)")
+    NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $VCF_FILTER_OUT | wc -l | grep -oP "(^\d+)")
+    NUMBER_OF_LINES_VCF_2=\$(cat $VCF_SPLIT_OUTDIR/*.vcf | grep -v "^#" | wc -l | grep -oP "(^\d+)")
 
     if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
         touch $VCF_SPLIT_OUT.done
@@ -1076,9 +1207,9 @@ fi
 cat << EOF >> $CREATE_BED_ANNOTATION_SH
 
 echo \`date\`: Running on \`uname -n\`
-
-bash $STEPSDIR/create_bed_annotation_jobs.sh -j $BED_ANNOTATION_JOBNAMES -f $BED_ANNOTATION_FILES -v $VCF_SPLIT_OUTDIR -o $OUTPUTDIR -s $STEPSDIR -b $BED_ANNOTATION_SCRIPT -m $MAIL -i $BED_ANNOTATION_MERGE_JOBNAME -vm $BED_ANNOTATION_MEM -rt $BED_ANNOTATION_TIME
-
+if [ -e $VCF_SPLIT_OUT.done ]; then
+  bash $STEPSDIR/create_bed_annotation_jobs.sh -j $BED_ANNOTATION_JOBNAMES -f $BED_ANNOTATION_FILES -v $VCF_SPLIT_OUTDIR -o $OUTPUTDIR -s $STEPSDIR -b $BED_ANNOTATION_SCRIPT -m $MAIL -i $BED_ANNOTATION_MERGE_JOBNAME -vm $BED_ANNOTATION_MEM -rt $BED_ANNOTATION_TIME -e $VENV
+fi
 echo \`date\`: Done
 EOF
 qsub $CREATE_BED_ANNOTATION_SH
@@ -1113,21 +1244,23 @@ fi
 cat << EOF >> $BED_ANNOTATION_MERGE_SH
 echo \`date\`: Running on \`uname -n\`
 
-NUMBER_OF_SPLIT_FILES=\$(ls -l $VCF_SPLIT_OUTDIR/*.*.vcf | wc -l)
-NUMBER_OF_DONE_FILES=\$(ls -l $VCF_SPLIT_OUTDIR/*.done | wc -l)
-if [ "\$NUMBER_OF_SPLIT_FILES" == "\$NUMBER_OF_DONE_FILES" ]; then
-    HEADERS=\$(cat $VCF_SPLIT_OUTDIR/1.*.vcf | grep "^#" | grep "_DISTANCE")
-    grep "^#" $VCF_FILTER_OUT | awk -v headers="\$HEADERS" '/^##FORMAT/ && !modif { print headers; modif=1 } {print}' > $BED_ANNOTATION_MERGE_OUT
-    $PASTE_CMD
-fi
+if [ -e $VCF_SPLIT_OUT.done ]; then
+  NUMBER_OF_SPLIT_FILES=\$(ls -l $VCF_SPLIT_OUTDIR/*.*.vcf | wc -l)
+  NUMBER_OF_DONE_FILES=\$(ls -l $VCF_SPLIT_OUTDIR/*.done | wc -l)
+  if [ "\$NUMBER_OF_SPLIT_FILES" == "\$NUMBER_OF_DONE_FILES" ]; then
+      HEADERS=\$(cat $VCF_SPLIT_OUTDIR/1.*.vcf | grep "^#" | grep "_DISTANCE")
+      grep "^#" $VCF_FILTER_OUT | awk -v headers="\$HEADERS" '/^##FORMAT/ && !modif { print headers; modif=1 } {print}' > $BED_ANNOTATION_MERGE_OUT
+      $PASTE_CMD
+  fi
 
-NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $VCF_FILTER_OUT | wc -l | grep -oP "(^\d+)")
-NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $BED_ANNOTATION_MERGE_OUT | wc -l | grep -oP "(^\d+)")
+  NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $VCF_FILTER_OUT | wc -l | grep -oP "(^\d+)")
+  NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $BED_ANNOTATION_MERGE_OUT | wc -l | grep -oP "(^\d+)")
 
-if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
-    touch $BED_ANNOTATION_MERGE_OUT.done
-else
-    echo "The number of lines in the original vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the annotated vcf file (\$NUMBER_OF_LINES_VCF_2)" >&2
+  if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
+      touch $BED_ANNOTATION_MERGE_OUT.done
+  else
+      echo "The number of lines in the original vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the annotated vcf file (\$NUMBER_OF_LINES_VCF_2)" >&2
+  fi
 fi
 
 echo \`date\`: Done
@@ -1147,21 +1280,21 @@ cat << EOF > $RF_SH
 #$ -o $RF_LOG
 EOF
 
-if [ ! -z $BED_ANNOTATION_MERGE_JOBNAME ] && [ ! -z $COVERAGE_CALCULTATION_JOBNAME ]; then
+if [ ! -z $BED_ANNOTATION_MERGE_JOBNAME ] && [ ! -z $COVERAGE_CALCULATION_JOBNAME ]; then
 cat << EOF >> $RF_SH
-#$ -hold_jid $BED_ANNOTATION_MERGE_JOBNAME,$COVERAGE_CALCULTATION_JOBNAME
+#$ -hold_jid $BED_ANNOTATION_MERGE_JOBNAME,$COVERAGE_CALCULATION_JOBNAME
 EOF
 fi
 
 cat << EOF >> $RF_SH
 echo \`date\`: Running on \`uname -n\`
 
-if [ -e $BED_ANNOTATION_MERGE_OUT.done ] && [ -e $COVERAGE_CALCULTATION_OUT.done ]; then
-    MEANCOV=\$(head -n 1 $COVERAGE_CALCULTATION_OUT | cut -f 2 -d'=' | grep -oP "(^\d+)")
+if [ -e $BED_ANNOTATION_MERGE_OUT.done ] && [ -e $COVERAGE_CALCULATION_OUT.done ]; then
+    MEANCOV=\$(head -n 1 $COVERAGE_CALCULATION_OUT | cut -f 2 -d'=' | grep -oP "(^\d+)")
     if [ \$MEANCOV -eq 0 ]; then
       MEANCOV=1
     fi
-    bash $STEPSDIR/randomForest.sh -v $BED_ANNOTATION_MERGE_OUT -m \$MEANCOV -o $RF_OUT -d $RF_OUTDIR -ft $RF_CREATE_FEATURE_TABLE_SCRIPT -rf $RF_SCRIPT -ap $RF_ADD_PREDICT_SCRIPT
+    bash $STEPSDIR/randomForest.sh -v $BED_ANNOTATION_MERGE_OUT -m \$MEANCOV -o $RF_OUT -d $RF_OUTDIR -ft $RF_CREATE_FEATURE_TABLE_SCRIPT -rf $RF_SCRIPT -ap $RF_ADD_PREDICT_SCRIPT -e $VENV
 
     NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $BED_ANNOTATION_MERGE_OUT | wc -l | grep -oP "(^\d+)")
     NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $RF_OUT | wc -l | grep -oP "(^\d+)")
@@ -1311,6 +1444,77 @@ EOF
 qsub $SHARC_FILTER_SH
 }
 
+icgc_filter() {
+cat << EOF > $ICGC_FILTER_SH
+#!/bin/bash
+
+#$ -N $ICGC_FILTER_JOBNAME
+#$ -cwd
+#$ -l h_vmem=$ICGC_FILTER_MEM
+#$ -l h_rt=$ICGC_FILTER_TIME
+#$ -e $ICGC_FILTER_ERR
+#$ -o $ICGC_FILTER_LOG
+EOF
+
+if [ ! -z $SHARC_FILTER_JOBNAME ]; then
+cat << EOF >> $ICGC_FILTER_SH
+#$ -hold_jid $SHARC_FILTER_JOBNAME
+EOF
+fi
+
+cat << EOF >> $ICGC_FILTER_SH
+echo \`date\`: Running on \`uname -n\`
+
+if [ -e $SHARC_FILTER_OUT.done ]; then
+    bash $STEPSDIR/icgc_filter.sh -v $SHARC_FILTER_OUT -s $ICGC_FILTER_SCRIPT -c $ICGC_FILTER_CANCER_TYPE -f $ICGC_FILTER_FLANK -p $ICGC_FILTER_SUPPORT -o $ICGC_FILTER_OUT
+    NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $SHARC_FILTER_OUT | wc -l | grep -oP "(^\d+)")
+    NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $ICGC_FILTER_OUT | wc -l | grep -oP "(^\d+)")
+
+    if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
+        touch $ICGC_FILTER_OUT.done
+    else
+        echo "The number of lines in the SHARC vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the ICGC file (\$NUMBER_OF_LINES_VCF_2)" >&2
+    fi
+fi
+
+echo \`date\`: Done
+EOF
+qsub $ICGC_FILTER_SH
+}
+
+somatic_ranking() {
+cat << EOF > $SOMATIC_RANKING_SH
+#!/bin/bash
+#$ -N $SOMATIC_RANKING_JOBNAME
+#$ -cwd
+#$ -l h_vmem=$SOMATIC_RANKING_MEM
+#$ -l h_rt=$SOMATIC_RANKING_TIME
+#$ -e $SOMATIC_RANKING_ERR
+#$ -o $SOMATIC_RANKING_LOG
+EOF
+if [ ! -z $ICGC_FILTER_JOBNAME ]; then
+cat << EOF >> $SOMATIC_RANKING_SH
+#$ -hold_jid $ICGC_FILTER_JOBNAME
+EOF
+fi
+cat << EOF >> $SOMATIC_RANKING_SH
+echo \`date\`: Running on \`uname -n\`
+if [ -e $ICGC_FILTER_OUT.done ]; then
+    bash $STEPSDIR/somatic_ranking.sh -v $ICGC_FILTER_OUT -s $SOMATIC_RANKING_SCRIPT -o $SOMATIC_RANKING_OUT -e $VENV
+    NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $ICGC_FILTER_OUT | wc -l | grep -oP "(^\d+)")
+    NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $SOMATIC_RANKING_OUT | wc -l | grep -oP "(^\d+)")
+    if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
+        touch $SOMATIC_RANKING_OUT.done
+    else
+        echo "The number of lines in the ICGC vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the Ranking file (\$NUMBER_OF_LINES_VCF_2)" >&2
+    fi
+fi
+echo \`date\`: Done
+EOF
+qsub $SOMATIC_RANKING_SH
+}
+
+
 vcf_fasta() {
 cat << EOF > $VCF_FASTA_SH
 #!/bin/bash
@@ -1323,24 +1527,24 @@ cat << EOF > $VCF_FASTA_SH
 #$ -o $VCF_FASTA_LOG
 EOF
 
-if [ ! -z $SHARC_FILTER_JOBNAME ]; then
+if [ ! -z $SOMATIC_RANKING_JOBNAME ]; then
 cat << EOF >> $VCF_FASTA_SH
-#$ -hold_jid $SHARC_FILTER_JOBNAME
+#$ -hold_jid $SOMATIC_RANKING_JOBNAME
 EOF
 fi
 
 cat << EOF >> $VCF_FASTA_SH
 echo \`date\`: Running on \`uname -n\`
 
-if [ -e $SHARC_FILTER_OUT.done ]; then
+if [ -e $ICGC_FILTER_OUT.done ]; then
 EOF
 if [ $VCF_FASTA_MARK = true ]; then
 cat << EOF >> $VCF_FASTA_SH
-    bash $STEPSDIR/vcf_fasta.sh -v $SHARC_FILTER_OUT -vff $VCF_FASTA_FLANK -vfo $VCF_FASTA_OFFSET -vfs $VCF_FASTA_SCRIPT -vfm -o $VCF_FASTA_OUT
+    bash $STEPSDIR/vcf_fasta.sh -v $ICGC_FILTER_OUT -vff $VCF_FASTA_FLANK -vfo $VCF_FASTA_OFFSET -vfs $VCF_FASTA_SCRIPT -vfm -o $VCF_FASTA_OUT -e $VENV
 EOF
 else
 cat << EOF >> $VCF_FASTA_SH
-    bash $STEPSDIR/vcf_fasta.sh -v $SHARC_FILTER_OUT -vff $VCF_FASTA_FLANK -vfo $VCF_FASTA_OFFSET -vfs $VCF_FASTA_SCRIPT -o $VCF_FASTA_OUT
+    bash $STEPSDIR/vcf_fasta.sh -v $ICGC_FILTER_OUT -vff $VCF_FASTA_FLANK -vfo $VCF_FASTA_OFFSET -vfs $VCF_FASTA_SCRIPT -o $VCF_FASTA_OUT -e $VENV
 EOF
 fi
 cat << EOF >> $VCF_FASTA_SH
@@ -1423,7 +1627,7 @@ cat << EOF >> $VCF_PRIMER_FILTER_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $PRIMER_DESIGN_OUT.done ]; then
-    bash $STEPSDIR/vcf_primer_filter.sh -v $SHARC_FILTER_OUT -p $PRIMER_DESIGN_OUT -o $VCF_PRIMER_FILTER_OUT -s $VCF_PRIMER_FILTER_SCRIPT
+    bash $STEPSDIR/vcf_primer_filter.sh -v $ICGC_FILTER_OUT -p $PRIMER_DESIGN_OUT -o $VCF_PRIMER_FILTER_OUT -s $VCF_PRIMER_FILTER_SCRIPT
     NUMBER_OF_LINES_PRIMER=\$(cat $PRIMER_DESIGN_OUT | wc -l | grep -oP "(^\d+)")
     NUMBER_OF_LINES_VCF=\$(grep -v "^#" $VCF_PRIMER_FILTER_OUT | wc -l | grep -oP "(^\d+)")
     if [ "\$NUMBER_OF_LINES_PRIMER" == "\$NUMBER_OF_LINES_VCF" ]; then
@@ -1436,6 +1640,38 @@ fi
 echo \`date\`: Done
 EOF
 qsub $VCF_PRIMER_FILTER_SH
+}
+
+primer_ranking() {
+cat << EOF > $PRIMER_RANKING_SH
+#!/bin/bash
+#$ -N $PRIMER_RANKING_JOBNAME
+#$ -cwd
+#$ -l h_vmem=$PRIMER_RANKING_MEM
+#$ -l h_rt=$PRIMER_RANKING_TIME
+#$ -e $PRIMER_RANKING_ERR
+#$ -o $PRIMER_RANKING_LOG
+EOF
+if [ ! -z $PRIMER_DESIGN_JOBNAME ]; then
+cat << EOF >> $PRIMER_RANKING_SH
+#$ -hold_jid $PRIMER_DESIGN_JOBNAME
+EOF
+fi
+cat << EOF >> $PRIMER_RANKING_SH
+echo \`date\`: Running on \`uname -n\`
+if [ -e $PRIMER_DESIGN_OUT.done ]; then
+    bash $STEPSDIR/primer_ranking.sh -v $SOMATIC_RANKING_OUT -p $PRIMER_DESIGN_OUT -o $PRIMER_RANKING_OUT -e $VENV
+    NUMBER_OF_PRIMERS_1=\$(wc -l $PRIMER_DESIGN_OUT | grep -oP "(^\d+)")
+    NUMBER_OF_PRIMERS_2=\$(wc -l $PRIMER_RANKING_OUT | grep -oP "(^\d+)")
+    if [ "\$NUMBER_OF_PRIMERS_1" == "\$NUMBER_OF_PRIMERS_2" ]; then
+        touch $PRIMER_RANKING_OUT.done
+    else
+        echo "The number of lines in the unranked primers file (\$NUMBER_OF_PRIMERS_1) is different than the number of lines in the ranked primers file (\$NUMBER_OF_PRIMERS_2)" >&2
+    fi
+fi
+echo \`date\`: Done
+EOF
+qsub $PRIMER_RANKING_SH
 }
 
 check_SHARC() {
@@ -1451,9 +1687,9 @@ cat << EOF > $CHECK_SHARC_SH
 
 EOF
 
-if [ ! -z $VCF_PRIMER_FILTER_JOBNAME ]; then
+if [ ! -z $VCF_PRIMER_FILTER_JOBNAME ] && [ ! -z $PRIMER_RANKING_SH ]; then
 cat << EOF >> $CHECK_SHARC_SH
-#$ -hold_jid $VCF_PRIMER_FILTER_JOBNAME
+#$ -hold_jid $VCF_PRIMER_FILTER_JOBNAME,$PRIMER_RANKING_SH
 EOF
 fi
 
@@ -1471,7 +1707,7 @@ else
     CHECK_BOOL=false
 fi
 
-if [ -e $COVERAGE_CALCULTATION_OUT.done ]; then
+if [ -e $COVERAGE_CALCULATION_OUT.done ]; then
     echo "Coverage calculation: Done" >> $CHECK_SHARC_OUT
 else
   echo "Coverage calculation: Fail" >> $CHECK_SHARC_OUT
@@ -1520,6 +1756,18 @@ else
     CHECK_BOOL=false
 fi
 
+if [ -e $ICGC_FILTER_OUT.done ]; then
+    echo "ICGC filter: Done" >> $CHECK_SHARC_OUT
+else
+    echo "ICGC filter: Fail" >> $CHECK_SHARC_OUT
+    CHECK_BOOL=false
+fi
+if [ -e $SOMATIC_RANKING_OUT.done ]; then
+    echo "Somatic ranking: Done" >> $CHECK_SHARC_OUT
+else
+    echo "Somatic ranking: Fail" >> $CHECK_SHARC_OUT
+    CHECK_BOOL=false
+fi
 if [ -e $VCF_FASTA_OUT.done ]; then
     echo "VCF to FASTA: Done" >> $CHECK_SHARC_OUT
 else
@@ -1540,13 +1788,19 @@ else
     echo "VCF primer filter: Fail" >> $CHECK_SHARC_OUT
     CHECK_BOOL=false
 fi
+if [ -e $PRIMER_RANKING_OUT.done ]; then
+    echo "Primer ranking: Done" >> $CHECK_SHARC_OUT
+else
+    echo "Primer ranking: Fail" >> $CHECK_SHARC_OUT
+    CHECK_BOOL=false
+fi
 if [ \$CHECK_BOOL = true ]; then
     touch $CHECK_SHARC_OUT.done
     if [ $DONT_CLEAN = false ]; then
       rm -rf $MAPPING_TMP_DIR
     fi
 fi
-tail -13 $CHECK_SHARC_OUT | mail -s 'SHARC_${OUTNAME}_${RAND}' $MAIL
+tail -16 $CHECK_SHARC_OUT | mail -s 'SHARC_${OUTNAME}_${RAND}' $MAIL
 
 echo \`date\`: Done
 
@@ -1560,8 +1814,8 @@ if [ ! -e $MAPPING_MERGE_OUT.done ]; then
     mapping
     mapping_merge
 fi
-if [ ! -e $COVERAGE_CALCULTATION_OUT.done ]; then
-    coverage_calcultation
+if [ ! -e $COVERAGE_CALCULATION_OUT.done ]; then
+    coverage_calculation
 fi
 if [ ! -e $SV_OUT.done ]; then
     sv
@@ -1584,6 +1838,12 @@ fi
 if [ ! -e $SHARC_FILTER_OUT.done ]; then
   sharc_filter
 fi
+if [ ! -e $ICGC_FILTER_OUT.done ]; then
+  icgc_filter
+fi
+if [ ! -e $SOMATIC_RANKING_OUT.done ]; then
+  somatic_ranking
+fi
 if [ ! -e $VCF_FASTA_OUT.done ]; then
   vcf_fasta
 fi
@@ -1592,6 +1852,9 @@ if [ ! -e $PRIMER_DESIGN_OUT.done ]; then
 fi
 if [ ! -e $VCF_PRIMER_FILTER_OUT.done ]; then
   vcf_primer_filter
+fi
+if [ ! -e $PRIMER_RANKING_OUT.done ]; then
+  primer_ranking
 fi
 if [ ! -e $CHECK_SHARC_OUT.done ]; then
   check_SHARC
