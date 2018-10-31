@@ -18,7 +18,7 @@ VCF_READER=pyvcf.Reader(open(VCF, "r"))
 
 PRIMER_RANKING={}
 for record in VCF_READER:
-    PRIMER_RANKING[record.ID]=record.INFO["RANK"]
+    PRIMER_RANKING[record.ID]=record.INFO["SHARC_RANK"]
 
 PRIMER_RANKING=sorted(PRIMER_RANKING, key=lambda k: PRIMER_RANKING[k])
 
