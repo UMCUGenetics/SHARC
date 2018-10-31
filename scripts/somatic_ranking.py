@@ -36,7 +36,8 @@ with open(VCF, "r") as input:
         else:
             record_info["TYPE"]=record.ALT[0]
 
-        record_info["ICGC_SCORE"]=record.INFO['ICGC_SCORE'][0]
+        print (record.INFO["ICGC_SCORE"])
+        record_info["ICGC_SCORE"]=record.INFO['ICGC_SCORE']
         primers.append(record_info)
 
     score_5=[]
@@ -83,7 +84,7 @@ with open(VCF, "r") as vcf_input, open(RANKED_VCF, "w") as vcf_output:
     VCF_WRITER=pyvcf.Writer(vcf_output, VCF_READ2, lineterminator='\n')
     for record in VCF_READ2:
         for rank, primer in enumerate(SCORE):
-            print (str(primer["ID"]) + "\t" + str(primer["TYPE"]) + "\t" + str(primer["ICGC_SCORE"]) + "\t" + str(primer["SVLEN"]) + "\n")
+            #print (str(primer["ID"]) + "\t" + str(primer["TYPE"]) + "\t" + str(primer["ICGC_SCORE"]) + "\t" + str(primer["SVLEN"]))
             RANK=rank+1
             if str(record.ID) == str(primer["ID"]):
                 record.INFO["SHARC_RANK"]=RANK
