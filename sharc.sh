@@ -97,6 +97,11 @@ ICGC_FILTER
     -ifp|icgc_filter_support                             ICGC filter support [$ICGC_FILTER_SUPPORT]
     -ifs|icgc_filter_script                              Path to Gene_annotation_ICGC.py [$ICGC_FILTER_SCRIPT]
 
+SOMATIC_RANKING
+    -srhv|somatic_ranking_h_vmem                         Somatic ranking memory [$ICGC_FILTER_MEM]
+    -srhr|somatic_ranking_h_rt                           Somatic ranking time [$ICGC_FILTER_TIME]
+    -srs|somatic_ranking_script                          Path to somatic_ranking.py [$ICGC_FILTER_SCRIPT]
+
 VCF_TO_FASTA
     -v2fhv|--vcf_fasta_h_vmem                            VCF to FASTA memory [$VCF_FASTA_MEM]
     -v2fhr|--vcf_fasta_h_rt                              VCF to FASTA time [$VCF_FASTA_TIME]
@@ -121,6 +126,11 @@ VCF PRIMER FILTER
     -vpfhv|--vcf_primer_filter_h_vmem                    VCF Primer Filter memory [$VCF_PRIMER_FILTER_MEM]
     -vpfhr|--vcf_primer_filter_h_rt                      VCF Primer Filter time [$VCF_PRIMER_FILTER_TIME]
     -vpfs|--vcf_primer_filter_script                     Path to vcf_primer_filter.py [$VCF_PRIMER_FILTER_SCRIPT]
+
+PRIMER_RANKING
+    -rphv|primer_ranking_h_vmem                          Primer ranking memory [$PRIMER_RANKING_MEM]
+    -rphr|primer_ranking_h_rt                            Primer ranking time [$PRIMER_RANKING_TIME]
+    -rps|primer_ranking_script                           Path to primer ranking.py [$PRIMER_RANKING_SCRIPT]
 
 "
 exit
@@ -223,6 +233,11 @@ ICGC_FILTER_FLANK=200
 ICGC_FILTER_SUPPORT=0.05
 ICGC_FILTER_SCRIPT=$SCRIPTSDIR/gene_annotation_ICGC.py
 
+#SOMATIC_RANKING VCF_FASTA_DEFAULTS
+SOMATIC_RANKING_MEM=2G
+SOMATIC_RANKING_TIME=0:5:0
+SOMATIC_RANKING_SCRIPT=$SCRIPTSDIR/somatic_ranking.py
+
 # VCF_FASTA_DEFAULTS
 VCF_FASTA_MEM=2G
 VCF_FASTA_TIME=0:5:0
@@ -248,6 +263,11 @@ PRIMER_DESIGN_MISPRIMING=$PRIMER_DESIGN_DIR/repbase/current/empty.ref
 VCF_PRIMER_FILTER_MEM=2G
 VCF_PRIMER_FILTER_TIME=0:5:0
 VCF_PRIMER_FILTER_SCRIPT=$SCRIPTSDIR/vcf_primer_filter.py
+
+# PRIMER_RANKING DEFAULTS
+PRIMER_RANKING_MEM=1G
+PRIMER_RANKING_TIME=0:5:0
+PRIMER_RANKING_SCRIPT=$SCRIPTSDIR/primer_ranking.py
 
 # CHECK_SHARC FILTER DEFAULTS
 CHECK_SHARC_MEM=1G
@@ -586,6 +606,22 @@ do
     shift # past argument
     shift # past value
     ;;
+# SOMATIC_RANKING OPTIONS
+    -srhv|--somatic_ranking_h_vmem)
+    SOMATIC_RANKING_MEM="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -srhr|--somatic_ranking_h_rt)
+    SOMATIC_RANKING_TIME="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -srs|--somatic_ranking_script)
+    SOMATIC_RANKING_SCRIPT="$2"
+    shift # past argument
+    shift # past value
+    ;;
 # VCF_FASTA OPTIONS
     -v2fhv|--vcf_fasta_h_vmem)
     VCF_FASTA_MEM="$2"
@@ -686,6 +722,22 @@ do
     *)    # unknown option
     POSITIONAL+=("$1") # save it in an array for later
     shift # past argument
+    ;;
+# PRIMER_RANKING OPTIONS
+    -prhv|--primer_ranking_h_vmem)
+    PRIMER_RANKING_MEM="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -prhr|--primer_ranking_h_rt)
+    PRIMER_RANKING_TIME="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -prs|--primer_ranking_script)
+    PRIMER_RANKING_SCRIPT="$2"
+    shift # past argument
+    shift # past value
     ;;
     esac
 done
@@ -804,14 +856,20 @@ ICGC_FILTER_JOBNAME=$OUTNAME'_ICGCFILTER_'$RAND
 ICGC_FILTER_SH=$JOBDIR/$ICGC_FILTER_JOBNAME.sh
 ICGC_FILTER_ERR=$LOGDIR/$ICGC_FILTER_JOBNAME.err
 ICGC_FILTER_LOG=$LOGDIR/$ICGC_FILTER_JOBNAME.log
-ICGC_FILTER_OUT=$SV_DIR/$(basename ${SHARC_FILTER_OUT/.vcf/.ICGC.vcf})
+ICGC_FILTER_OUT=$SV_TMP_DIR/$(basename ${SHARC_FILTER_OUT/.vcf/.ICGC.vcf})
+
+SOMATIC_RANKING_JOBNAME=$OUTNAME'_SOMATICRANKING_'$RAND
+SOMATIC_RANKING_SH=$JOBDIR/$SOMATIC_RANKING_JOBNAME.sh
+SOMATIC_RANKING_ERR=$LOGDIR/$SOMATIC_RANKING_JOBNAME.err
+SOMATIC_RANKING_LOG=$LOGDIR/$SOMATIC_RANKING_JOBNAME.log
+SOMATIC_RANKING_OUT=$SV_DIR/$(basename ${ICGC_FILTER_OUT/.vcf/.ranked.vcf})
 
 VCF_FASTA_OUTDIR=$OUTPUTDIR/primers
 VCF_FASTA_JOBNAME=$OUTNAME'_VCFFASTA_'$RAND
 VCF_FASTA_SH=$JOBDIR/$VCF_FASTA_JOBNAME.sh
 VCF_FASTA_ERR=$LOGDIR/$VCF_FASTA_JOBNAME.err
 VCF_FASTA_LOG=$LOGDIR/$VCF_FASTA_JOBNAME.log
-VCF_FASTA_OUT=$VCF_FASTA_OUTDIR/$(basename ${ICGC_FILTER_OUT/.vcf/.fasta})
+VCF_FASTA_OUT=$VCF_FASTA_OUTDIR/$(basename ${SOMATIC_RANKING_OUT/.vcf/.fasta})
 
 PRIMER_DESIGN_OUTDIR=$OUTPUTDIR/primers
 PRIMER_DESIGN_TMP_DIR=$PRIMER_DESIGN_OUTDIR/tmp
@@ -826,7 +884,13 @@ VCF_PRIMER_FILTER_JOBNAME=$OUTNAME'_VCFPRIMERFILTER_'$RAND
 VCF_PRIMER_FILTER_SH=$JOBDIR/$VCF_PRIMER_FILTER_JOBNAME.sh
 VCF_PRIMER_FILTER_ERR=$LOGDIR/$VCF_PRIMER_FILTER_JOBNAME.err
 VCF_PRIMER_FILTER_LOG=$LOGDIR/$VCF_PRIMER_FILTER_JOBNAME.log
-VCF_PRIMER_FILTER_OUT=$VCF_PRIMER_FILTER_OUTDIR/$(basename ${ICGC_FILTER_OUT/.vcf/.primers.vcf})
+VCF_PRIMER_FILTER_OUT=$VCF_PRIMER_FILTER_OUTDIR/$(basename ${SOMATIC_RANKING_OUT/.vcf/.primers.vcf})
+
+PRIMER_RANKING_JOBNAME=$OUTNAME'_PRIMERRANKING_'$RAND
+PRIMER_RANKING_SH=$JOBDIR/$PRIMER_RANKING_JOBNAME.sh
+PRIMER_RANKING_ERR=$LOGDIR/$PRIMER_RANKING_JOBNAME.err
+PRIMER_RANKING_LOG=$LOGDIR/$PRIMER_RANKING_JOBNAME.log
+PRIMER_RANKING_OUT=$PRIMER_DESIGN_OUTDIR/$(basename ${PRIMER_DESIGN_OUT/.primers/.ranked.primers})
 
 CHECK_SHARC_OUTDIR=$OUTPUTDIR
 CHECK_SHARC_JOBNAME=$OUTNAME'_CHECKSHARC_'$RAND
@@ -1416,6 +1480,39 @@ EOF
 qsub $ICGC_FILTER_SH
 }
 
+somatic_ranking() {
+cat << EOF > $SOMATIC_RANKING_SH
+#!/bin/bash
+#$ -N $SOMATIC_RANKING_JOBNAME
+#$ -cwd
+#$ -l h_vmem=$SOMATIC_RANKING_MEM
+#$ -l h_rt=$SOMATIC_RANKING_TIME
+#$ -e $SOMATIC_RANKING_ERR
+#$ -o $SOMATIC_RANKING_LOG
+EOF
+if [ ! -z $ICGC_FILTER_JOBNAME ]; then
+cat << EOF >> $SOMATIC_RANKING_SH
+#$ -hold_jid $ICGC_FILTER_JOBNAME
+EOF
+fi
+cat << EOF >> $SOMATIC_RANKING_SH
+echo \`date\`: Running on \`uname -n\`
+if [ -e $ICGC_FILTER_OUT.done ]; then
+    bash $STEPSDIR/somatic_ranking.sh -v $ICGC_FILTER_OUT -s $SOMATIC_RANKING_SCRIPT -o $SOMATIC_RANKING_OUT -e $VENV
+    NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $ICGC_FILTER_OUT | wc -l | grep -oP "(^\d+)")
+    NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $SOMATIC_RANKING_OUT | wc -l | grep -oP "(^\d+)")
+    if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
+        touch $SOMATIC_RANKING_OUT.done
+    else
+        echo "The number of lines in the ICGC vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the Ranking file (\$NUMBER_OF_LINES_VCF_2)" >&2
+    fi
+fi
+echo \`date\`: Done
+EOF
+qsub $SOMATIC_RANKING_SH
+}
+
+
 vcf_fasta() {
 cat << EOF > $VCF_FASTA_SH
 #!/bin/bash
@@ -1428,9 +1525,9 @@ cat << EOF > $VCF_FASTA_SH
 #$ -o $VCF_FASTA_LOG
 EOF
 
-if [ ! -z $ICGC_FILTER_JOBNAME ]; then
+if [ ! -z $SOMATIC_RANKING_JOBNAME ]; then
 cat << EOF >> $VCF_FASTA_SH
-#$ -hold_jid $ICGC_FILTER_JOBNAME
+#$ -hold_jid $SOMATIC_RANKING_JOBNAME
 EOF
 fi
 
@@ -1543,6 +1640,38 @@ EOF
 qsub $VCF_PRIMER_FILTER_SH
 }
 
+primer_ranking() {
+cat << EOF > $PRIMER_RANKING_SH
+#!/bin/bash
+#$ -N $PRIMER_RANKING_JOBNAME
+#$ -cwd
+#$ -l h_vmem=$PRIMER_RANKING_MEM
+#$ -l h_rt=$PRIMER_RANKING_TIME
+#$ -e $PRIMER_RANKING_ERR
+#$ -o $PRIMER_RANKING_LOG
+EOF
+if [ ! -z $PRIMER_DESIGN_JOBNAME ]; then
+cat << EOF >> $PRIMER_RANKING_SH
+#$ -hold_jid $PRIMER_DESIGN_JOBNAME
+EOF
+fi
+cat << EOF >> $PRIMER_RANKING_SH
+echo \`date\`: Running on \`uname -n\`
+if [ -e $VCF_PRIMER_FILTER_OUT.done ]; then
+    bash $STEPSDIR/primer_ranking.sh -v $SOMATIC_RANKING_OUT -p $PRIMER_DESIGN_OUT -o $PRIMER_RANKING_OUT -e $VENV
+    NUMBER_OF_PRIMERS_1=\$(wc -l $PRIMER_FILTER_OUT | grep -oP "(^\d+)")
+    NUMBER_OF_PRIMERS_2=\$(wc -l $PRIMER_RANKING_OUT | grep -oP "(^\d+)")
+    if [ "\$NUMBER_OF_PRIMERS_1" == "\$NUMBER_OF_PRIMERS_2" ]; then
+        touch $ICGC_FILTER_OUT.done
+    else
+        echo "The number of lines in the unranked primers file (\$NUMBER_OF_PRIMERS_1) is different than the number of lines in the ranked primers file (\$NUMBER_OF_PRIMERS_2)" >&2
+    fi
+fi
+echo \`date\`: Done
+EOF
+qsub $PRIMER_RANKING_SH
+}
+
 check_SHARC() {
 cat << EOF > $CHECK_SHARC_SH
 #!/bin/bash
@@ -1631,7 +1760,12 @@ else
     echo "ICGC filter: Fail" >> $CHECK_SHARC_OUT
     CHECK_BOOL=false
 fi
-
+if [ -e $SOMATIC_RANKING_OUT.done ]; then
+    echo "Somatic ranking: Done" >> $CHECK_SHARC_OUT
+else
+    echo "Somatic ranking: Fail" >> $CHECK_SHARC_OUT
+    CHECK_BOOL=false
+fi
 if [ -e $VCF_FASTA_OUT.done ]; then
     echo "VCF to FASTA: Done" >> $CHECK_SHARC_OUT
 else
@@ -1652,13 +1786,19 @@ else
     echo "VCF primer filter: Fail" >> $CHECK_SHARC_OUT
     CHECK_BOOL=false
 fi
+if [ -e $PRIMER_RANKING_OUT.done ]; then
+    echo "Primer ranking: Done" >> $CHECK_SHARC_OUT
+else
+    echo "Primer ranking: Fail" >> $CHECK_SHARC_OUT
+    CHECK_BOOL=false
+fi
 if [ \$CHECK_BOOL = true ]; then
     touch $CHECK_SHARC_OUT.done
     if [ $DONT_CLEAN = false ]; then
       rm -rf $MAPPING_TMP_DIR
     fi
 fi
-tail -14 $CHECK_SHARC_OUT | mail -s 'SHARC_${OUTNAME}_${RAND}' $MAIL
+tail -16 $CHECK_SHARC_OUT | mail -s 'SHARC_${OUTNAME}_${RAND}' $MAIL
 
 echo \`date\`: Done
 
@@ -1699,6 +1839,9 @@ fi
 if [ ! -e $ICGC_FILTER_OUT.done ]; then
   icgc_filter
 fi
+if [ ! -e $SOMATIC_RANKING_OUT.done ]; then
+  somatic_ranking
+fi
 if [ ! -e $VCF_FASTA_OUT.done ]; then
   vcf_fasta
 fi
@@ -1707,6 +1850,9 @@ if [ ! -e $PRIMER_DESIGN_OUT.done ]; then
 fi
 if [ ! -e $VCF_PRIMER_FILTER_OUT.done ]; then
   vcf_primer_filter
+fi
+if [ ! -e $PRIMER_RANKING_OUT.done ]; then
+  primer_ranking
 fi
 if [ ! -e $CHECK_SHARC_OUT.done ]; then
   check_SHARC
