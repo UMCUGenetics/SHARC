@@ -20,6 +20,7 @@ MAPPING
     -mt|--mapping_threads                                Number of threads [$MAPPING_THREADS]
     -mhr|--mapping_h_rt                                  Mapping time [$MAPPING_TIME]
     -mhv|--mapping_h_vmem                                Mapping memory [$MAPPING_MEM]
+    -mr|--mapping_ref                                    Mapping reference [$MAPPING_REF]
     -mm|--minimap2                                       Path to minimap2 [$MAPPING_MINIMAP2]
     -mms|--minimap2_settings                             Minimap2 settings [$MAPPING_MINIMAP2_SETTINGS]
     -msb|--mapping_sambamba                              Path to sambamba [$MAPPING_SAMBAMBA]
@@ -60,8 +61,8 @@ CREATE_BED_ANNOTATION
     -cbahr|--create_bed_annotation_h_rt                  Create BED time [$CREATE_BED_ANNOTATION_TIME]
 
 BED_ANNOTATION
-    -bahv|--bad_annotation_h_vmem                        BED annotation memory [$BED_ANNOTATION_MEM]
-    -bahr|--bad_annotation_h_rt                          BED annotation time [$BED_ANNOTATION_TIME]
+    -bahv|--bed_annotation_h_vmem                        BED annotation memory [$BED_ANNOTATION_MEM]
+    -bahr|--bed_annotation_h_rt                          BED annotation time [$BED_ANNOTATION_TIME]
     -baf|--bed_annotation_files                          Path to the directory with the feature bed files [$BED_ANNOTATION_FILES]
     -bas|--bed_annotation_script                         Path to get_closest_feature.py script [$BED_ANNOTATION_SCRIPT]
 
@@ -91,17 +92,17 @@ SHARC_FILTER
     -sfq|--sharc_filter_query                            SHARC Filter query [$SHARC_FILTER_QUERY]
 
 ICGC_FILTER
-    -ifhv|icgc_filter_h_vmem                             ICGC filter memory [$ICGC_FILTER_MEM]
-    -ifhr|icgc_filter_h_rt                               ICGC filter time [$ICGC_FILTER_TIME]
-    -ifc|icgc_filter_cancer_type                         ICGC filter cancer type [$ICGC_FILTER_CANCER_TYPE]
-    -iff|icgc_filter_flank                               ICGC filter flank [$ICGC_FILTER_FLANK]
-    -ifp|icgc_filter_support                             ICGC filter support [$ICGC_FILTER_SUPPORT]
-    -ifs|icgc_filter_script                              Path to Gene_annotation_ICGC.py [$ICGC_FILTER_SCRIPT]
+    -ifhv|--icgc_filter_h_vmem                           ICGC filter memory [$ICGC_FILTER_MEM]
+    -ifhr|--icgc_filter_h_rt                             ICGC filter time [$ICGC_FILTER_TIME]
+    -ifc|--icgc_filter_cancer_type                       ICGC filter cancer type [$ICGC_FILTER_CANCER_TYPE]
+    -iff|--icgc_filter_flank                             ICGC filter flank [$ICGC_FILTER_FLANK]
+    -ifp|--icgc_filter_support                           ICGC filter support [$ICGC_FILTER_SUPPORT]
+    -ifs|--icgc_filter_script                            Path to Gene_annotation_ICGC.py [$ICGC_FILTER_SCRIPT]
 
 SOMATIC_RANKING
-    -srhv|somatic_ranking_h_vmem                         Somatic ranking memory [$ICGC_FILTER_MEM]
-    -srhr|somatic_ranking_h_rt                           Somatic ranking time [$ICGC_FILTER_TIME]
-    -srs|somatic_ranking_script                          Path to somatic_ranking.py [$ICGC_FILTER_SCRIPT]
+    -srhv|--somatic_ranking_h_vmem                       Somatic ranking memory [$ICGC_FILTER_MEM]
+    -srhr|--somatic_ranking_h_rt                         Somatic ranking time [$ICGC_FILTER_TIME]
+    -srs|--somatic_ranking_script                        Path to somatic_ranking.py [$ICGC_FILTER_SCRIPT]
 
 VCF_TO_FASTA
     -v2fhv|--vcf_fasta_h_vmem                            VCF to FASTA memory [$VCF_FASTA_MEM]
@@ -129,9 +130,9 @@ VCF PRIMER FILTER
     -vpfs|--vcf_primer_filter_script                     Path to vcf_primer_filter.py [$VCF_PRIMER_FILTER_SCRIPT]
 
 PRIMER_RANKING
-    -rphv|primer_ranking_h_vmem                          Primer ranking memory [$PRIMER_RANKING_MEM]
-    -rphr|primer_ranking_h_rt                            Primer ranking time [$PRIMER_RANKING_TIME]
-    -rps|primer_ranking_script                           Path to primer ranking.py [$PRIMER_RANKING_SCRIPT]
+    -prhv|--primer_ranking_h_vmem                        Primer ranking memory [$PRIMER_RANKING_MEM]
+    -prhr|--primer_ranking_h_rt                          Primer ranking time [$PRIMER_RANKING_TIME]
+    -prs|--primer_ranking_script                         Path to primer ranking.py [$PRIMER_RANKING_SCRIPT]
 
 "
 exit
