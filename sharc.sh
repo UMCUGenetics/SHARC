@@ -1326,6 +1326,9 @@ for DB in ${DB_TYPES[@]|}; do
   if [ $DB == 'SHARCDB' ]; then
     DB_SCRIPT='/hpc/cog_bioinf/kloosterman/users/mroosmalen/vcf-explorer/sharc_database/vcfexplorer.py'
   fi
+  if [ -e $DB_OUT.done ]; then
+    continue
+  fi
 
 cat << EOF > $DB_SH
 #!/bin/bash
@@ -1352,6 +1355,15 @@ if [ -e $RF_OUT.done ]; then
 
     sed -i s/DB_Count/${DB}_Count/g $DB_OUT
     sed -i s/DB_Frequency/${DB}_Frequency/g $DB_OUT
+
+    NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $RF_OUT | wc -l | grep -oP "(^\d+)")
+    NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $DB_OUT | wc -l | grep -oP "(^\d+)")
+
+    if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
+        touch $DB_OUT.done
+    else
+        echo "The number of lines in the random forest vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the db vcf file (\$NUMBER_OF_LINES_VCF_2)" >&2
+    fi
 fi
 
 echo \`date\`: Done
@@ -1542,16 +1554,21 @@ if [ -e $ICGC_FILTER_OUT.done ]; then
 EOF
 if [ $VCF_FASTA_MARK = true ]; then
 cat << EOF >> $VCF_FASTA_SH
-    bash $STEPSDIR/vcf_fasta.sh -v $ICGC_FILTER_OUT -vff $VCF_FASTA_FLANK -vfo $VCF_FASTA_OFFSET -vfs $VCF_FASTA_SCRIPT -vfm -o $VCF_FASTA_OUT -e $VENV
+    bash $STEPSDIR/vcf_fasta.sh -v $SOMATIC_RANKING_OUT -vff $VCF_FASTA_FLANK -vfo $VCF_FASTA_OFFSET -vfs $VCF_FASTA_SCRIPT -vfm -o $VCF_FASTA_OUT -e $VENV
 EOF
 else
 cat << EOF >> $VCF_FASTA_SH
-    bash $STEPSDIR/vcf_fasta.sh -v $ICGC_FILTER_OUT -vff $VCF_FASTA_FLANK -vfo $VCF_FASTA_OFFSET -vfs $VCF_FASTA_SCRIPT -o $VCF_FASTA_OUT -e $VENV
+    bash $STEPSDIR/vcf_fasta.sh -v $SOMATIC_RANKING_OUT -vff $VCF_FASTA_FLANK -vfo $VCF_FASTA_OFFSET -vfs $VCF_FASTA_SCRIPT -o $VCF_FASTA_OUT -e $VENV
 EOF
 fi
 cat << EOF >> $VCF_FASTA_SH
-
-  touch $VCF_FASTA_OUT.done
+  NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $SOMATIC_RANKING_OUT | wc -l | grep -oP "(^\d+)")
+  NUMBER_OF_LINES_FILE_2=\$(grep "^Record" $VCF_FASTA_LOG | wc -l | grep -oP "(^\d+)")
+  if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_FILE_2" ]; then
+      touch $VCF_FASTA_OUT.done
+  else
+      echo "The number of lines in the Somatic ranking vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the vcf fasta log file (\$NUMBER_OF_LINES_FILE_2)" >&2
+  fi
 fi
 
 echo \`date\`: Done
@@ -1825,8 +1842,10 @@ fi
 if [ ! -e $VCF_FILTER_OUT.done ]; then
   vcf_filter
 fi
-if [ ! -e $BED_ANNOTATION_MERGE_OUT.done ]; then
+if [ ! -e $VCF_SPLIT_OUT.done ]; then
   vcf_split
+fi
+if [ ! -e $BED_ANNOTATION_MERGE_OUT.done ]; then
   create_bed_annotation_jobs
   annotation_merge
 fi
