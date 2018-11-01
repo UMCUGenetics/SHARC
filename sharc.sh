@@ -1551,7 +1551,7 @@ echo \`date\`: Running on \`uname -n\`
 
 if [ -e $ICGC_FILTER_OUT.done ]; then
 EOF
-if [ $VCF_FASTA_MARK = true ]; then
+if [ "$VCF_FASTA_MASK" = true ]; then
 cat << EOF >> $VCF_FASTA_SH
     bash $STEPSDIR/vcf_fasta.sh -v $SOMATIC_RANKING_OUT -vff $VCF_FASTA_FLANK -vfo $VCF_FASTA_OFFSET -vfs $VCF_FASTA_SCRIPT -vfm -o $VCF_FASTA_OUT -e $VENV
 EOF
@@ -1562,11 +1562,11 @@ EOF
 fi
 cat << EOF >> $VCF_FASTA_SH
   NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $SOMATIC_RANKING_OUT | wc -l | grep -oP "(^\d+)")
-  NUMBER_OF_LINES_FILE_2=\$(grep "^Record" $VCF_FASTA_LOG | wc -l | grep -oP "(^\d+)")
+  NUMBER_OF_LINES_FILE_2=\$(grep "^Record" $VCF_FASTA_ERR | wc -l | grep -oP "(^\d+)")
   if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_FILE_2" ]; then
       touch $VCF_FASTA_OUT.done
   else
-      echo "The number of lines in the Somatic ranking vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the vcf fasta log file (\$NUMBER_OF_LINES_FILE_2)" >&2
+      echo "The number of lines in the Somatic ranking vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the vcf fasta err file (\$NUMBER_OF_LINES_FILE_2)" >&2
   fi
 fi
 
