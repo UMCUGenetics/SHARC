@@ -141,7 +141,8 @@ exit
 POSITIONAL=()
 
 # GENERAL DEFAULTS
-SHARCDIR='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/'
+SHARCDIR=$(dirname ${BASH_SOURCE[0]})
+#SHARCDIR='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/'
 VENV=$SHARCDIR/venv/bin/activate
 STEPSDIR=$SHARCDIR/steps
 SCRIPTSDIR=$SHARCDIR/scripts
