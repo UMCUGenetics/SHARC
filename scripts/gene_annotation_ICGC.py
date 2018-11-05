@@ -155,6 +155,9 @@ def overlap_ENSEMBLE(REGIONS):
                     except:
                         if TRY==3:
                             sys.exit("Error while requesting from ENSEMBL database after 3 tries")
+                        print ("Try:", TRY)
+                        print("ID", ID)
+                        print("Length region:", SV_END-SV_START)
                         TRY +=1
 
                 if isinstance(data, list):
@@ -169,9 +172,22 @@ def overlap_ENSEMBLE(REGIONS):
                     TEMP_SV_END+=4999999
                     if TEMP_SV_END > SV_END:
                         TEMP_SV_END=SV_END
-                    request = requests.get(SERVER+SPECIES+"/"+CHROM+":"+str(TEMP_SV_START)+"-"+str(TEMP_SV_END)+"?feature=gene", headers=HEADERS)
-                    response = request.text
-                    data=json.loads(response)
+
+                    TRY=1
+                    while TRY <= 10:
+                        try:
+                            request = requests.get(SERVER+SPECIES+"/"+CHROM+":"+str(TEMP_SV_START)+"-"+str(TEMP_SV_END)+"?feature=gene", headers=HEADERS)
+                            response = request.text
+                            data=json.loads(response)
+                            break
+                        except:
+                            if TRY==10:
+                                sys.exit("Error while requesting from ENSEMBL database after " +TRY+ "tries")
+                            print ("Try:", TRY)
+                            print("ID", ID)
+                            print("Length region:", SV_END-SV_START)
+                            TRY +=1
+
                     if isinstance(data, list):
                         REGIONS[ID]["GENES"]=REGIONS[ID]["GENES"]+[gene["id"] for gene in data]
                     else:
@@ -212,7 +228,7 @@ def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
             }
 
         TRY=1
-        while TRY <= 3:
+        while TRY <= 10:
             try:
                 request_genes=requests.get(SERVER_GENES, params=PARAMS_GENES)
                 response_genes=request_genes.text
@@ -220,7 +236,7 @@ def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
                 hits_genes=response_genes["hits"]
                 break
             except:
-                if TRY==3:
+                if TRY==10:
                     sys.exit("Error while requesting from ICGC database after 3 tries")
                 TRY +=1
 
@@ -262,7 +278,7 @@ def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
             }
 
         TRY=1
-        while TRY <= 3:
+        while TRY <= 10:
             try:
                 request_genes=requests.get(SERVER_GENES, params=PARAMS_GENES)
                 response_genes=request_genes.text
@@ -270,7 +286,7 @@ def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
                 hits_genes=response_genes["hits"]
                 break
             except:
-                if TRY==3:
+                if TRY==10:
                     sys.exit("Error while requesting from ICGC database after 3 tries")
                 TRY +=1
 
@@ -309,7 +325,7 @@ def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
             }
 
         TRY=1
-        while TRY <= 3:
+        while TRY <= 10:
             try:
                 request_genes=requests.get(SERVER_GENES, params=PARAMS_GENES)
                 response_genes=request_genes.text
@@ -317,7 +333,7 @@ def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
                 hits_genes=response_genes["hits"]
                 break
             except:
-                if TRY==3:
+                if TRY==10:
                     sys.exit("Error while requesting from ICGC database after 3 tries")
                 TRY +=1
 
@@ -352,7 +368,7 @@ def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
             }
 
         TRY=1
-        while TRY <= 3:
+        while TRY <= 10:
             try:
                 request_genes=requests.get(SERVER_GENES, params=PARAMS_GENES)
                 response_genes=request_genes.text
@@ -360,7 +376,7 @@ def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
                 hits_genes=response_genes["hits"]
                 break
             except:
-                if TRY==3:
+                if TRY==10:
                     sys.exit("Error while requesting from ICGC database after 3 tries")
                 TRY +=1
 
