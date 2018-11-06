@@ -25,10 +25,11 @@ def mask_seq( chr, start, end, strand, seq ):
         try:
             request = requests.get(server+ext, headers={ "Content-Type" : "application/json"})
             data = json.loads(request.text)
+            break
         except:
             if TRY==10:
                 sys.exit("Error while requesting from ENSEMBL database after " +TRY+ "tries")
-            TRY +=1
+        TRY +=1
 
     masked_seq = seq
 
@@ -47,10 +48,11 @@ def get_seq(chr, start, end, strand):
         try:
             request = requests.get(server+ext, headers={ "Content-Type" : "application/json"})
             data = json.loads(request.text)
+            break
         except:
             if TRY==10:
                 sys.exit("Error while requesting from ENSEMBL database after " +TRY+ "tries")
-            TRY +=1
+        TRY +=1
 
     chrlength = data['length']
 
@@ -67,10 +69,11 @@ def get_seq(chr, start, end, strand):
             try:
                 request = requests.get(server+ext, headers={ "Content-Type" : "application/json"})
                 data = json.loads(request.text)
+                break
             except:
                 if TRY==10:
                     sys.exit("Error while requesting from ENSEMBL database after " +TRY+ "tries")
-                TRY +=1
+            TRY +=1
         seq = data['seq']
         if mask:
             seq = mask_seq(chr, start, end, strand, seq )
