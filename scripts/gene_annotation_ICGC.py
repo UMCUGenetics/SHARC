@@ -11,8 +11,8 @@ parser = argparse.ArgumentParser(description='Put here a description.')
 parser.add_argument('vcf', help='VCF file')
 parser.add_argument('-c', '--cancertype', type=str, help='Primary site of cancer', required=True)
 parser.add_argument('-o', '--output', type=str, help='VCF output file', required=True)
-parser.add_argument('-f', '--flank', default=200, type=int, help='Flank [default: 200]')
-parser.add_argument('-s', '--support', default=0.05, type=float, help='Minimal percentage of cancer patients supporting the mutated gene [default: 0.05]')
+parser.add_argument('-f', '--flank', type=int, help='Flank', required=True)
+parser.add_argument('-s', '--support', type=float, help='Minimal percentage of cancer patients supporting the mutated gene', required=True)
 args = parser.parse_args()
 
 #############################################   CONVERT DIFFERENT VCF SV NOTATIONS TO bracket notations N[Chr:pos[   #############################################
@@ -438,7 +438,7 @@ def vcf_annotate_tcga_genes_overlap(INPUT_VCF, OUTPUT_VCF, ICGC_GENES, REGIONS):
                 if "SVLEN" in record.INFO:
                     print (str(record.ID) + "\t" + str(record.ALT[0]) + "\t" + str(record.INFO["SVLEN"][0]) + "\t" + str(len(OVERLAP)) + "\t" + str(SCORE) + "\t" + str(",".join(GENE)))
                 else:
-                    print (str(record.ID) + "\t" + "TRANS/INV" + "\t" + "NA" + "\t" + str(len(OVERLAP)) + "\t" + str(SCORE) + "\t" + str(",".join(GENE)))
+                    print (str(record.ID) + "\t" + "TRANS" + "\t" + "NA" + "\t" + str(len(OVERLAP)) + "\t" + str(SCORE) + "\t" + str(",".join(GENE)))
                 count_pros_overlap+=1
             elif len(REGIONS[record.ID]["GENES"])>0:
                 count_gene_no_overlap+=1
