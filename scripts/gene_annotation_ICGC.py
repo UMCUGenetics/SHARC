@@ -432,9 +432,9 @@ def vcf_annotate_ICGC_genes_overlap(INPUT_VCF, OUTPUT_VCF, ICGC_GENES, REGIONS):
 
             if len(OVERLAP)>0:
                 if "SVLEN" in record.INFO:
-                    print (str(record.ID) + "\t" + str(record.ALT[0]) + "\t" + str(record.INFO["SVLEN"][0]) + "\t" + str(len(OVERLAP)) + "\t" + str(SCORE) + "\t" + str(",".join(GENE)) + "\t" + str(record.FILTER))
+                    print (str(record.ID) + "\t" + str(record.ALT[0]) + "\t" + str(record.INFO["SVLEN"][0]) + "\t" + str(len(OVERLAP)) + "\t" + str(SCORE) + "\t" + str(",".join(GENE)))
                 else:
-                    print (str(record.ID) + "\t" + "TRANS" + "\t" + "NA" + "\t" + str(len(OVERLAP)) + "\t" + str(SCORE) + "\t" + str(",".join(GENE)) + "\t" + str(record.FILTER))
+                    print (str(record.ID) + "\t" + "TRANS" + "\t" + "NA" + "\t" + str(len(OVERLAP)) + "\t" + str(SCORE) + "\t" + str(",".join(GENE)))
                 count_pros_overlap+=1
             elif len(REGIONS[record.ID]["GENES"])>0:
                 count_gene_no_overlap+=1
