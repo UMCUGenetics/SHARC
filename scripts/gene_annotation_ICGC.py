@@ -211,9 +211,7 @@ def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
     SLICE=0
     STOP=False
 
-    print (MAX_GENES)
     while SLICE < MAX_GENES and STOP==False :
-        print (SLICE, SLICE+100)
         PARAMS_GENES = {
             "filters": FILTERS_GENES,
             "format": "JSON",
@@ -261,9 +259,7 @@ def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
 
     SLICE=0
     STOP=False
-    print (MAX_GENES)
     while SLICE < MAX_GENES and STOP==False:
-        print (SLICE, SLICE+100)
         PARAMS_GENES = {
             "filters": FILTERS_GENES,
             "format": "JSON",
