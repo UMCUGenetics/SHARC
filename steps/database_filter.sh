@@ -87,7 +87,7 @@ echo `date`: Running on `uname -n`
 
 . $VENV
 
-if [ $SAMPLE_EXCLUSION != None]; then
+if [ $SAMPLE_EXCLUSION != None ]; then
   python $DB_SCRIPT filter -n $NAME -f $FLANK -q SAMPLE?=$SAMPLE_EXCLUSION $VCF > $OUTPUT
 else
   python $DB_SCRIPT filter -n $NAME -f $FLANK $VCF > $OUTPUT
