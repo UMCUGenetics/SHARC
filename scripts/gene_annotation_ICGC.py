@@ -383,7 +383,7 @@ def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
 
 
 #############################################   OVERLAP GENES THAT OVERLAP WITH GIVEN SV VCF AND TCGA CANCER GENES   #############################################
-def vcf_annotate_tcga_genes_overlap(INPUT_VCF, OUTPUT_VCF, ICGC_GENES, REGIONS):
+def vcf_annotate_ICGC_genes_overlap(INPUT_VCF, OUTPUT_VCF, ICGC_GENES, REGIONS):
     with open(INPUT_VCF, "r") as INPUT, open (OUTPUT_VCF, "w") as OUTPUT:
 
         count_pros_overlap=0
@@ -455,7 +455,15 @@ MIN_SUPPORT=args.support
 CANCERTYPE=args.cancertype
 CANCERTYPE=CANCERTYPE.capitalize()
 
+print("Selecting regions from VCF")
 REGIONS=regions_from_vcf(VCF_IN)
+print("Done")
+print("Overlapping regions with known ENSEMBL GENES")
 OVERLAP=overlap_ENSEMBLE(REGIONS)
+print("Done")
+print("Creating a list of ICGC genes with their respective score for "+CANCERTYPE)
 KNOWN_GENES=create_ICGC_gene_list(CANCERTYPE, MIN_SUPPORT)
-vcf_annotate_tcga_genes_overlap(VCF_IN, VCF_GENE_SELECTED, KNOWN_GENES, OVERLAP)
+print("Done")
+print("Overlapping genes per SV with ICGC genes")
+vcf_annotate_ICGC_genes_overlap(VCF_IN, VCF_GENE_SELECTED, KNOWN_GENES, OVERLAP)
+print("Done")
