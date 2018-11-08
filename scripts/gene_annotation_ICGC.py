@@ -11,8 +11,8 @@ parser = argparse.ArgumentParser(description='Put here a description.')
 parser.add_argument('vcf', help='VCF file')
 parser.add_argument('-c', '--cancertype', type=str, help='Primary site of cancer', required=True)
 parser.add_argument('-o', '--output', type=str, help='VCF output file', required=True)
-parser.add_argument('-f', '--flank', default=200, type=int, help='Flank [default: 200]')
-parser.add_argument('-s', '--support', default=0.05, type=float, help='Minimal percentage of cancer patients supporting the mutated gene [default: 0.05]')
+parser.add_argument('-f', '--flank', type=int, help='Flank', required=True)
+parser.add_argument('-s', '--support', type=float, help='Minimal percentage of cancer patients supporting the mutated gene', required=True)
 args = parser.parse_args()
 
 #############################################   CONVERT DIFFERENT VCF SV NOTATIONS TO bracket notations N[Chr:pos[   #############################################
@@ -144,9 +144,19 @@ def overlap_ENSEMBLE(REGIONS):
             SV_END=int(region["End"])
 
             if SV_END-SV_START <= 5000000:
-                request = requests.get(SERVER+SPECIES+"/"+CHROM+":"+str(SV_START)+"-"+str(SV_END)+"?feature=gene", headers=HEADERS)
-                response = request.text
-                data=json.loads(response)
+
+                TRY=1
+                while TRY <= 10:
+                    try:
+                        request = requests.get(SERVER+SPECIES+"/"+CHROM+":"+str(SV_START)+"-"+str(SV_END)+"?feature=gene", headers=HEADERS)
+                        response = request.text
+                        data=json.loads(response)
+                        break
+                    except:
+                        if TRY==10:
+                            sys.exit("Error while requesting from ENSEMBL database after " +TRY+ "tries")
+                        TRY +=1
+
                 if isinstance(data, list):
                     REGIONS[ID]["GENES"]=REGIONS[ID]["GENES"]+[gene["id"] for gene in data]
                 else:
@@ -159,9 +169,19 @@ def overlap_ENSEMBLE(REGIONS):
                     TEMP_SV_END+=4999999
                     if TEMP_SV_END > SV_END:
                         TEMP_SV_END=SV_END
-                    request = requests.get(SERVER+SPECIES+"/"+CHROM+":"+str(TEMP_SV_START)+"-"+str(TEMP_SV_END)+"?feature=gene", headers=HEADERS)
-                    response = request.text
-                    data=json.loads(response)
+
+                    TRY=1
+                    while TRY <= 10:
+                        try:
+                            request = requests.get(SERVER+SPECIES+"/"+CHROM+":"+str(TEMP_SV_START)+"-"+str(TEMP_SV_END)+"?feature=gene", headers=HEADERS)
+                            response = request.text
+                            data=json.loads(response)
+                            break
+                        except:
+                            if TRY==10:
+                                sys.exit("Error while requesting from ENSEMBL database after " +TRY+ "tries")
+                            TRY +=1
+
                     if isinstance(data, list):
                         REGIONS[ID]["GENES"]=REGIONS[ID]["GENES"]+[gene["id"] for gene in data]
                     else:
@@ -173,7 +193,7 @@ def overlap_ENSEMBLE(REGIONS):
 
 #############################################   CREATE A LIST OF CANCER GENES FROM THE ICGC DATABASE   #############################################
 
-def create_TCGA_gene_list(CANCER_TYPE, MIN_SUPPORT):
+def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
 
 ##################################### Top 1500 genes with occurence > given occurence
     SIGNIFICANT_GENES={}
@@ -198,10 +218,20 @@ def create_TCGA_gene_list(CANCER_TYPE, MIN_SUPPORT):
             "size": "100",
             "from": str(SLICE)
             }
-        request_genes=requests.get(SERVER_GENES, params=PARAMS_GENES)
-        response_genes=request_genes.text
-        response_genes=json.loads(response_genes)
-        hits_genes=response_genes["hits"]
+
+        TRY=1
+        while TRY <= 10:
+            try:
+                request_genes=requests.get(SERVER_GENES, params=PARAMS_GENES)
+                response_genes=request_genes.text
+                response_genes=json.loads(response_genes)
+                hits_genes=response_genes["hits"]
+                break
+            except:
+                if TRY==10:
+                    sys.exit("Error while requesting from ICGC database after " +TRY+ "tries")
+                TRY +=1
+
 
         for HIT in hits_genes:
             OCCURRENCE=float(float(HIT["affectedDonorCountFiltered"])/float(CASE_NUMBER))
@@ -237,14 +267,25 @@ def create_TCGA_gene_list(CANCER_TYPE, MIN_SUPPORT):
             "from": str(SLICE)
             }
 
-        request_genes=requests.get(SERVER_GENES, params=PARAMS_GENES)
-        response_genes=request_genes.text
-        response_genes=json.loads(response_genes)
-        hits_genes=response_genes["hits"]
+        TRY=1
+        while TRY <= 10:
+            try:
+                request_genes=requests.get(SERVER_GENES, params=PARAMS_GENES)
+                response_genes=request_genes.text
+                response_genes=json.loads(response_genes)
+                hits_genes=response_genes["hits"]
+                break
+            except:
+                if TRY==10:
+                    sys.exit("Error while requesting from ICGC database after " +TRY+ "tries")
+                TRY +=1
 
         for HIT in hits_genes:
             OCCURRENCE=float(float(HIT["affectedDonorCountFiltered"])/float(CASE_NUMBER))
             if OCCURRENCE>=float(MIN_SUPPORT):
+                if HIT["id"] not in SIGNIFICANT_GENES:
+                    SIGNIFICANT_GENES[HIT["id"]]={}
+                    SIGNIFICANT_GENES[HIT["id"]]["symbol"]=HIT["symbol"]
                 SIGNIFICANT_GENES[HIT["id"]]["score"]=3
             else:
                 STOP=True
@@ -273,10 +314,18 @@ def create_TCGA_gene_list(CANCER_TYPE, MIN_SUPPORT):
             "from": str(SLICE)
             }
 
-        request_genes=requests.get(SERVER_GENES, params=PARAMS_GENES)
-        response_genes=request_genes.text
-        response_genes=json.loads(response_genes)
-        hits_genes=response_genes["hits"]
+        TRY=1
+        while TRY <= 10:
+            try:
+                request_genes=requests.get(SERVER_GENES, params=PARAMS_GENES)
+                response_genes=request_genes.text
+                response_genes=json.loads(response_genes)
+                hits_genes=response_genes["hits"]
+                break
+            except:
+                if TRY==10:
+                    sys.exit("Error while requesting from ICGC database after " +TRY+ "tries")
+                TRY +=1
 
         for HIT in hits_genes:
             OCCURRENCE=float(float(HIT["affectedDonorCountFiltered"])/float(CASE_NUMBER))
@@ -308,10 +357,18 @@ def create_TCGA_gene_list(CANCER_TYPE, MIN_SUPPORT):
             "from": str(SLICE)
             }
 
-        request_genes=requests.get(SERVER_GENES, params=PARAMS_GENES)
-        response_genes=request_genes.text
-        response_genes=json.loads(response_genes)
-        hits_genes=response_genes["hits"]
+        TRY=1
+        while TRY <= 10:
+            try:
+                request_genes=requests.get(SERVER_GENES, params=PARAMS_GENES)
+                response_genes=request_genes.text
+                response_genes=json.loads(response_genes)
+                hits_genes=response_genes["hits"]
+                break
+            except:
+                if TRY==10:
+                    sys.exit("Error while requesting from ICGC database after " +TRY+ "tries")
+                TRY +=1
 
         for HIT in hits_genes:
             #OCCURRENCE=float(float(HIT["affectedDonorCountFiltered"])/float(CASE_NUMBER))
@@ -326,7 +383,7 @@ def create_TCGA_gene_list(CANCER_TYPE, MIN_SUPPORT):
 
 
 #############################################   OVERLAP GENES THAT OVERLAP WITH GIVEN SV VCF AND TCGA CANCER GENES   #############################################
-def vcf_annotate_tcga_genes_overlap(INPUT_VCF, OUTPUT_VCF, ICGC_GENES, REGIONS):
+def vcf_annotate_ICGC_genes_overlap(INPUT_VCF, OUTPUT_VCF, ICGC_GENES, REGIONS):
     with open(INPUT_VCF, "r") as INPUT, open (OUTPUT_VCF, "w") as OUTPUT:
 
         count_pros_overlap=0
@@ -377,7 +434,7 @@ def vcf_annotate_tcga_genes_overlap(INPUT_VCF, OUTPUT_VCF, ICGC_GENES, REGIONS):
                 if "SVLEN" in record.INFO:
                     print (str(record.ID) + "\t" + str(record.ALT[0]) + "\t" + str(record.INFO["SVLEN"][0]) + "\t" + str(len(OVERLAP)) + "\t" + str(SCORE) + "\t" + str(",".join(GENE)))
                 else:
-                    print (str(record.ID) + "\t" + "TRANS/INV" + "\t" + "NA" + "\t" + str(len(OVERLAP)) + "\t" + str(SCORE) + "\t" + str(",".join(GENE)))
+                    print (str(record.ID) + "\t" + "TRANS" + "\t" + "NA" + "\t" + str(len(OVERLAP)) + "\t" + str(SCORE) + "\t" + str(",".join(GENE)))
                 count_pros_overlap+=1
             elif len(REGIONS[record.ID]["GENES"])>0:
                 count_gene_no_overlap+=1
@@ -396,8 +453,17 @@ VCF_GENE_SELECTED=args.output
 FLANK=args.flank
 MIN_SUPPORT=args.support
 CANCERTYPE=args.cancertype
+CANCERTYPE=CANCERTYPE.capitalize()
 
+print("Selecting regions from VCF")
 REGIONS=regions_from_vcf(VCF_IN)
+print("Done")
+print("Overlapping regions with known ENSEMBL GENES")
 OVERLAP=overlap_ENSEMBLE(REGIONS)
-KNOWN_GENES=create_TCGA_gene_list(CANCERTYPE, MIN_SUPPORT)
-vcf_annotate_tcga_genes_overlap(VCF_IN, VCF_GENE_SELECTED, KNOWN_GENES, OVERLAP)
+print("Done")
+print("Creating a list of ICGC genes with their respective score for "+CANCERTYPE)
+KNOWN_GENES=create_ICGC_gene_list(CANCERTYPE, MIN_SUPPORT)
+print("Done")
+print("Overlapping genes per SV with ICGC genes")
+vcf_annotate_ICGC_genes_overlap(VCF_IN, VCF_GENE_SELECTED, KNOWN_GENES, OVERLAP)
+print("Done")

@@ -5,44 +5,47 @@ echo "
 Required parameters:
     -f|--fastqdir                                        Path to fastq directory
     -m|--mail                                            Email adress
+    -c|--cancer_type                                     Cancer type used in ICGC database
 
 Optional parameters:
 
 GENERAL
-    -h|--help		                                         Shows help
+    -h|--help                                            Shows help
     -sd|--sharc_dir                                      Path to sharc directory [$SHARCDIR]
-    -v|--venv		                                         Path to virtual env [$VENV]
-    -o|--outputdir	                                     Path to output directory [$OUTPUTDIR]
+    -v|--venv                                            Path to virtual env [$VENV]
+    -o|--outputdir                                       Path to output directory [$OUTPUTDIR]
     -sm|--sample_name                                    Name of the sample [From FASTQ or OUTPUTDIR ]
-    -dc|--dont_clean                                     Don't clean up the mapping tmp dir [$DONT_CLEAN]
+    -dc|--dont_clean                                     Don't clean up the mapping tmp dir []
 
 MAPPING
-    -mt|--mapping_threads	                               Number of threads [$MAPPING_THREADS]
+    -mt|--mapping_threads                                Number of threads [$MAPPING_THREADS]
+    -mhr|--mapping_h_rt                                  Mapping time [$MAPPING_TIME]
     -mhv|--mapping_h_vmem                                Mapping memory [$MAPPING_MEM]
-    -mm|--minimap2	                                     Path to minimap2 [$MAPPING_MINIMAP2]
+    -mr|--mapping_ref                                    Mapping reference [$MAPPING_REF]
+    -mm|--minimap2                                       Path to minimap2 [$MAPPING_MINIMAP2]
     -mms|--minimap2_settings                             Minimap2 settings [$MAPPING_MINIMAP2_SETTINGS]
-    -msb|--mapping_sambamba	                             Path to sambamba [$MAPPING_SAMBAMBA]
+    -msb|--mapping_sambamba                              Path to sambamba [$MAPPING_SAMBAMBA]
 
 MAPPING MERGE
-    -mmt|--mapping_merge_threads	                       Number of threads [$MAPPING_MERGE_THREADS]
+    -mmt|--mapping_merge_threads                         Number of threads [$MAPPING_MERGE_THREADS]
     -mmhv|--mapping_merge_h_vmem                         Mapping merge memory [$MAPPING_MERGE_MEM]
     -mmhr|--mapping_merge_h_rt                           Mapping merge time [$MAPPING_MERGE_TIME]
-    -mmsb|--mapping_merge_sambamba	                     Path to sambamba [$MAPPING_MERGE_SAMBAMBA]
+    -mmsb|--mapping_merge_sambamba                       Path to sambamba [$MAPPING_MERGE_SAMBAMBA]
 
 COVERAGE CALCULATION
-    -cct|--coverage_calculation_threads                 Number of threads [$COVERAGE_CALCULATION_THREADS]
-    -cchv|--coverage_calculation_h_vmem                 Coverage calculation memory [$COVERAGE_CALCULATION_MEM]
-    -cchr|--coverage_calculation_h_rt                   Coverage calculation time [$COVERAGE_CALCULATION_TIME]
-    -ccs|--coverage_calculation_sambamba                Path to sambamba [$COVERAGE_CALCULATION_SAMBAMBA]
-    -ccb|--coverage_calculation_bed                     Path to bed file [$COVERAGE_CALCULATION_BED]
-    -ccss|--coverage_calculation_sambamba_settings      Sambamba settings [$COVERAGE_CALCULATION_SAMBAMBA_SETTINGS]
+    -cct|--coverage_calculation_threads                  Number of threads [$COVERAGE_CALCULATION_THREADS]
+    -cchv|--coverage_calculation_h_vmem                  Coverage calculation memory [$COVERAGE_CALCULATION_MEM]
+    -cchr|--coverage_calculation_h_rt                    Coverage calculation time [$COVERAGE_CALCULATION_TIME]
+    -ccs|--coverage_calculation_sambamba                 Path to sambamba [$COVERAGE_CALCULATION_SAMBAMBA]
+    -ccb|--coverage_calculation_bed                      Path to bed file [$COVERAGE_CALCULATION_BED]
+    -ccss|--coverage_calculation_sambamba_settings       Sambamba settings [$COVERAGE_CALCULATION_SAMBAMBA_SETTINGS]
 
 SV_CALLING
     -svt|--sv_threads                                    Number of threads [$SV_THREADS]
     -svhv|--sv_h_vmem                                    SV calling memory [$SV_MEM]
     -svhr|--sv_h_rt                                      SV calling time [$SV_TIME]
-    -svc|--sv_config		                                 Path to config file [$SV_CONFIG]
-    -svs|--sv_sambamba	                                 Path to sambamba [$SV_SAMBAMBA]
+    -svc|--sv_config                                     Path to config file [$SV_CONFIG]
+    -svs|--sv_sambamba                                   Path to sambamba [$SV_SAMBAMBA]
 
 VCF_FILTER
     -vfhv|--vcf_filter_h_vmem                            VCF filter memory [$VCF_FILTER_MEM]
@@ -52,17 +55,17 @@ VCF_FILTER
 VCF_SPLIT
     -vshv|--vcf_split_h_vmem                             VCF split memory [$VCF_SPLIT_MEM]
     -vshr|--vcf_split_h_rt                               VCF split time [$VCF_SPLIT_TIME]
-    -vsl|--vcf_split_lines		                           Number of lines per split [$VCF_SPLIT_LINES]
+    -vsl|--vcf_split_lines                               Number of lines per split [$VCF_SPLIT_LINES]
 
 CREATE_BED_ANNOTATION
     -cbahv|--create_bed_annotation_h_vmem                Create BED memory [$CREATE_BED_ANNOTATION_MEM]
     -cbahr|--create_bed_annotation_h_rt                  Create BED time [$CREATE_BED_ANNOTATION_TIME]
 
 BED_ANNOTATION
-    -bahv|--bad_annotation_h_vmem                        BED annotation memory [$BED_ANNOTATION_MEM]
-    -bahr|--bad_annotation_h_rt                          BED annotation time [$BED_ANNOTATION_TIME]
-    -baf|--bed_annotation_files	                         Path to the directory with the feature bed files [$BED_ANNOTATION_FILES]
-    -bas|--bed_annotation_script	                       Path to get_closest_feature.py script [$BED_ANNOTATION_SCRIPT]
+    -bahv|--bed_annotation_h_vmem                        BED annotation memory [$BED_ANNOTATION_MEM]
+    -bahr|--bed_annotation_h_rt                          BED annotation time [$BED_ANNOTATION_TIME]
+    -baf|--bed_annotation_files                          Path to the directory with the feature bed files [$BED_ANNOTATION_FILES]
+    -bas|--bed_annotation_script                         Path to get_closest_feature.py script [$BED_ANNOTATION_SCRIPT]
 
 BED_ANNOTATION MERGE
     -bamhv|--bed_annotation_merge_h_vmem                 Merge annotation memory [$BED_ANNOTATION_MERGE_MEM]
@@ -79,6 +82,7 @@ DB FILTER
     -dbhv|--db_h_vmem                                    DB filter memory [$DB_MEM]
     -dbhr|--db_h_rt                                      DB filter time [$DB_TIME]
     -dbf|--db_flank                                      Database filter flank [$DB_FLANK]
+    -dbse|--db_sample_exclusion                          List of samples to exclusion from the SHARC database (e.g '[Sample1,Sample2]') [$DB_EXCLUSION]
 
 DB MERGE
     -dbmhv|--db_merge_h_vmem                             Merge DB annotation memory [$DB_MERGE_MEM]
@@ -90,17 +94,16 @@ SHARC_FILTER
     -sfq|--sharc_filter_query                            SHARC Filter query [$SHARC_FILTER_QUERY]
 
 ICGC_FILTER
-    -ifhv|icgc_filter_h_vmem                             ICGC filter memory [$ICGC_FILTER_MEM]
-    -ifhr|icgc_filter_h_rt                               ICGC filter time [$ICGC_FILTER_TIME]
-    -ifc|icgc_filter_cancer_type                         ICGC filter cancer type [$ICGC_FILTER_CANCER_TYPE]
-    -iff|icgc_filter_flank                               ICGC filter flank [$ICGC_FILTER_FLANK]
-    -ifp|icgc_filter_support                             ICGC filter support [$ICGC_FILTER_SUPPORT]
-    -ifs|icgc_filter_script                              Path to Gene_annotation_ICGC.py [$ICGC_FILTER_SCRIPT]
+    -ifhv|--icgc_filter_h_vmem                           ICGC filter memory [$ICGC_FILTER_MEM]
+    -ifhr|--icgc_filter_h_rt                             ICGC filter time [$ICGC_FILTER_TIME]
+    -iff|--icgc_filter_flank                             ICGC filter flank [$ICGC_FILTER_FLANK]
+    -ifp|--icgc_filter_support                           ICGC filter support [$ICGC_FILTER_SUPPORT]
+    -ifs|--icgc_filter_script                            Path to Gene_annotation_ICGC.py [$ICGC_FILTER_SCRIPT]
 
 SOMATIC_RANKING
-    -srhv|somatic_ranking_h_vmem                         Somatic ranking memory [$ICGC_FILTER_MEM]
-    -srhr|somatic_ranking_h_rt                           Somatic ranking time [$ICGC_FILTER_TIME]
-    -srs|somatic_ranking_script                          Path to somatic_ranking.py [$ICGC_FILTER_SCRIPT]
+    -srhv|--somatic_ranking_h_vmem                       Somatic ranking memory [$ICGC_FILTER_MEM]
+    -srhr|--somatic_ranking_h_rt                         Somatic ranking time [$ICGC_FILTER_TIME]
+    -srs|--somatic_ranking_script                        Path to somatic_ranking.py [$ICGC_FILTER_SCRIPT]
 
 VCF_TO_FASTA
     -v2fhv|--vcf_fasta_h_vmem                            VCF to FASTA memory [$VCF_FASTA_MEM]
@@ -128,9 +131,9 @@ VCF PRIMER FILTER
     -vpfs|--vcf_primer_filter_script                     Path to vcf_primer_filter.py [$VCF_PRIMER_FILTER_SCRIPT]
 
 PRIMER_RANKING
-    -rphv|primer_ranking_h_vmem                          Primer ranking memory [$PRIMER_RANKING_MEM]
-    -rphr|primer_ranking_h_rt                            Primer ranking time [$PRIMER_RANKING_TIME]
-    -rps|primer_ranking_script                           Path to primer ranking.py [$PRIMER_RANKING_SCRIPT]
+    -prhv|--primer_ranking_h_vmem                        Primer ranking memory [$PRIMER_RANKING_MEM]
+    -prhr|--primer_ranking_h_rt                          Primer ranking time [$PRIMER_RANKING_TIME]
+    -prs|--primer_ranking_script                         Path to primer ranking.py [$PRIMER_RANKING_SCRIPT]
 
 "
 exit
@@ -139,7 +142,8 @@ exit
 POSITIONAL=()
 
 # GENERAL DEFAULTS
-SHARCDIR='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/'
+SHARCDIR=$(dirname ${BASH_SOURCE[0]})
+#SHARCDIR='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/'
 VENV=$SHARCDIR/venv/bin/activate
 STEPSDIR=$SHARCDIR/steps
 SCRIPTSDIR=$SHARCDIR/scripts
@@ -215,6 +219,7 @@ DB_MEM=2G
 DB_TIME=0:5:0
 DB_TYPES=("REFDB" "SHARCDB")
 DB_FLANK=100
+DB_EXCLUSION=None
 
 # DB_MERGE
 DB_MERGE_MEM=2G
@@ -228,7 +233,6 @@ SHARC_FILTER_QUERY='grep "PREDICT_LABEL=1" | grep -v "SHARCDBFILTER" | grep -v "
 #ICGC FILTER DEFAULTS
 ICGC_FILTER_MEM=10G
 ICGC_FILTER_TIME=0:10:0
-ICGC_FILTER_CANCER_TYPE="Prostate"
 ICGC_FILTER_FLANK=200
 ICGC_FILTER_SUPPORT=0.05
 ICGC_FILTER_SCRIPT=$SCRIPTSDIR/gene_annotation_ICGC.py
@@ -285,6 +289,11 @@ do
     ;;
     -m|--mail)
     MAIL="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -c|--cancer_type)
+    ICGC_FILTER_CANCER_TYPE="$2"
     shift # past argument
     shift # past value
     ;;
@@ -548,6 +557,11 @@ do
     shift # past argument
     shift # past value
     ;;
+    -dbse|--db_sample_exclusion)
+    DB_EXCLUSION="$2"
+    shift # past argument
+    shift # past value
+    ;;
 # DB_MERGE OPTIONS
     -dbmhv|--db_merge_h_vmem)
     DB_MERGE_MEM="$2"
@@ -583,11 +597,6 @@ do
     ;;
     -ifhr|--icgc_filter_h_rt)
     ICGC_FILTER_TIME="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    -ifc|--icgc_filter_cancer_type)
-    ICGC_FILTER_CANCER_TYPE="$2"
     shift # past argument
     shift # past value
     ;;
@@ -743,7 +752,7 @@ do
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 if [ -z $FASTQDIR ]; then
-  echo "Missing -f|--fastq parameter"
+  echo "Missing -f|--fastqdir parameter"
   usage
 elif [ -z $MAIL ]; then
   echo "Missing -m|--mail parameter"
@@ -774,7 +783,7 @@ if [ ! $OUTNAME ]; then
   fi
 fi
 
-RAND=$(cat /dev/urandom | tr -cd 'a-f0-9' | head -c 5)
+RAND=$(cat /dev/urandom | tr -cd 'a-zA-Z0-9' | head -c 5)
 NUMBER_OF_FASTQ_FILES=$(ls -l $FASTQDIR/*.fastq | wc -l)
 
 MAPPING_DIR=$OUTPUTDIR/mapping/minimap2
@@ -1324,6 +1333,9 @@ for DB in ${DB_TYPES[@]|}; do
   if [ $DB == 'SHARCDB' ]; then
     DB_SCRIPT='/hpc/cog_bioinf/kloosterman/users/mroosmalen/vcf-explorer/sharc_database/vcfexplorer.py'
   fi
+  if [ -e $DB_OUT.done ]; then
+    continue
+  fi
 
 cat << EOF > $DB_SH
 #!/bin/bash
@@ -1346,10 +1358,19 @@ cat << EOF >> $DB_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $RF_OUT.done ]; then
-    bash $STEPSDIR/database_filter.sh -v $RF_OUT -o $DB_OUT -e $VENV -f $DB_FLANK -n $DB_NAME -db $DB_SCRIPT
+    bash $STEPSDIR/database_filter.sh -v $RF_OUT -o $DB_OUT -e $VENV -f $DB_FLANK -n $DB_NAME -db $DB_SCRIPT -se $DB_EXCLUSION
 
     sed -i s/DB_Count/${DB}_Count/g $DB_OUT
     sed -i s/DB_Frequency/${DB}_Frequency/g $DB_OUT
+
+    NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $RF_OUT | wc -l | grep -oP "(^\d+)")
+    NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $DB_OUT | wc -l | grep -oP "(^\d+)")
+
+    if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
+        touch $DB_OUT.done
+    else
+        echo "The number of lines in the random forest vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the db vcf file (\$NUMBER_OF_LINES_VCF_2)" >&2
+    fi
 fi
 
 echo \`date\`: Done
@@ -1538,18 +1559,23 @@ echo \`date\`: Running on \`uname -n\`
 
 if [ -e $ICGC_FILTER_OUT.done ]; then
 EOF
-if [ $VCF_FASTA_MARK = true ]; then
+if [ "$VCF_FASTA_MASK" = true ]; then
 cat << EOF >> $VCF_FASTA_SH
-    bash $STEPSDIR/vcf_fasta.sh -v $ICGC_FILTER_OUT -vff $VCF_FASTA_FLANK -vfo $VCF_FASTA_OFFSET -vfs $VCF_FASTA_SCRIPT -vfm -o $VCF_FASTA_OUT -e $VENV
+    bash $STEPSDIR/vcf_fasta.sh -v $SOMATIC_RANKING_OUT -vff $VCF_FASTA_FLANK -vfo $VCF_FASTA_OFFSET -vfs $VCF_FASTA_SCRIPT -vfm -o $VCF_FASTA_OUT -e $VENV
 EOF
 else
 cat << EOF >> $VCF_FASTA_SH
-    bash $STEPSDIR/vcf_fasta.sh -v $ICGC_FILTER_OUT -vff $VCF_FASTA_FLANK -vfo $VCF_FASTA_OFFSET -vfs $VCF_FASTA_SCRIPT -o $VCF_FASTA_OUT -e $VENV
+    bash $STEPSDIR/vcf_fasta.sh -v $SOMATIC_RANKING_OUT -vff $VCF_FASTA_FLANK -vfo $VCF_FASTA_OFFSET -vfs $VCF_FASTA_SCRIPT -o $VCF_FASTA_OUT -e $VENV
 EOF
 fi
 cat << EOF >> $VCF_FASTA_SH
-
-  touch $VCF_FASTA_OUT.done
+  NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $SOMATIC_RANKING_OUT | wc -l | grep -oP "(^\d+)")
+  NUMBER_OF_LINES_FILE_2=\$(grep "^Record" $VCF_FASTA_ERR | wc -l | grep -oP "(^\d+)")
+  if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_FILE_2" ]; then
+      touch $VCF_FASTA_OUT.done
+  else
+      echo "The number of lines in the Somatic ranking vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the vcf fasta err file (\$NUMBER_OF_LINES_FILE_2)" >&2
+  fi
 fi
 
 echo \`date\`: Done
@@ -1566,7 +1592,7 @@ cat << EOF > $PRIMER_DESIGN_SH
 #$ -l h_vmem=$PRIMER_DESIGN_MEM
 #$ -l h_rt=$PRIMER_DESIGN_TIME
 #$ -e $PRIMER_DESIGN_ERR
-#$ -o $PRIMER_DESIGN_ERR
+#$ -o $PRIMER_DESIGN_LOG
 EOF
 
 if [ ! -z $VCF_FASTA_JOBNAME ]; then
@@ -1800,7 +1826,7 @@ if [ \$CHECK_BOOL = true ]; then
       rm -rf $MAPPING_TMP_DIR
     fi
 fi
-tail -16 $CHECK_SHARC_OUT | mail -s 'SHARC_${OUTNAME}_${RAND}' $MAIL
+tac $CHECK_SHARC_OUT | sed '/^Qsub/q' | tac | mail -s 'SHARC_${OUTNAME}_${RAND}' $MAIL
 
 echo \`date\`: Done
 
@@ -1823,8 +1849,10 @@ fi
 if [ ! -e $VCF_FILTER_OUT.done ]; then
   vcf_filter
 fi
-if [ ! -e $BED_ANNOTATION_MERGE_OUT.done ]; then
+if [ ! -e $VCF_SPLIT_OUT.done ]; then
   vcf_split
+fi
+if [ ! -e $BED_ANNOTATION_MERGE_OUT.done ]; then
   create_bed_annotation_jobs
   annotation_merge
 fi

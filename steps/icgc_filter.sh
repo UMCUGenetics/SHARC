@@ -92,3 +92,5 @@ echo `date`: Running on `uname -n`
 . $VENV
 
 python $SCRIPT -c $TYPE -f $FLANK -s $SUPPORT -o $OUTPUT $VCF
+
+echo `date`: Done

@@ -19,8 +19,17 @@ mask = args.mask
 
 def mask_seq( chr, start, end, strand, seq ):
     ext = "/overlap/region/human/"+str(chr)+":"+str(start)+"-"+str(end)+":"+str(strand)+"?feature=variation"
-    request = requests.get(server+ext, headers={ "Content-Type" : "application/json"})
-    data = json.loads(request.text)
+
+    TRY=1
+    while TRY <= 10:
+        try:
+            request = requests.get(server+ext, headers={ "Content-Type" : "application/json"})
+            data = json.loads(request.text)
+            break
+        except:
+            if TRY==10:
+                sys.exit("Error while requesting from ENSEMBL database after " +TRY+ "tries")
+        TRY +=1
 
     masked_seq = seq
 
@@ -34,8 +43,17 @@ def mask_seq( chr, start, end, strand, seq ):
 
 def get_seq(chr, start, end, strand):
     ext = "/info/assembly/homo_sapiens/"+str(chr)
-    request = requests.get(server+ext, headers={ "Content-Type" : "application/json"})
-    data = json.loads(request.text)
+    TRY=1
+    while TRY <= 10:
+        try:
+            request = requests.get(server+ext, headers={ "Content-Type" : "application/json"})
+            data = json.loads(request.text)
+            break
+        except:
+            if TRY==10:
+                sys.exit("Error while requesting from ENSEMBL database after " +TRY+ "tries")
+        TRY +=1
+
     chrlength = data['length']
 
     ext = "/sequence/region/human/"+str(chr)+":"+str(start)+"-"+str(end)+":"+str(strand)+""
@@ -46,8 +64,16 @@ def get_seq(chr, start, end, strand):
         sys.stderr.write("\tFailed to get seq, because ENDPOS is too close to END of the chr\n")
         seq = False
     else:
-        request = requests.get(server+ext, headers={ "Content-Type" : "application/json"})
-        data = json.loads(request.text)
+        TRY=1
+        while TRY <= 10:
+            try:
+                request = requests.get(server+ext, headers={ "Content-Type" : "application/json"})
+                data = json.loads(request.text)
+                break
+            except:
+                if TRY==10:
+                    sys.exit("Error while requesting from ENSEMBL database after " +TRY+ "tries")
+            TRY +=1
         seq = data['seq']
         if mask:
             seq = mask_seq(chr, start, end, strand, seq )
