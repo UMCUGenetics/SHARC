@@ -12,6 +12,7 @@ Optional parameters:
     -f|--flank  Flank to increase filter search space [$FLANK]
     -n|--name   Filter name [$NAME]
     -db|--db_script  Path to vcfexplorer.py [$DB_SCRIPT]
+    -se|--sample_exclusion []
 "
 }
 
@@ -23,6 +24,7 @@ DB_SCRIPT='/hpc/cog_bioinf/kloosterman/users/mroosmalen/vcf-explorer/vcf-explore
 NAME='DBFILTER'
 FLANK=10
 OUTPUT='/dev/stdout'
+SAMPLE_EXCLUSION=None
 
 while [[ $# -gt 0 ]]
 do
@@ -63,6 +65,11 @@ do
     shift # past argument
     shift # past value
     ;;
+    -se|--sample_exclusion)
+    SAMPLE_EXCLUSION="$2"
+    shift # past argument
+    shift # past value
+    ;;
     *)    # unknown option
     POSITIONAL+=("$1") # save it in an array for later
     shift # past argument
@@ -80,7 +87,11 @@ echo `date`: Running on `uname -n`
 
 . $VENV
 
-python $DB_SCRIPT filter -n $NAME -f $FLANK $VCF > $OUTPUT
+if [ $SAMPLE_EXCLUSION != None]; then
+  python $DB_SCRIPT filter -n $NAME -f $FLANK -q SAMPLE?=$SAMPLE_EXCLUSION $VCF > $OUTPUT
+else
+  python $DB_SCRIPT filter -n $NAME -f $FLANK $VCF > $OUTPUT
+fi
 
 deactivate
 

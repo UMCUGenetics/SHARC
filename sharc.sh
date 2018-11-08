@@ -82,6 +82,7 @@ DB FILTER
     -dbhv|--db_h_vmem                                    DB filter memory [$DB_MEM]
     -dbhr|--db_h_rt                                      DB filter time [$DB_TIME]
     -dbf|--db_flank                                      Database filter flank [$DB_FLANK]
+    -dbse|--db_sample_exclusion                          List of samples to exclusion from the SHARC database (e.g '[Sample1,Sample2]') [$DB_EXCLUSION]
 
 DB MERGE
     -dbmhv|--db_merge_h_vmem                             Merge DB annotation memory [$DB_MERGE_MEM]
@@ -218,6 +219,7 @@ DB_MEM=2G
 DB_TIME=0:5:0
 DB_TYPES=("REFDB" "SHARCDB")
 DB_FLANK=100
+DB_EXCLUSION=None
 
 # DB_MERGE
 DB_MERGE_MEM=2G
@@ -552,6 +554,11 @@ do
     ;;
     -dbf|--db_flank)
     DB_FLANK="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -dbse|--db_sample_exclusion)
+    DB_EXCLUSION="$2"
     shift # past argument
     shift # past value
     ;;
@@ -1351,7 +1358,7 @@ cat << EOF >> $DB_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $RF_OUT.done ]; then
-    bash $STEPSDIR/database_filter.sh -v $RF_OUT -o $DB_OUT -e $VENV -f $DB_FLANK -n $DB_NAME -db $DB_SCRIPT
+    bash $STEPSDIR/database_filter.sh -v $RF_OUT -o $DB_OUT -e $VENV -f $DB_FLANK -n $DB_NAME -db $DB_SCRIPT -se $DB_EXCLUSION
 
     sed -i s/DB_Count/${DB}_Count/g $DB_OUT
     sed -i s/DB_Frequency/${DB}_Frequency/g $DB_OUT
