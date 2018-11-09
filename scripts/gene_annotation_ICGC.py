@@ -195,7 +195,7 @@ def overlap_ENSEMBLE(REGIONS):
 
 def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
 
-##################################### Top 1500 genes with occurence > given occurence
+##################################### Top genes with occurence > given occurence
     SIGNIFICANT_GENES={}
 
     SERVER_GENES="https://dcc.icgc.org/api/v1/genes"
@@ -292,7 +292,7 @@ def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
                 break
         SLICE+=100
 
-##################################### Genes with occurence > 0.1 and cancer_census is true
+##################################### Genes with occurence > 0.2 and cancer_census is true
     SERVER_GENES="https://dcc.icgc.org/api/v1/genes"
     FILTERS_GENES={
                     "donor":{"primarySite":{"is":[CANCER_TYPE]}
@@ -377,8 +377,8 @@ def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
         SLICE+=100
 
 ##################################### Return
-    print (len(SIGNIFICANT_GENES))
     print ("Selecting genes with a minimal occurrence of "+str(MIN_SUPPORT)+"/"+str(CASE_NUMBER)+"="+str(float(MIN_SUPPORT)*CASE_NUMBER))
+    print (len(SIGNIFICANT_GENES))
     return SIGNIFICANT_GENES
 
 
