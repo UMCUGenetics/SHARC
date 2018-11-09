@@ -1557,7 +1557,7 @@ fi
 cat << EOF >> $VCF_FASTA_SH
 echo \`date\`: Running on \`uname -n\`
 
-if [ -e $ICGC_FILTER_OUT.done ]; then
+if [ -e $SOMATIC_RANKING_OUT.done ]; then
 EOF
 if [ "$VCF_FASTA_MASK" = true ]; then
 cat << EOF >> $VCF_FASTA_SH
