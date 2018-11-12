@@ -348,7 +348,7 @@ def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
     MAX_GENES=int(requests.get("https://dcc.icgc.org/api/v1/genes/count?filters="+FILTERS_GENES).text)
     CASE_NUMBER=int(requests.get("https://dcc.icgc.org/api/v1/donors/count?filters="+FILTERS_GENES).text)
 
-    SLICE=0
+    SLICE=1
     while SLICE < MAX_GENES:
         PARAMS_GENES = {
             "filters": FILTERS_GENES,
