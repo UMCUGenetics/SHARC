@@ -1111,7 +1111,10 @@ echo \`date\`: Running on \`uname -n\`
 
 if [ -e $MAPPING_MERGE_OUT.done ]; then
     bash $STEPSDIR/nanosv.sh -b $MAPPING_MERGE_OUT -t $SV_THREADS -s $SV_SAMBAMBA -v $VENV -c $SV_CONFIG -o $SV_OUT
-    touch $SV_OUT.done
+    NUMBER_OF_LINES_VCF=\$(grep -v "^#" $SV_OUT | wc -l | grep -oP "(^\d+)")
+    if [ $NUMBER_OF_LINES_VCF != 0 ]; then
+      touch $SV_OUT.done
+    fi
 fi
 
 echo \`date\`: Done
