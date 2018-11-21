@@ -134,7 +134,7 @@ def overlap_ENSEMBLE(REGIONS):
     SERVER="https://GRCh37.rest.ensembl.org/overlap/region/"
     SPECIES="human"
     HEADERS={"Content-Type" : "application/json"}
-
+    print("Ensembl overlap")
     for ID in REGIONS:
         REGIONS[ID]["GENES"]=[]
 
@@ -159,6 +159,7 @@ def overlap_ENSEMBLE(REGIONS):
 
                 if isinstance(data, list):
                     REGIONS[ID]["GENES"]=REGIONS[ID]["GENES"]+[gene["id"] for gene in data]
+
                 else:
                     print ("Error:", data["error"])
                     REGIONS[ID]["GENES"]=[]
@@ -189,13 +190,14 @@ def overlap_ENSEMBLE(REGIONS):
                         REGIONS[ID]["GENES"]=[]
                         break
                     TEMP_SV_START=TEMP_SV_END
+            print (ID, "\t", REGIONS[ID]["GENES"])
     return REGIONS
 
 #############################################   CREATE A LIST OF CANCER GENES FROM THE ICGC DATABASE   #############################################
 
 def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
 
-##################################### Top 1500 genes with occurence > given occurence
+##################################### Top genes with occurence > given occurence
     SIGNIFICANT_GENES={}
 
     SERVER_GENES="https://dcc.icgc.org/api/v1/genes"
@@ -208,7 +210,7 @@ def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
     MAX_GENES=int(requests.get("https://dcc.icgc.org/api/v1/genes/count?filters="+FILTERS_GENES).text)
     CASE_NUMBER=int(requests.get("https://dcc.icgc.org/api/v1/donors/count?filters="+FILTERS_GENES).text)
 
-    SLICE=0
+    SLICE=1
     STOP=False
 
     while SLICE < MAX_GENES and STOP==False :
@@ -257,7 +259,7 @@ def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
     MAX_GENES=int(requests.get("https://dcc.icgc.org/api/v1/genes/count?filters="+FILTERS_GENES).text)
     CASE_NUMBER=int(requests.get("https://dcc.icgc.org/api/v1/donors/count?filters="+FILTERS_GENES).text)
 
-    SLICE=0
+    SLICE=1
     STOP=False
     while SLICE < MAX_GENES and STOP==False:
         PARAMS_GENES = {
@@ -292,7 +294,7 @@ def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
                 break
         SLICE+=100
 
-##################################### Genes with occurence > 0.1 and cancer_census is true
+##################################### Genes with occurence > 0.2 and cancer_census is true
     SERVER_GENES="https://dcc.icgc.org/api/v1/genes"
     FILTERS_GENES={
                     "donor":{"primarySite":{"is":[CANCER_TYPE]}
@@ -304,7 +306,7 @@ def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
     MAX_GENES=int(requests.get("https://dcc.icgc.org/api/v1/genes/count?filters="+FILTERS_GENES).text)
     CASE_NUMBER=int(requests.get("https://dcc.icgc.org/api/v1/donors/count?filters="+FILTERS_GENES).text)
 
-    SLICE=0
+    SLICE=1
     STOP=False
     while SLICE < MAX_GENES and STOP==False:
         PARAMS_GENES = {
@@ -348,7 +350,7 @@ def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
     MAX_GENES=int(requests.get("https://dcc.icgc.org/api/v1/genes/count?filters="+FILTERS_GENES).text)
     CASE_NUMBER=int(requests.get("https://dcc.icgc.org/api/v1/donors/count?filters="+FILTERS_GENES).text)
 
-    SLICE=0
+    SLICE=1
     while SLICE < MAX_GENES:
         PARAMS_GENES = {
             "filters": FILTERS_GENES,
@@ -377,8 +379,8 @@ def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
         SLICE+=100
 
 ##################################### Return
-    print (len(SIGNIFICANT_GENES))
     print ("Selecting genes with a minimal occurrence of "+str(MIN_SUPPORT)+"/"+str(CASE_NUMBER)+"="+str(float(MIN_SUPPORT)*CASE_NUMBER))
+    print (len(SIGNIFICANT_GENES))
     return SIGNIFICANT_GENES
 
 
@@ -432,9 +434,9 @@ def vcf_annotate_ICGC_genes_overlap(INPUT_VCF, OUTPUT_VCF, ICGC_GENES, REGIONS):
 
             if len(OVERLAP)>0:
                 if "SVLEN" in record.INFO:
-                    print (str(record.ID) + "\t" + str(record.ALT[0]) + "\t" + str(record.INFO["SVLEN"][0]) + "\t" + str(len(OVERLAP)) + "\t" + str(SCORE) + "\t" + str(",".join(GENE)))
+                    print (str(record.ID) + "\t" + str(record.ALT[0]) + "\t" + str(record.INFO["SVLEN"][0]) + "\t" + str(len(OVERLAP)) + "\t" + str(len(GENE)) + "\t" + str(SCORE) + "\t" + str(",".join(GENE)))
                 else:
-                    print (str(record.ID) + "\t" + "TRANS" + "\t" + "NA" + "\t" + str(len(OVERLAP)) + "\t" + str(SCORE) + "\t" + str(",".join(GENE)))
+                    print (str(record.ID) + "\t" + "TRANS" + "\t" + "NA" + "\t" + str(len(GENE)) + "\t" + str(SCORE) + "\t" + str(",".join(GENE)))
                 count_pros_overlap+=1
             elif len(REGIONS[record.ID]["GENES"])>0:
                 count_gene_no_overlap+=1

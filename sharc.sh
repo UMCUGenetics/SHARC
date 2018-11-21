@@ -1111,7 +1111,10 @@ echo \`date\`: Running on \`uname -n\`
 
 if [ -e $MAPPING_MERGE_OUT.done ]; then
     bash $STEPSDIR/nanosv.sh -b $MAPPING_MERGE_OUT -t $SV_THREADS -s $SV_SAMBAMBA -v $VENV -c $SV_CONFIG -o $SV_OUT
-    touch $SV_OUT.done
+    NUMBER_OF_LINES_VCF=\$(grep -v "^#" $SV_OUT | wc -l | grep -oP "(^\d+)")
+    if [ $NUMBER_OF_LINES_VCF != 0 ]; then
+      touch $SV_OUT.done
+    fi
 fi
 
 echo \`date\`: Done
@@ -1557,7 +1560,7 @@ fi
 cat << EOF >> $VCF_FASTA_SH
 echo \`date\`: Running on \`uname -n\`
 
-if [ -e $ICGC_FILTER_OUT.done ]; then
+if [ -e $SOMATIC_RANKING_OUT.done ]; then
 EOF
 if [ "$VCF_FASTA_MASK" = true ]; then
 cat << EOF >> $VCF_FASTA_SH
@@ -1678,9 +1681,9 @@ cat << EOF > $PRIMER_RANKING_SH
 #$ -e $PRIMER_RANKING_ERR
 #$ -o $PRIMER_RANKING_LOG
 EOF
-if [ ! -z $PRIMER_DESIGN_JOBNAME ]; then
+if [ ! -z $PRIMER_DESIGN_JOBNAME ]  && [ ! -z $SOMATIC_RANKING_JOBNAME ]; then
 cat << EOF >> $PRIMER_RANKING_SH
-#$ -hold_jid $PRIMER_DESIGN_JOBNAME
+#$ -hold_jid $PRIMER_DESIGN_JOBNAME,$SOMATIC_RANKING_JOBNAME
 EOF
 fi
 cat << EOF >> $PRIMER_RANKING_SH
@@ -1713,9 +1716,9 @@ cat << EOF > $CHECK_SHARC_SH
 
 EOF
 
-if [ ! -z $VCF_PRIMER_FILTER_JOBNAME ] && [ ! -z $PRIMER_RANKING_SH ]; then
+if [ ! -z $VCF_PRIMER_FILTER_JOBNAME ] && [ ! -z $PRIMER_RANKING_JOBNAME ]; then
 cat << EOF >> $CHECK_SHARC_SH
-#$ -hold_jid $VCF_PRIMER_FILTER_JOBNAME,$PRIMER_RANKING_SH
+#$ -hold_jid $VCF_PRIMER_FILTER_JOBNAME,$PRIMER_RANKING_JOBNAME
 EOF
 fi
 
