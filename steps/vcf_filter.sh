@@ -16,7 +16,7 @@ POSITIONAL=()
 
 # DEFAULTS
 THREADS=1
-FILTER='$7 == "PASS" && $1 !~ /[XYMT]/ && $5 !~ /[XYMT]/ && $5 != "<INS>"'
+FILTER='$7 == "PASS" && $1 !~ /(X|Y|MT):/ && $5 !~ /(X|Y|MT):/ && $5 != "<INS>"'
 OUTPUT='/dev/stdout'
 
 while [[ $# -gt 0 ]]
