@@ -22,7 +22,7 @@ with open(VCF, "r") as input:
         if "SVLEN" in record.INFO:
             record_info["SVLEN"]=record.INFO["SVLEN"][0]
         else:
-            record_info["SVLEN"]=10000
+            record_info["SVLEN"]=0
         if isinstance(record.ALT[0], pyvcf.model._Breakend):
             if record.ALT[0].chr == record.CHROM:
                 if record.ALT[0].orientation == False and record.ALT[0].remoteOrientation == True:
@@ -39,8 +39,11 @@ with open(VCF, "r") as input:
         record_info["ICGC_SCORE"]=record.INFO['ICGC_SCORE']
         primers.append(record_info)
 
+    score_6=[]
     score_5=[]
+    score_4=[]
     score_3=[]
+    score_2=[]
     score_1=[]
     score_0=[]
 
@@ -48,35 +51,71 @@ with open(VCF, "r") as input:
 
     for primer in primers:
         if int(primer["ICGC_SCORE"]) >= 5:
-            score_5.append(primer)
+            if int(primer["SVLEN"]) >= 200000:
+                score_6.append(primer)
+            elif int(primer["SVLEN"]) >= 1000:
+                score_5.append(primer)
+            elif int(primer["SVLEN"]) == 0:
+                score_5.append(primer)
+            else:
+                score_0.append(primer)
+
         elif int(primer["ICGC_SCORE"]) >= 3:
-            score_3.append(primer)
+            if int(primer["SVLEN"]) >= 200000:
+                score_5.append(primer)
+            elif int(primer["SVLEN"]) >= 1000:
+                score_4.append(primer)
+            elif int(primer["SVLEN"]) == 0:
+                score_3.append(primer)
+            else:
+                score_0.append(primer)
+
         elif int(primer["ICGC_SCORE"]) >= 1:
-            score_1.append(primer)
+            if int(primer["SVLEN"]) >= 200000:
+                score_4.append(primer)
+            elif int(primer["SVLEN"]) >= 50000:
+                score_3.append(primer)
+            elif int(primer["SVLEN"]) >= 1000:
+                score_2.append(primer)
+            elif int(primer["SVLEN"]) == 0:
+                score_1.append(primer)
+            else:
+                score_0.append(primer)
+
         elif int(primer["ICGC_SCORE"]) == 0:
-            score_0.append(primer)
+            if int(primer["SVLEN"]) >= 200000:
+                score_3.append(primer)
+            elif int(primer["SVLEN"]) >= 50000:
+                score_2.append(primer)
+            elif int(primer["SVLEN"]) >= 1000:
+                score_1.append(primer)
+            elif int(primer["SVLEN"]) == 0:
+                score_0.append(primer)
+            else:
+                score_0.append(primer)
+        else:
+            print ("ERROR: UNKNOWN SCORE")
 
-    for primer in score_0:
-        if int(primer["SVLEN"]) > 10000:
-            score_1.append(primer)
-            score_0.remove(primer)
-    for primer in score_1:
-        if int(primer["SVLEN"]) > 1000000:
-            score_3.append(primer)
-            score_1.remove(primer)
-        # for primer in score_3:
-        #     if int(primer["SVLEN"]) > 10000000:
-        #         score_5.append(primer)
-        #         score_3.remove(primer)
 
+    score_6=sorted(score_6, key=lambda k: k['SVLEN'], reverse=True)
     score_5=sorted(score_5, key=lambda k: k['SVLEN'], reverse=True)
+    score_4=sorted(score_4, key=lambda k: k['SVLEN'], reverse=True)
     score_3=sorted(score_3, key=lambda k: k['SVLEN'], reverse=True)
+    score_2=sorted(score_2, key=lambda k: k['SVLEN'], reverse=True)
     score_1=sorted(score_1, key=lambda k: k['SVLEN'], reverse=True)
     score_0=sorted(score_0, key=lambda k: k['SVLEN'], reverse=True)
 
-    SCORE=score_5+score_3+score_1+score_0
+    SCORE=score_6+score_5+score_4+score_3+score_2+score_1+score_0
+    SVLEN_SCORE=sorted(primers, key=lambda k: k['SVLEN'], reverse=True)
 
+    # for i in range(20):
+    #     rank=SCORE[i]
+    #     len=SVLEN_SCORE[i]
+    #     print (str(rank["ID"]) + "\t" + str(len["ID"]))
     for primer in SCORE:
+        print (str(primer["ID"]) + "\t" + str(primer["TYPE"]) + "\t" + str(primer["ICGC_SCORE"]) + "\t" + str(primer["SVLEN"]))
+    for primer in SVLEN_SCORE:
+        continue
         print (str(primer["ID"]) + "\t" + str(primer["TYPE"]) + "\t" + str(primer["ICGC_SCORE"]) + "\t" + str(primer["SVLEN"]))
 
 with open(VCF, "r") as vcf_input, open(RANKED_VCF, "w") as vcf_output:
