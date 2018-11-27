@@ -28,7 +28,7 @@ def mask_seq( chr, start, end, strand, seq ):
             break
         except:
             if TRY==10:
-                sys.exit("Error while requesting from ENSEMBL database after "+str(TRY)" tries")
+                sys.exit("Error while requesting from ENSEMBL database after "+str(TRY)+" tries")
         TRY +=1
 
     masked_seq = seq
@@ -51,7 +51,7 @@ def get_seq(chr, start, end, strand):
             break
         except:
             if TRY==10:
-                sys.exit("Error while requesting from ENSEMBL database after "+str(TRY)" tries")
+                sys.exit("Error while requesting from ENSEMBL database after "+str(TRY)+" tries")
         TRY +=1
 
     chrlength = data['length']
@@ -72,7 +72,7 @@ def get_seq(chr, start, end, strand):
                 break
             except:
                 if TRY==10:
-                    sys.exit("Error while requesting from ENSEMBL database after "+str(TRY)" tries")
+                    sys.exit("Error while requesting from ENSEMBL database after "+str(TRY)+" tries")
             TRY +=1
         seq = data['seq']
         if mask:
