@@ -154,7 +154,7 @@ def overlap_ENSEMBLE(REGIONS):
                         break
                     except:
                         if TRY==10:
-                            sys.exit("Error while requesting from ENSEMBL database after", TRY,  "tries")
+                            sys.exit("Error while requesting from ENSEMBL database after "+str(TRY)" tries")
                         TRY +=1
 
                 if isinstance(data, list):
@@ -180,7 +180,7 @@ def overlap_ENSEMBLE(REGIONS):
                             break
                         except:
                             if TRY==10:
-                                sys.exit("Error while requesting from ENSEMBL database after", TRY,  "tries")
+                                sys.exit("Error while requesting from ENSEMBL database after "+str(TRY)" tries")
                             TRY +=1
 
                     if isinstance(data, list):
@@ -231,7 +231,7 @@ def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
                 break
             except:
                 if TRY==10:
-                    sys.exit("Error while requesting from ENSEMBL database after", TRY,  "tries")
+                    sys.exit("Error while requesting from ENSEMBL database after "+str(TRY)" tries")
                 TRY +=1
 
 
@@ -279,7 +279,7 @@ def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
                 break
             except:
                 if TRY==10:
-                    sys.exit("Error while requesting from ENSEMBL database after", TRY,  "tries")
+                    sys.exit("Error while requesting from ENSEMBL database after "+str(TRY)" tries")
                 TRY +=1
 
         for HIT in hits_genes:
@@ -326,7 +326,7 @@ def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
                 break
             except:
                 if TRY==10:
-                    sys.exit("Error while requesting from ENSEMBL database after", TRY,  "tries")
+                    sys.exit("Error while requesting from ENSEMBL database after "+str(TRY)" tries")
                 TRY +=1
 
         for HIT in hits_genes:
@@ -369,7 +369,7 @@ def create_ICGC_gene_list(CANCER_TYPE, MIN_SUPPORT):
                 break
             except:
                 if TRY==10:
-                    sys.exit("Error while requesting from ENSEMBL database after", TRY,  "tries")
+                    sys.exit("Error while requesting from ENSEMBL database after "+str(TRY)" tries")
                 TRY +=1
 
         for HIT in hits_genes:
