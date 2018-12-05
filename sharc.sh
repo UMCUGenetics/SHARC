@@ -82,7 +82,7 @@ DB FILTER
     -dbhv|--db_h_vmem                                    DB filter memory [$DB_MEM]
     -dbhr|--db_h_rt                                      DB filter time [$DB_TIME]
     -dbf|--db_flank                                      Database filter flank [$DB_FLANK]
-    -dbse|--db_sample_exclusion                          List of samples to exclusion from the SHARC database (e.g '[Sample1,Sample2]') [$DB_EXCLUSION]
+    -dbse|--db_sample_exclusion                          List of samples to exclude from the SHARC database (e.g '[Sample1,Sample2]') [$DB_EXCLUSION]
 
 DB MERGE
     -dbmhv|--db_merge_h_vmem                             Merge DB annotation memory [$DB_MERGE_MEM]
@@ -1112,7 +1112,7 @@ echo \`date\`: Running on \`uname -n\`
 if [ -e $MAPPING_MERGE_OUT.done ]; then
     bash $STEPSDIR/nanosv.sh -b $MAPPING_MERGE_OUT -t $SV_THREADS -s $SV_SAMBAMBA -v $VENV -c $SV_CONFIG -o $SV_OUT
     NUMBER_OF_LINES_VCF=\$(grep -v "^#" $SV_OUT | wc -l | grep -oP "(^\d+)")
-    if [ $NUMBER_OF_LINES_VCF != 0 ]; then
+    if [ \$NUMBER_OF_LINES_VCF != 0 ]; then
       touch $SV_OUT.done
     fi
 fi
