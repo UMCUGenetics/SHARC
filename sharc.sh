@@ -93,17 +93,19 @@ SHARC_FILTER
     -sfhr|--sharc_filter_h_rt                            SHARC Filter time [$SHARC_FILTER_TIME]
     -sfq|--sharc_filter_query                            SHARC Filter query [$SHARC_FILTER_QUERY]
 
-ICGC_FILTER
-    -ifhv|--icgc_filter_h_vmem                           ICGC filter memory [$ICGC_FILTER_MEM]
-    -ifhr|--icgc_filter_h_rt                             ICGC filter time [$ICGC_FILTER_TIME]
-    -iff|--icgc_filter_flank                             ICGC filter flank [$ICGC_FILTER_FLANK]
-    -ifp|--icgc_filter_support                           ICGC filter support [$ICGC_FILTER_SUPPORT]
-    -ifs|--icgc_filter_script                            Path to Gene_annotation_ICGC.py [$ICGC_FILTER_SCRIPT]
+DATABASE ANNOTATION
+    -dahv|--database_annotation_h_vmem                   Database annotation memory [$DATABASE_ANNOTATION_MEM]
+    -dahr|--database_annotation_h_rt                     Database annotation time [$DATABASE_ANNOTATION_TIME]
+    -daf|--database_annotation_flank                     Database annotation flank [$DATABASE_ANNOTATION_FLANK]
+    -dap|--database_annotation_support                   Database annotation support [$DATABASE_ANNOTATION_SUPPORT]
+    -das|--database_annotation_script                    Path to database_annotation.py [$DATABASE_ANNOTATION_SCRIPT]
+    -daid|--database_annotation_icgc_directory           Path to ICGC database directory [$DATABASE_ANNOTATION_ICGC_DIRECTORY]
+    -dacb|--database_annotation_cosmic_breakpoints       Path to COSMIC database .csv file [$DATABASE_ANNOTATION_COSMIC_BREAKPOINTS]
 
 SOMATIC_RANKING
-    -srhv|--somatic_ranking_h_vmem                       Somatic ranking memory [$ICGC_FILTER_MEM]
-    -srhr|--somatic_ranking_h_rt                         Somatic ranking time [$ICGC_FILTER_TIME]
-    -srs|--somatic_ranking_script                        Path to somatic_ranking.py [$ICGC_FILTER_SCRIPT]
+    -srhv|--somatic_ranking_h_vmem                       Somatic ranking memory [$SOMATIC_RANKING_MEM]
+    -srhr|--somatic_ranking_h_rt                         Somatic ranking time [$SOMATIC_RANKING_TIME]
+    -srs|--somatic_ranking_script                        Path to somatic_ranking.py [$SOMATIC_RANKING_SCRIPT]
 
 VCF_TO_FASTA
     -v2fhv|--vcf_fasta_h_vmem                            VCF to FASTA memory [$VCF_FASTA_MEM]
@@ -231,11 +233,12 @@ SHARC_FILTER_TIME=0:5:0
 SHARC_FILTER_QUERY='grep "PREDICT_LABEL=1" | grep -v "SHARCDBFILTER" | grep -v "REFDBFILTER"'
 
 #ICGC FILTER DEFAULTS
-ICGC_FILTER_MEM=10G
-ICGC_FILTER_TIME=0:10:0
-ICGC_FILTER_FLANK=200
-ICGC_FILTER_SUPPORT=0.05
-ICGC_FILTER_SCRIPT=$SCRIPTSDIR/gene_annotation_ICGC.py
+DATABASE_ANNOTATION_MEM=10G
+DATABASE_ANNOTATION_TIME=0:10:0
+DATABASE_ANNOTATION_FLANK=200
+DATABASE_ANNOTATION_SCRIPT=$SCRIPTSDIR/database_annotation.py
+DATABASE_ANNOTATION_ICGC_DIRECTORY=$FILESDIR
+DATABASE_ANNOTATION_COSMIC_BREAKPOINTS=None
 
 #SOMATIC_RANKING VCF_FASTA_DEFAULTS
 SOMATIC_RANKING_MEM=2G
@@ -257,6 +260,7 @@ PRIMER_DESIGN_DIR='/hpc/cog_bioinf/kloosterman/tools/primer3/'
 PRIMER_DESIGN_BINDIR=$PRIMER_DESIGN_DIR/primers
 PRIMER_DESIGN_PCR_TYPE='single'
 PRIMER_DESIGN_TILLING_PARAMS=''
+
 #PRIMER_DESIGN_PSR='30-230'
 PRIMER_DESIGN_PSR='60-100'
 PRIMER_DESIGN_GUIX_PROFILE=$PRIMER_DESIGN_DIR/emboss/.guix-profile
@@ -293,7 +297,7 @@ do
     shift # past value
     ;;
     -c|--cancer_type)
-    ICGC_FILTER_CANCER_TYPE="$2"
+    DATABASE_ANNOTATION_CANCER_TYPE="$2"
     shift # past argument
     shift # past value
     ;;
@@ -589,29 +593,39 @@ do
     shift # past argument
     shift # past value
     ;;
-# ICGC_FILTER OPTIONS
-    -ifhv|--icgc_filter_h_vmem)
-    ICGC_FILTER_MEM="$2"
+# DATABASE_ANNOTATION OPTIONS
+    -dahv|--database_annotation_h_vmem)
+    DATABASE_ANNOTATION_MEM="$2"
     shift # past argument
     shift # past value
     ;;
-    -ifhr|--icgc_filter_h_rt)
-    ICGC_FILTER_TIME="$2"
+    -dahr|--database_annotation_h_rt)
+    DATABASE_ANNOTATION_TIME="$2"
     shift # past argument
     shift # past value
     ;;
-    -iff|--icgc_filter_flank)
-    ICGC_FILTER_FLANK="$2"
+    -daf|--database_annotation_flank)
+    DATABASE_ANNOTATION_FLANK="$2"
     shift # past argument
     shift # past value
     ;;
-    -ifp|--icgc_filter_support)
-    ICGC_FILTER_SUPPORT="$2"
+    -dap|--database_annotation_support)
+    DATABASE_ANNOTATION_SUPPORT="$2"
     shift # past argument
     shift # past value
     ;;
-    -ifs|--icgc_filter_script)
-    ICGC_FILTER_SCRIPT="$2"
+    -das|--database_annotation_script)
+    DATABASE_ANNOTATION_SCRIPT="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -daid|--database_annotation_icgc_directory)
+    DATABASE_ANNOTATION_ICGC_DIRECTORY="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -dacb|--database_annotation_cosmic_breakpoints)
+    DATABASE_ANNOTATION_COSMIC_BREAKPOINTS="$2"
     shift # past argument
     shift # past value
     ;;
@@ -861,17 +875,18 @@ SHARC_FILTER_ERR=$LOGDIR/$SHARC_FILTER_JOBNAME.err
 SHARC_FILTER_LOG=$LOGDIR/$SHARC_FILTER_JOBNAME.log
 SHARC_FILTER_OUT=$SV_TMP_DIR/$(basename ${SV_OUT/.vcf/.SHARC.vcf})
 
-ICGC_FILTER_JOBNAME=$OUTNAME'_ICGCFILTER_'$RAND
-ICGC_FILTER_SH=$JOBDIR/$ICGC_FILTER_JOBNAME.sh
-ICGC_FILTER_ERR=$LOGDIR/$ICGC_FILTER_JOBNAME.err
-ICGC_FILTER_LOG=$LOGDIR/$ICGC_FILTER_JOBNAME.log
-ICGC_FILTER_OUT=$SV_TMP_DIR/$(basename ${SHARC_FILTER_OUT/.vcf/.ICGC.vcf})
+DATABASE_ANNOTATION_JOBNAME=$OUTNAME'_DATABASE_ANNOTATION_'$RAND
+DATABASE_ANNOTATION_SH=$JOBDIR/$DATABASE_ANNOTATION_JOBNAME.sh
+DATABASE_ANNOTATION_ERR=$LOGDIR/$DATABASE_ANNOTATION_JOBNAME.err
+DATABASE_ANNOTATION_LOG=$LOGDIR/$DATABASE_ANNOTATION_JOBNAME.log
+DATABASE_ANNOTATION_ATTRIBUTES_OUT=$RF_OUTDIR/$(basename ${SHARC_FILTER_OUT/.vcf/.rf})
+DATABASE_ANNOTATION_OUT=$SV_TMP_DIR/$(basename ${SHARC_FILTER_OUT/.vcf/.ICGC.vcf})
 
 SOMATIC_RANKING_JOBNAME=$OUTNAME'_SOMATICRANKING_'$RAND
 SOMATIC_RANKING_SH=$JOBDIR/$SOMATIC_RANKING_JOBNAME.sh
 SOMATIC_RANKING_ERR=$LOGDIR/$SOMATIC_RANKING_JOBNAME.err
 SOMATIC_RANKING_LOG=$LOGDIR/$SOMATIC_RANKING_JOBNAME.log
-SOMATIC_RANKING_OUT=$SV_DIR/$(basename ${ICGC_FILTER_OUT/.vcf/.SHARC_RANK.vcf})
+SOMATIC_RANKING_OUT=$SV_DIR/$(basename ${DATABASE_ANNOTATION_OUT/.vcf/.SHARC_RANK.vcf})
 
 VCF_FASTA_OUTDIR=$OUTPUTDIR/primers
 VCF_FASTA_JOBNAME=$OUTNAME'_VCFFASTA_'$RAND
@@ -1468,34 +1483,34 @@ EOF
 qsub $SHARC_FILTER_SH
 }
 
-icgc_filter() {
-cat << EOF > $ICGC_FILTER_SH
+database_annotation() {
+cat << EOF > $DATABASE_ANNOTATION_SH
 #!/bin/bash
 
-#$ -N $ICGC_FILTER_JOBNAME
+#$ -N $DATABASE_ANNOTATION_JOBNAME
 #$ -cwd
-#$ -l h_vmem=$ICGC_FILTER_MEM
-#$ -l h_rt=$ICGC_FILTER_TIME
-#$ -e $ICGC_FILTER_ERR
-#$ -o $ICGC_FILTER_LOG
+#$ -l h_vmem=$DATABASE_ANNOTATION_MEM
+#$ -l h_rt=$DATABASE_ANNOTATION_TIME
+#$ -e $DATABASE_ANNOTATION_ERR
+#$ -o $DATABASE_ANNOTATION_LOG
 EOF
 
 if [ ! -z $SHARC_FILTER_JOBNAME ]; then
-cat << EOF >> $ICGC_FILTER_SH
+cat << EOF >> $DATABASE_ANNOTATION_SH
 #$ -hold_jid $SHARC_FILTER_JOBNAME
 EOF
 fi
 
-cat << EOF >> $ICGC_FILTER_SH
+cat << EOF >> $DATABASE_ANNOTATION_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $SHARC_FILTER_OUT.done ]; then
-    bash $STEPSDIR/icgc_filter.sh -v $SHARC_FILTER_OUT -s $ICGC_FILTER_SCRIPT -c $ICGC_FILTER_CANCER_TYPE -f $ICGC_FILTER_FLANK -p $ICGC_FILTER_SUPPORT -o $ICGC_FILTER_OUT
+    bash $STEPSDIR/database_annotation.sh -v $SHARC_FILTER_OUT -s $DATABASE_ANNOTATION_SCRIPT -c $DATABASE_ANNOTATION_CANCER_TYPE -f $DATABASE_ANNOTATION_FLANK -p $DATABASE_ANNOTATION_SUPPORT -id $DATABASE_ANNOTATION_ICGC_DIRECTORY -cb $DATABASE_ANNOTATION_COSMIC_BREAKPOINTS -o $DATABASE_ANNOTATION_OUT -a $DATABASE_ANNOTATION_ATTRIBUTES_OUT
     NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $SHARC_FILTER_OUT | wc -l | grep -oP "(^\d+)")
-    NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $ICGC_FILTER_OUT | wc -l | grep -oP "(^\d+)")
+    NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $DATABASE_ANNOTATION_OUT | wc -l | grep -oP "(^\d+)")
 
     if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
-        touch $ICGC_FILTER_OUT.done
+        touch $DATABASE_ANNOTATION_OUT.done
     else
         echo "The number of lines in the SHARC vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the ICGC file (\$NUMBER_OF_LINES_VCF_2)" >&2
     fi
@@ -1503,7 +1518,7 @@ fi
 
 echo \`date\`: Done
 EOF
-qsub $ICGC_FILTER_SH
+qsub $DATABASE_ANNOTATION_SH
 }
 
 somatic_ranking() {
@@ -1516,16 +1531,16 @@ cat << EOF > $SOMATIC_RANKING_SH
 #$ -e $SOMATIC_RANKING_ERR
 #$ -o $SOMATIC_RANKING_LOG
 EOF
-if [ ! -z $ICGC_FILTER_JOBNAME ]; then
+if [ ! -z $DATABASE_ANNOTATION_JOBNAME ]; then
 cat << EOF >> $SOMATIC_RANKING_SH
-#$ -hold_jid $ICGC_FILTER_JOBNAME
+#$ -hold_jid $DATABASE_ANNOTATION_JOBNAME
 EOF
 fi
 cat << EOF >> $SOMATIC_RANKING_SH
 echo \`date\`: Running on \`uname -n\`
-if [ -e $ICGC_FILTER_OUT.done ]; then
-    bash $STEPSDIR/somatic_ranking.sh -v $ICGC_FILTER_OUT -s $SOMATIC_RANKING_SCRIPT -o $SOMATIC_RANKING_OUT -e $VENV
-    NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $ICGC_FILTER_OUT | wc -l | grep -oP "(^\d+)")
+if [ -e $DATABASE_ANNOTATION_OUT.done ]; then
+    bash $STEPSDIR/somatic_ranking.sh -v $DATABASE_ANNOTATION_OUT -s $SOMATIC_RANKING_SCRIPT -o $SOMATIC_RANKING_OUT -f $DATABASE_ANNOTATION_ATTRIBUTES_OUT -e $VENV
+    NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $DATABASE_ANNOTATION_OUT | wc -l | grep -oP "(^\d+)")
     NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $SOMATIC_RANKING_OUT | wc -l | grep -oP "(^\d+)")
     if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
         touch $SOMATIC_RANKING_OUT.done
@@ -1656,7 +1671,7 @@ cat << EOF >> $VCF_PRIMER_FILTER_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $PRIMER_DESIGN_OUT.done ]; then
-    bash $STEPSDIR/vcf_primer_filter.sh -v $ICGC_FILTER_OUT -p $PRIMER_DESIGN_OUT -o $VCF_PRIMER_FILTER_OUT -s $VCF_PRIMER_FILTER_SCRIPT
+    bash $STEPSDIR/vcf_primer_filter.sh -v $DATABASE_ANNOTATION_OUT -p $PRIMER_DESIGN_OUT -o $VCF_PRIMER_FILTER_OUT -s $VCF_PRIMER_FILTER_SCRIPT
     NUMBER_OF_LINES_PRIMER=\$(cat $PRIMER_DESIGN_OUT | wc -l | grep -oP "(^\d+)")
     NUMBER_OF_LINES_VCF=\$(grep -v "^#" $VCF_PRIMER_FILTER_OUT | wc -l | grep -oP "(^\d+)")
     if [ "\$NUMBER_OF_LINES_PRIMER" == "\$NUMBER_OF_LINES_VCF" ]; then
@@ -1785,10 +1800,10 @@ else
     CHECK_BOOL=false
 fi
 
-if [ -e $ICGC_FILTER_OUT.done ]; then
-    echo "ICGC filter: Done" >> $CHECK_SHARC_OUT
+if [ -e $DATABASE_ANNOTATION_OUT.done ]; then
+    echo "Database annotation: Done" >> $CHECK_SHARC_OUT
 else
-    echo "ICGC filter: Fail" >> $CHECK_SHARC_OUT
+    echo "Database annotation: Fail" >> $CHECK_SHARC_OUT
     CHECK_BOOL=false
 fi
 if [ -e $SOMATIC_RANKING_OUT.done ]; then
@@ -1869,8 +1884,8 @@ fi
 if [ ! -e $SHARC_FILTER_OUT.done ]; then
   sharc_filter
 fi
-if [ ! -e $ICGC_FILTER_OUT.done ]; then
-  icgc_filter
+if [ ! -e $DATABASE_ANNOTATION_OUT.done ]; then
+  database_annotation
 fi
 if [ ! -e $SOMATIC_RANKING_OUT.done ]; then
   somatic_ranking
