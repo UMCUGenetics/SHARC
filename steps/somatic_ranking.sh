@@ -4,6 +4,7 @@ usage() {
 echo "
 Required parameters:
     -v|--vcf		    Path to vcf file
+    -f|--FEATURES   Path to vcf features file
 
 Optional parameters:
     -h|--help       Shows help
@@ -34,6 +35,11 @@ do
     shift # past argument
     shift # past value
     ;;
+    -f|--features)
+    FEATURES="$2"
+    shift # past argument
+    shift # past value
+    ;;
     -o|--output)
     OUTPUT="$2"
     shift # past argument
@@ -57,10 +63,15 @@ if [ -z $VCF ]; then
     echo "Missing -v|--vcf parameter"
     usage
     exit
+
+elif [ -z $FEATURES ]; then
+  echo "Missing -f|--features parameter"
+  usage
+  exit
 fi
 
 echo `date`: Running on `uname -n`
 
 . $VENV
 
-python $SCRIPT -v $VCF -o $OUTPUT
+python $SCRIPT -v $VCF -o $OUTPUT -f $FEATURES
