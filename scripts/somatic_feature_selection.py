@@ -15,7 +15,7 @@ parser.add_argument('vcf', help='VCF file')
 parser.add_argument('-c', '--cancertype', type=str, help='Primary site of cancer', required=True)
 parser.add_argument('-o', '--output', type=str, help='VCF output file', required=True)
 parser.add_argument('-f', '--flank', type=int, help='Number of basepairs that are taken around a breakpoint', required=True)
-parser.add_argument('-a', '--attributes_output', type=str, help='Output for random forest', required=True)
+parser.add_argument('-a', '--attributes_output', type=str, help='Output for feature table', required=True)
 parser.add_argument('-id', '--icgc_database_directory', type=str, help='Directory containing ICGC files for genes in cancer types', required=True)
 
 #OPTIONAL ARGUMENTS
