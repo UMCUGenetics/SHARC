@@ -75,3 +75,5 @@ echo `date`: Running on `uname -n`
 . $VENV
 
 python $SCRIPT -v $VCF -o $OUTPUT -f $FEATURES
+
+echo `date`: Done
