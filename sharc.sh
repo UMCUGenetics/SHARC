@@ -964,6 +964,9 @@ mkdir -p $DB_OUTDIR
 if [ ! -d $DB_OUTDIR ]; then
     exit
 fi
+if [ -d $PRIMER_DESIGN_TMP_DIR ];then
+  rm -r $PRIMER_DESIGN_TMP_DIR
+fi
 mkdir -p $PRIMER_DESIGN_TMP_DIR
 if [ ! -d $PRIMER_DESIGN_TMP_DIR ]; then
     exit
@@ -1603,12 +1606,6 @@ qsub $VCF_FASTA_SH
 }
 
 primer_design() {
-
-if [ -d $PRIMER_DESIGN_TMP_DIR ];then
-  echo "D exists"
-  rm -r $PRIMER_DESIGN_TMP_DIR
-fi
-
 cat << EOF > $PRIMER_DESIGN_SH
 #!/bin/bash
 
