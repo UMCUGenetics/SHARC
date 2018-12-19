@@ -1,4 +1,4 @@
--somatic_feature_selection-sfs#!/bin/bash
+#!/bin/bash
 
 usage() {
 echo "
