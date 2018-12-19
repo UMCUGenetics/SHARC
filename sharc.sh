@@ -93,11 +93,11 @@ SHARC_FILTER
     -sfhr|--sharc_filter_h_rt                            SHARC Filter time [$SHARC_FILTER_TIME]
     -sfq|--sharc_filter_query                            SHARC Filter query [$SHARC_FILTER_QUERY]
 
-DATABASE ANNOTATION
-    -sfshv|--somatic_feature_selection_h_vmem                   Database annotation memory [$SOMATIC_FEATURE_SELECTION_MEM]
-    -sfshr|--somatic_feature_selection_h_rt                     Database annotation time [$SOMATIC_FEATURE_SELECTION_TIME]
-    -daf|--somatic_feature_selection_flank                     Database annotation flank [$SOMATIC_FEATURE_SELECTION_FLANK]
-    -sfsp|--somatic_feature_selection_support                   Database annotation support [$SOMATIC_FEATURE_SELECTION_SUPPORT]
+SOMATIC FEATURE SELECTION
+    -sfshv|--somatic_feature_selection_h_vmem                   Somatic feature selection memory [$SOMATIC_FEATURE_SELECTION_MEM]
+    -sfshr|--somatic_feature_selection_h_rt                     Somatic feature selection time [$SOMATIC_FEATURE_SELECTION_TIME]
+    -sfsf|--somatic_feature_selection_flank                     Somatic feature selection flank [$SOMATIC_FEATURE_SELECTION_FLANK]
+    -sfsp|--somatic_feature_selection_support                   Somatic feature selection support [$SOMATIC_FEATURE_SELECTION_SUPPORT]
     -sfss|--somatic_feature_selection_script                    Path to somatic_feature_selection.py [$SOMATIC_FEATURE_SELECTION_SCRIPT]
     -sfsid|--somatic_feature_selection_icgc_directory           Path to ICGC database directory [$SOMATIC_FEATURE_SELECTION_ICGC_DIRECTORY]
     -sfscb|--somatic_feature_selection_cosmic_breakpoints       Path to COSMIC database .csv file [$SOMATIC_FEATURE_SELECTION_COSMIC_BREAKPOINTS]
@@ -1802,9 +1802,9 @@ else
 fi
 
 if [ -e $SOMATIC_FEATURE_SELECTION_OUT.done ]; then
-    echo "Database annotation: Done" >> $CHECK_SHARC_OUT
+    echo "Somatic feature selection: Done" >> $CHECK_SHARC_OUT
 else
-    echo "Database annotation: Fail" >> $CHECK_SHARC_OUT
+    echo "Somatic feature selection: Fail" >> $CHECK_SHARC_OUT
     CHECK_BOOL=false
 fi
 if [ -e $SOMATIC_RANKING_OUT.done ]; then
