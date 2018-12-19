@@ -1603,6 +1603,11 @@ qsub $VCF_FASTA_SH
 }
 
 primer_design() {
+
+if [ -d $PRIMER_DESIGN_TMP_DIR/ ];then
+  rm -r $PRIMER_DESIGN_TMP_DIR/
+fi
+
 cat << EOF > $PRIMER_DESIGN_SH
 #!/bin/bash
 
@@ -1627,6 +1632,7 @@ cd $PRIMER_DESIGN_TMP_DIR
 
 if [ -e $VCF_FASTA_OUT.done ]; then
 EOF
+
 if [ -z $PRIMER_DESIGN_TILLING_PARAMS ]; then
 cat << EOF >> $PRIMER_DESIGN_SH
     bash $STEPSDIR/primer_design.sh -f $VCF_FASTA_OUT -pdb $PRIMER_DESIGN_BINDIR -pdpt $PRIMER_DESIGN_PCR_TYPE -pdp $PRIMER_DESIGN_PSR -pdgp $PRIMER_DESIGN_GUIX_PROFILE -pdpc $PRIMER_DESIGN_PRIMER3_CORE -pdm $PRIMER_DESIGN_MISPRIMING
