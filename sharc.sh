@@ -1,4 +1,4 @@
-#!/bin/bash
+-somatic_feature_selection-sfs#!/bin/bash
 
 usage() {
 echo "
@@ -94,13 +94,13 @@ SHARC_FILTER
     -sfq|--sharc_filter_query                            SHARC Filter query [$SHARC_FILTER_QUERY]
 
 DATABASE ANNOTATION
-    -dahv|--database_annotation_h_vmem                   Database annotation memory [$DATABASE_ANNOTATION_MEM]
-    -dahr|--database_annotation_h_rt                     Database annotation time [$DATABASE_ANNOTATION_TIME]
-    -daf|--database_annotation_flank                     Database annotation flank [$DATABASE_ANNOTATION_FLANK]
-    -dap|--database_annotation_support                   Database annotation support [$DATABASE_ANNOTATION_SUPPORT]
-    -das|--database_annotation_script                    Path to database_annotation.py [$DATABASE_ANNOTATION_SCRIPT]
-    -daid|--database_annotation_icgc_directory           Path to ICGC database directory [$DATABASE_ANNOTATION_ICGC_DIRECTORY]
-    -dacb|--database_annotation_cosmic_breakpoints       Path to COSMIC database .csv file [$DATABASE_ANNOTATION_COSMIC_BREAKPOINTS]
+    -sfshv|--somatic_feature_selection_h_vmem                   Database annotation memory [$SOMATIC_FEATURE_SELECTION_MEM]
+    -sfshr|--somatic_feature_selection_h_rt                     Database annotation time [$SOMATIC_FEATURE_SELECTION_TIME]
+    -daf|--somatic_feature_selection_flank                     Database annotation flank [$SOMATIC_FEATURE_SELECTION_FLANK]
+    -sfsp|--somatic_feature_selection_support                   Database annotation support [$SOMATIC_FEATURE_SELECTION_SUPPORT]
+    -sfss|--somatic_feature_selection_script                    Path to somatic_feature_selection.py [$SOMATIC_FEATURE_SELECTION_SCRIPT]
+    -sfsid|--somatic_feature_selection_icgc_directory           Path to ICGC database directory [$SOMATIC_FEATURE_SELECTION_ICGC_DIRECTORY]
+    -sfscb|--somatic_feature_selection_cosmic_breakpoints       Path to COSMIC database .csv file [$SOMATIC_FEATURE_SELECTION_COSMIC_BREAKPOINTS]
 
 SOMATIC_RANKING
     -srhv|--somatic_ranking_h_vmem                       Somatic ranking memory [$SOMATIC_RANKING_MEM]
@@ -233,12 +233,13 @@ SHARC_FILTER_TIME=0:5:0
 SHARC_FILTER_QUERY='grep "PREDICT_LABEL=1" | grep -v "SHARCDBFILTER" | grep -v "REFDBFILTER"'
 
 #ICGC FILTER DEFAULTS
-DATABASE_ANNOTATION_MEM=10G
-DATABASE_ANNOTATION_TIME=0:10:0
-DATABASE_ANNOTATION_FLANK=200
-DATABASE_ANNOTATION_SCRIPT=$SCRIPTSDIR/database_annotation.py
-DATABASE_ANNOTATION_ICGC_DIRECTORY=$FILESDIR
-DATABASE_ANNOTATION_COSMIC_BREAKPOINTS=None
+SOMATIC_FEATURE_SELECTION_MEM=10G
+SOMATIC_FEATURE_SELECTION_TIME=0:10:0
+SOMATIC_FEATURE_SELECTION_FLANK=200
+SOMATIC_FEATURE_SELECTION_SCRIPT=$SCRIPTSDIR/somatic_feature_selection.py
+SOMATIC_FEATURE_SELECTION_ICGC_DIRECTORY=$FILESDIR
+SOMATIC_FEATURE_SELECTION_COSMIC_BREAKPOINTS=None
+SOMATIC_FEATURE_SELECTION_SUPPORT=None
 
 #SOMATIC_RANKING VCF_FASTA_DEFAULTS
 SOMATIC_RANKING_MEM=2G
@@ -297,7 +298,7 @@ do
     shift # past value
     ;;
     -c|--cancer_type)
-    DATABASE_ANNOTATION_CANCER_TYPE="$2"
+    SOMATIC_FEATURE_SELECTION_CANCER_TYPE="$2"
     shift # past argument
     shift # past value
     ;;
@@ -593,39 +594,39 @@ do
     shift # past argument
     shift # past value
     ;;
-# DATABASE_ANNOTATION OPTIONS
-    -dahv|--database_annotation_h_vmem)
-    DATABASE_ANNOTATION_MEM="$2"
+# SOMATIC_FEATURE_SELECTION OPTIONS
+    -sfshv|--somatic_feature_selection_h_vmem)
+    SOMATIC_FEATURE_SELECTION_MEM="$2"
     shift # past argument
     shift # past value
     ;;
-    -dahr|--database_annotation_h_rt)
-    DATABASE_ANNOTATION_TIME="$2"
+    -sfshr|--somatic_feature_selection_h_rt)
+    SOMATIC_FEATURE_SELECTION_TIME="$2"
     shift # past argument
     shift # past value
     ;;
-    -daf|--database_annotation_flank)
-    DATABASE_ANNOTATION_FLANK="$2"
+    -sfsf|--somatic_feature_selection_flank)
+    SOMATIC_FEATURE_SELECTION_FLANK="$2"
     shift # past argument
     shift # past value
     ;;
-    -dap|--database_annotation_support)
-    DATABASE_ANNOTATION_SUPPORT="$2"
+    -sfsp|--somatic_feature_selection_support)
+    SOMATIC_FEATURE_SELECTION_SUPPORT="$2"
     shift # past argument
     shift # past value
     ;;
-    -das|--database_annotation_script)
-    DATABASE_ANNOTATION_SCRIPT="$2"
+    -sfss|--somatic_feature_selection_script)
+    SOMATIC_FEATURE_SELECTION_SCRIPT="$2"
     shift # past argument
     shift # past value
     ;;
-    -daid|--database_annotation_icgc_directory)
-    DATABASE_ANNOTATION_ICGC_DIRECTORY="$2"
+    -sfsid|--somatic_feature_selection_icgc_directory)
+    SOMATIC_FEATURE_SELECTION_ICGC_DIRECTORY="$2"
     shift # past argument
     shift # past value
     ;;
-    -dacb|--database_annotation_cosmic_breakpoints)
-    DATABASE_ANNOTATION_COSMIC_BREAKPOINTS="$2"
+    -sfscb|--somatic_feature_selection_cosmic_breakpoints)
+    SOMATIC_FEATURE_SELECTION_COSMIC_BREAKPOINTS="$2"
     shift # past argument
     shift # past value
     ;;
@@ -875,18 +876,18 @@ SHARC_FILTER_ERR=$LOGDIR/$SHARC_FILTER_JOBNAME.err
 SHARC_FILTER_LOG=$LOGDIR/$SHARC_FILTER_JOBNAME.log
 SHARC_FILTER_OUT=$SV_TMP_DIR/$(basename ${SV_OUT/.vcf/.SHARC.vcf})
 
-DATABASE_ANNOTATION_JOBNAME=$OUTNAME'_DATABASE_ANNOTATION_'$RAND
-DATABASE_ANNOTATION_SH=$JOBDIR/$DATABASE_ANNOTATION_JOBNAME.sh
-DATABASE_ANNOTATION_ERR=$LOGDIR/$DATABASE_ANNOTATION_JOBNAME.err
-DATABASE_ANNOTATION_LOG=$LOGDIR/$DATABASE_ANNOTATION_JOBNAME.log
-DATABASE_ANNOTATION_ATTRIBUTES_OUT=$RF_OUTDIR/$(basename ${SHARC_FILTER_OUT/.vcf/.rf})
-DATABASE_ANNOTATION_OUT=$SV_TMP_DIR/$(basename ${SHARC_FILTER_OUT/.vcf/.ICGC.vcf})
+SOMATIC_FEATURE_SELECTION_JOBNAME=$OUTNAME'_SOMATIC_FEATURE_SELECTION_'$RAND
+SOMATIC_FEATURE_SELECTION_SH=$JOBDIR/$SOMATIC_FEATURE_SELECTION_JOBNAME.sh
+SOMATIC_FEATURE_SELECTION_ERR=$LOGDIR/$SOMATIC_FEATURE_SELECTION_JOBNAME.err
+SOMATIC_FEATURE_SELECTION_LOG=$LOGDIR/$SOMATIC_FEATURE_SELECTION_JOBNAME.log
+SOMATIC_FEATURE_SELECTION_ATTRIBUTES_OUT=$RF_OUTDIR/$(basename ${SHARC_FILTER_OUT/.vcf/.rf})
+SOMATIC_FEATURE_SELECTION_OUT=$SV_TMP_DIR/$(basename ${SHARC_FILTER_OUT/.vcf/.ICGC.vcf})
 
 SOMATIC_RANKING_JOBNAME=$OUTNAME'_SOMATICRANKING_'$RAND
 SOMATIC_RANKING_SH=$JOBDIR/$SOMATIC_RANKING_JOBNAME.sh
 SOMATIC_RANKING_ERR=$LOGDIR/$SOMATIC_RANKING_JOBNAME.err
 SOMATIC_RANKING_LOG=$LOGDIR/$SOMATIC_RANKING_JOBNAME.log
-SOMATIC_RANKING_OUT=$SV_DIR/$(basename ${DATABASE_ANNOTATION_OUT/.vcf/.SHARC_RANK.vcf})
+SOMATIC_RANKING_OUT=$SV_DIR/$(basename ${SOMATIC_FEATURE_SELECTION_OUT/.vcf/.SHARC_RANK.vcf})
 
 VCF_FASTA_OUTDIR=$OUTPUTDIR/primers
 VCF_FASTA_JOBNAME=$OUTNAME'_VCFFASTA_'$RAND
@@ -1483,34 +1484,34 @@ EOF
 qsub $SHARC_FILTER_SH
 }
 
-database_annotation() {
-cat << EOF > $DATABASE_ANNOTATION_SH
+somatic_feature_selection() {
+cat << EOF > $SOMATIC_FEATURE_SELECTION_SH
 #!/bin/bash
 
-#$ -N $DATABASE_ANNOTATION_JOBNAME
+#$ -N $SOMATIC_FEATURE_SELECTION_JOBNAME
 #$ -cwd
-#$ -l h_vmem=$DATABASE_ANNOTATION_MEM
-#$ -l h_rt=$DATABASE_ANNOTATION_TIME
-#$ -e $DATABASE_ANNOTATION_ERR
-#$ -o $DATABASE_ANNOTATION_LOG
+#$ -l h_vmem=$SOMATIC_FEATURE_SELECTION_MEM
+#$ -l h_rt=$SOMATIC_FEATURE_SELECTION_TIME
+#$ -e $SOMATIC_FEATURE_SELECTION_ERR
+#$ -o $SOMATIC_FEATURE_SELECTION_LOG
 EOF
 
 if [ ! -z $SHARC_FILTER_JOBNAME ]; then
-cat << EOF >> $DATABASE_ANNOTATION_SH
+cat << EOF >> $SOMATIC_FEATURE_SELECTION_SH
 #$ -hold_jid $SHARC_FILTER_JOBNAME
 EOF
 fi
 
-cat << EOF >> $DATABASE_ANNOTATION_SH
+cat << EOF >> $SOMATIC_FEATURE_SELECTION_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $SHARC_FILTER_OUT.done ]; then
-    bash $STEPSDIR/database_annotation.sh -v $SHARC_FILTER_OUT -s $DATABASE_ANNOTATION_SCRIPT -c $DATABASE_ANNOTATION_CANCER_TYPE -f $DATABASE_ANNOTATION_FLANK -p $DATABASE_ANNOTATION_SUPPORT -id $DATABASE_ANNOTATION_ICGC_DIRECTORY -cb $DATABASE_ANNOTATION_COSMIC_BREAKPOINTS -o $DATABASE_ANNOTATION_OUT -a $DATABASE_ANNOTATION_ATTRIBUTES_OUT
+    bash $STEPSDIR/somatic_feature_selection.sh -v $SHARC_FILTER_OUT -s $SOMATIC_FEATURE_SELECTION_SCRIPT -c $SOMATIC_FEATURE_SELECTION_CANCER_TYPE -f $SOMATIC_FEATURE_SELECTION_FLANK -p $SOMATIC_FEATURE_SELECTION_SUPPORT -id $SOMATIC_FEATURE_SELECTION_ICGC_DIRECTORY -cb $SOMATIC_FEATURE_SELECTION_COSMIC_BREAKPOINTS -o $SOMATIC_FEATURE_SELECTION_OUT -a $SOMATIC_FEATURE_SELECTION_ATTRIBUTES_OUT
     NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $SHARC_FILTER_OUT | wc -l | grep -oP "(^\d+)")
-    NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $DATABASE_ANNOTATION_OUT | wc -l | grep -oP "(^\d+)")
+    NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $SOMATIC_FEATURE_SELECTION_OUT | wc -l | grep -oP "(^\d+)")
 
     if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
-        touch $DATABASE_ANNOTATION_OUT.done
+        touch $SOMATIC_FEATURE_SELECTION_OUT.done
     else
         echo "The number of lines in the SHARC vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the ICGC file (\$NUMBER_OF_LINES_VCF_2)" >&2
     fi
@@ -1518,7 +1519,7 @@ fi
 
 echo \`date\`: Done
 EOF
-qsub $DATABASE_ANNOTATION_SH
+qsub $SOMATIC_FEATURE_SELECTION_SH
 }
 
 somatic_ranking() {
@@ -1531,16 +1532,16 @@ cat << EOF > $SOMATIC_RANKING_SH
 #$ -e $SOMATIC_RANKING_ERR
 #$ -o $SOMATIC_RANKING_LOG
 EOF
-if [ ! -z $DATABASE_ANNOTATION_JOBNAME ]; then
+if [ ! -z $SOMATIC_FEATURE_SELECTION_JOBNAME ]; then
 cat << EOF >> $SOMATIC_RANKING_SH
-#$ -hold_jid $DATABASE_ANNOTATION_JOBNAME
+#$ -hold_jid $SOMATIC_FEATURE_SELECTION_JOBNAME
 EOF
 fi
 cat << EOF >> $SOMATIC_RANKING_SH
 echo \`date\`: Running on \`uname -n\`
-if [ -e $DATABASE_ANNOTATION_OUT.done ]; then
-    bash $STEPSDIR/somatic_ranking.sh -v $DATABASE_ANNOTATION_OUT -s $SOMATIC_RANKING_SCRIPT -o $SOMATIC_RANKING_OUT -f $DATABASE_ANNOTATION_ATTRIBUTES_OUT -e $VENV
-    NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $DATABASE_ANNOTATION_OUT | wc -l | grep -oP "(^\d+)")
+if [ -e $SOMATIC_FEATURE_SELECTION_OUT.done ]; then
+    bash $STEPSDIR/somatic_ranking.sh -v $SOMATIC_FEATURE_SELECTION_OUT -s $SOMATIC_RANKING_SCRIPT -o $SOMATIC_RANKING_OUT -f $SOMATIC_FEATURE_SELECTION_ATTRIBUTES_OUT -e $VENV
+    NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $SOMATIC_FEATURE_SELECTION_OUT | wc -l | grep -oP "(^\d+)")
     NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $SOMATIC_RANKING_OUT | wc -l | grep -oP "(^\d+)")
     if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
         touch $SOMATIC_RANKING_OUT.done
@@ -1671,7 +1672,7 @@ cat << EOF >> $VCF_PRIMER_FILTER_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $PRIMER_DESIGN_OUT.done ]; then
-    bash $STEPSDIR/vcf_primer_filter.sh -v $DATABASE_ANNOTATION_OUT -p $PRIMER_DESIGN_OUT -o $VCF_PRIMER_FILTER_OUT -s $VCF_PRIMER_FILTER_SCRIPT
+    bash $STEPSDIR/vcf_primer_filter.sh -v $SOMATIC_FEATURE_SELECTION_OUT -p $PRIMER_DESIGN_OUT -o $VCF_PRIMER_FILTER_OUT -s $VCF_PRIMER_FILTER_SCRIPT
     NUMBER_OF_LINES_PRIMER=\$(cat $PRIMER_DESIGN_OUT | wc -l | grep -oP "(^\d+)")
     NUMBER_OF_LINES_VCF=\$(grep -v "^#" $VCF_PRIMER_FILTER_OUT | wc -l | grep -oP "(^\d+)")
     if [ "\$NUMBER_OF_LINES_PRIMER" == "\$NUMBER_OF_LINES_VCF" ]; then
@@ -1800,7 +1801,7 @@ else
     CHECK_BOOL=false
 fi
 
-if [ -e $DATABASE_ANNOTATION_OUT.done ]; then
+if [ -e $SOMATIC_FEATURE_SELECTION_OUT.done ]; then
     echo "Database annotation: Done" >> $CHECK_SHARC_OUT
 else
     echo "Database annotation: Fail" >> $CHECK_SHARC_OUT
@@ -1884,8 +1885,8 @@ fi
 if [ ! -e $SHARC_FILTER_OUT.done ]; then
   sharc_filter
 fi
-if [ ! -e $DATABASE_ANNOTATION_OUT.done ]; then
-  database_annotation
+if [ ! -e $SOMATIC_FEATURE_SELECTION_OUT.done ]; then
+  somatic_feature_selection
 fi
 if [ ! -e $SOMATIC_RANKING_OUT.done ]; then
   somatic_ranking
