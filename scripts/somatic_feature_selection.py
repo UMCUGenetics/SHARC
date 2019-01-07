@@ -511,10 +511,10 @@ def overlap_COSMIC(REGIONS, COSMIC_BREAKPOINT_CSV, BREAKPOINT_FEATURES):
                     BREAKPOINT_FEATURES[int(ID)]["COSMIC_BREAKPOINT_OVERLAP"]=1
         elif len(regions)==2:
             for tra in TRA:
-                if ((regions[0]["Chrom"]== tra["Begin_chrom"] and abs(int(tra["Start"]) - int(regions[0]["Start"])+FLANK) < 1000) or
-                (regions[0]["Chrom"]== tra["End_chrom"] and abs(int(tra["End"]) - int(regions[0]["Start"])+FLANK) < 1000) or
-                (regions[1]["Chrom"]== tra["Begin_chrom"] and abs(int(tra["Start"]) - int(regions[1]["Start"])+FLANK) < 1000) or
-                (regions[1]["Chrom"]== tra["End_chrom"] and abs(int(tra["End"]) - int(regions[1]["Start"])+FLANK) < 1000)):
+                if ((regions[0]["Chrom"]== tra["Begin_chrom"] and abs(int(tra["Start"]) - int(regions[0]["Start"])) < 200) or
+                (regions[0]["Chrom"]== tra["End_chrom"] and abs(int(tra["End"]) - int(regions[0]["Start"])) < 200) or
+                (regions[1]["Chrom"]== tra["Begin_chrom"] and abs(int(tra["Start"]) - int(regions[1]["Start"])) < 200) or
+                (regions[1]["Chrom"]== tra["End_chrom"] and abs(int(tra["End"]) - int(regions[1]["Start"])) < 200)):
                     if int(ID) not in COSMIC_GENES:
                         COSMIC_GENES.append(int(ID))
                     BREAKPOINT_FEATURES[int(ID)]["COSMIC_BREAKPOINT_OVERLAP"]=1
