@@ -82,7 +82,7 @@ DB FILTER
     -dbhv|--db_h_vmem                                    DB filter memory [$DB_MEM]
     -dbhr|--db_h_rt                                      DB filter time [$DB_TIME]
     -dbf|--db_flank                                      Database filter flank [$DB_FLANK]
-    -dbse|--db_sample_exclusion                          List of samples to exclusion from the SHARC database (e.g '[Sample1,Sample2]') [$DB_EXCLUSION]
+    -dbse|--db_sample_exclusion                          List of samples to exclude from the SHARC database (e.g '[Sample1,Sample2]') [$DB_EXCLUSION]
 
 DB MERGE
     -dbmhv|--db_merge_h_vmem                             Merge DB annotation memory [$DB_MERGE_MEM]
@@ -93,17 +93,19 @@ SHARC_FILTER
     -sfhr|--sharc_filter_h_rt                            SHARC Filter time [$SHARC_FILTER_TIME]
     -sfq|--sharc_filter_query                            SHARC Filter query [$SHARC_FILTER_QUERY]
 
-ICGC_FILTER
-    -ifhv|--icgc_filter_h_vmem                           ICGC filter memory [$ICGC_FILTER_MEM]
-    -ifhr|--icgc_filter_h_rt                             ICGC filter time [$ICGC_FILTER_TIME]
-    -iff|--icgc_filter_flank                             ICGC filter flank [$ICGC_FILTER_FLANK]
-    -ifp|--icgc_filter_support                           ICGC filter support [$ICGC_FILTER_SUPPORT]
-    -ifs|--icgc_filter_script                            Path to Gene_annotation_ICGC.py [$ICGC_FILTER_SCRIPT]
+SOMATIC FEATURE SELECTION
+    -sfshv|--somatic_feature_selection_h_vmem                   Somatic feature selection memory [$SOMATIC_FEATURE_SELECTION_MEM]
+    -sfshr|--somatic_feature_selection_h_rt                     Somatic feature selection time [$SOMATIC_FEATURE_SELECTION_TIME]
+    -sfsf|--somatic_feature_selection_flank                     Somatic feature selection flank [$SOMATIC_FEATURE_SELECTION_FLANK]
+    -sfsp|--somatic_feature_selection_support                   Somatic feature selection support [$SOMATIC_FEATURE_SELECTION_SUPPORT]
+    -sfss|--somatic_feature_selection_script                    Path to somatic_feature_selection.py [$SOMATIC_FEATURE_SELECTION_SCRIPT]
+    -sfsid|--somatic_feature_selection_icgc_directory           Path to ICGC database directory [$SOMATIC_FEATURE_SELECTION_ICGC_DIRECTORY]
+    -sfscb|--somatic_feature_selection_cosmic_breakpoints       Path to COSMIC database .csv file [$SOMATIC_FEATURE_SELECTION_COSMIC_BREAKPOINTS]
 
 SOMATIC_RANKING
-    -srhv|--somatic_ranking_h_vmem                       Somatic ranking memory [$ICGC_FILTER_MEM]
-    -srhr|--somatic_ranking_h_rt                         Somatic ranking time [$ICGC_FILTER_TIME]
-    -srs|--somatic_ranking_script                        Path to somatic_ranking.py [$ICGC_FILTER_SCRIPT]
+    -srhv|--somatic_ranking_h_vmem                       Somatic ranking memory [$SOMATIC_RANKING_MEM]
+    -srhr|--somatic_ranking_h_rt                         Somatic ranking time [$SOMATIC_RANKING_TIME]
+    -srs|--somatic_ranking_script                        Path to somatic_ranking.py [$SOMATIC_RANKING_SCRIPT]
 
 VCF_TO_FASTA
     -v2fhv|--vcf_fasta_h_vmem                            VCF to FASTA memory [$VCF_FASTA_MEM]
@@ -231,11 +233,13 @@ SHARC_FILTER_TIME=0:5:0
 SHARC_FILTER_QUERY='grep "PREDICT_LABEL=1" | grep -v "SHARCDBFILTER" | grep -v "REFDBFILTER"'
 
 #ICGC FILTER DEFAULTS
-ICGC_FILTER_MEM=10G
-ICGC_FILTER_TIME=0:10:0
-ICGC_FILTER_FLANK=200
-ICGC_FILTER_SUPPORT=0.05
-ICGC_FILTER_SCRIPT=$SCRIPTSDIR/gene_annotation_ICGC.py
+SOMATIC_FEATURE_SELECTION_MEM=10G
+SOMATIC_FEATURE_SELECTION_TIME=0:10:0
+SOMATIC_FEATURE_SELECTION_FLANK=200
+SOMATIC_FEATURE_SELECTION_SCRIPT=$SCRIPTSDIR/somatic_feature_selection.py
+SOMATIC_FEATURE_SELECTION_ICGC_DIRECTORY=$FILESDIR
+SOMATIC_FEATURE_SELECTION_COSMIC_BREAKPOINTS=None
+SOMATIC_FEATURE_SELECTION_SUPPORT=None
 
 #SOMATIC_RANKING VCF_FASTA_DEFAULTS
 SOMATIC_RANKING_MEM=2G
@@ -257,6 +261,7 @@ PRIMER_DESIGN_DIR='/hpc/cog_bioinf/kloosterman/tools/primer3/'
 PRIMER_DESIGN_BINDIR=$PRIMER_DESIGN_DIR/primers
 PRIMER_DESIGN_PCR_TYPE='single'
 PRIMER_DESIGN_TILLING_PARAMS=''
+
 #PRIMER_DESIGN_PSR='30-230'
 PRIMER_DESIGN_PSR='60-100'
 PRIMER_DESIGN_GUIX_PROFILE=$PRIMER_DESIGN_DIR/emboss/.guix-profile
@@ -293,7 +298,7 @@ do
     shift # past value
     ;;
     -c|--cancer_type)
-    ICGC_FILTER_CANCER_TYPE="$2"
+    SOMATIC_FEATURE_SELECTION_CANCER_TYPE="$2"
     shift # past argument
     shift # past value
     ;;
@@ -589,29 +594,39 @@ do
     shift # past argument
     shift # past value
     ;;
-# ICGC_FILTER OPTIONS
-    -ifhv|--icgc_filter_h_vmem)
-    ICGC_FILTER_MEM="$2"
+# SOMATIC_FEATURE_SELECTION OPTIONS
+    -sfshv|--somatic_feature_selection_h_vmem)
+    SOMATIC_FEATURE_SELECTION_MEM="$2"
     shift # past argument
     shift # past value
     ;;
-    -ifhr|--icgc_filter_h_rt)
-    ICGC_FILTER_TIME="$2"
+    -sfshr|--somatic_feature_selection_h_rt)
+    SOMATIC_FEATURE_SELECTION_TIME="$2"
     shift # past argument
     shift # past value
     ;;
-    -iff|--icgc_filter_flank)
-    ICGC_FILTER_FLANK="$2"
+    -sfsf|--somatic_feature_selection_flank)
+    SOMATIC_FEATURE_SELECTION_FLANK="$2"
     shift # past argument
     shift # past value
     ;;
-    -ifp|--icgc_filter_support)
-    ICGC_FILTER_SUPPORT="$2"
+    -sfsp|--somatic_feature_selection_support)
+    SOMATIC_FEATURE_SELECTION_SUPPORT="$2"
     shift # past argument
     shift # past value
     ;;
-    -ifs|--icgc_filter_script)
-    ICGC_FILTER_SCRIPT="$2"
+    -sfss|--somatic_feature_selection_script)
+    SOMATIC_FEATURE_SELECTION_SCRIPT="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -sfsid|--somatic_feature_selection_icgc_directory)
+    SOMATIC_FEATURE_SELECTION_ICGC_DIRECTORY="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -sfscb|--somatic_feature_selection_cosmic_breakpoints)
+    SOMATIC_FEATURE_SELECTION_COSMIC_BREAKPOINTS="$2"
     shift # past argument
     shift # past value
     ;;
@@ -861,17 +876,18 @@ SHARC_FILTER_ERR=$LOGDIR/$SHARC_FILTER_JOBNAME.err
 SHARC_FILTER_LOG=$LOGDIR/$SHARC_FILTER_JOBNAME.log
 SHARC_FILTER_OUT=$SV_TMP_DIR/$(basename ${SV_OUT/.vcf/.SHARC.vcf})
 
-ICGC_FILTER_JOBNAME=$OUTNAME'_ICGCFILTER_'$RAND
-ICGC_FILTER_SH=$JOBDIR/$ICGC_FILTER_JOBNAME.sh
-ICGC_FILTER_ERR=$LOGDIR/$ICGC_FILTER_JOBNAME.err
-ICGC_FILTER_LOG=$LOGDIR/$ICGC_FILTER_JOBNAME.log
-ICGC_FILTER_OUT=$SV_TMP_DIR/$(basename ${SHARC_FILTER_OUT/.vcf/.ICGC.vcf})
+SOMATIC_FEATURE_SELECTION_JOBNAME=$OUTNAME'_SOMATIC_FEATURE_SELECTION_'$RAND
+SOMATIC_FEATURE_SELECTION_SH=$JOBDIR/$SOMATIC_FEATURE_SELECTION_JOBNAME.sh
+SOMATIC_FEATURE_SELECTION_ERR=$LOGDIR/$SOMATIC_FEATURE_SELECTION_JOBNAME.err
+SOMATIC_FEATURE_SELECTION_LOG=$LOGDIR/$SOMATIC_FEATURE_SELECTION_JOBNAME.log
+SOMATIC_FEATURE_SELECTION_ATTRIBUTES_OUT=$RF_OUTDIR/'somatic_features_table.txt'
+SOMATIC_FEATURE_SELECTION_OUT=$SV_TMP_DIR/$(basename ${SHARC_FILTER_OUT/.vcf/.ICGC.vcf})
 
 SOMATIC_RANKING_JOBNAME=$OUTNAME'_SOMATICRANKING_'$RAND
 SOMATIC_RANKING_SH=$JOBDIR/$SOMATIC_RANKING_JOBNAME.sh
 SOMATIC_RANKING_ERR=$LOGDIR/$SOMATIC_RANKING_JOBNAME.err
 SOMATIC_RANKING_LOG=$LOGDIR/$SOMATIC_RANKING_JOBNAME.log
-SOMATIC_RANKING_OUT=$SV_DIR/$(basename ${ICGC_FILTER_OUT/.vcf/.SHARC_RANK.vcf})
+SOMATIC_RANKING_OUT=$SV_DIR/$(basename ${SOMATIC_FEATURE_SELECTION_OUT/.vcf/.SHARC_RANK.vcf})
 
 VCF_FASTA_OUTDIR=$OUTPUTDIR/primers
 VCF_FASTA_JOBNAME=$OUTNAME'_VCFFASTA_'$RAND
@@ -947,6 +963,9 @@ fi
 mkdir -p $DB_OUTDIR
 if [ ! -d $DB_OUTDIR ]; then
     exit
+fi
+if [ -d $PRIMER_DESIGN_TMP_DIR ];then
+  rm -r $PRIMER_DESIGN_TMP_DIR
 fi
 mkdir -p $PRIMER_DESIGN_TMP_DIR
 if [ ! -d $PRIMER_DESIGN_TMP_DIR ]; then
@@ -1112,7 +1131,7 @@ echo \`date\`: Running on \`uname -n\`
 if [ -e $MAPPING_MERGE_OUT.done ]; then
     bash $STEPSDIR/nanosv.sh -b $MAPPING_MERGE_OUT -t $SV_THREADS -s $SV_SAMBAMBA -v $VENV -c $SV_CONFIG -o $SV_OUT
     NUMBER_OF_LINES_VCF=\$(grep -v "^#" $SV_OUT | wc -l | grep -oP "(^\d+)")
-    if [ $NUMBER_OF_LINES_VCF != 0 ]; then
+    if [ \$NUMBER_OF_LINES_VCF != 0 ]; then
       touch $SV_OUT.done
     fi
 fi
@@ -1468,34 +1487,34 @@ EOF
 qsub $SHARC_FILTER_SH
 }
 
-icgc_filter() {
-cat << EOF > $ICGC_FILTER_SH
+somatic_feature_selection() {
+cat << EOF > $SOMATIC_FEATURE_SELECTION_SH
 #!/bin/bash
 
-#$ -N $ICGC_FILTER_JOBNAME
+#$ -N $SOMATIC_FEATURE_SELECTION_JOBNAME
 #$ -cwd
-#$ -l h_vmem=$ICGC_FILTER_MEM
-#$ -l h_rt=$ICGC_FILTER_TIME
-#$ -e $ICGC_FILTER_ERR
-#$ -o $ICGC_FILTER_LOG
+#$ -l h_vmem=$SOMATIC_FEATURE_SELECTION_MEM
+#$ -l h_rt=$SOMATIC_FEATURE_SELECTION_TIME
+#$ -e $SOMATIC_FEATURE_SELECTION_ERR
+#$ -o $SOMATIC_FEATURE_SELECTION_LOG
 EOF
 
 if [ ! -z $SHARC_FILTER_JOBNAME ]; then
-cat << EOF >> $ICGC_FILTER_SH
+cat << EOF >> $SOMATIC_FEATURE_SELECTION_SH
 #$ -hold_jid $SHARC_FILTER_JOBNAME
 EOF
 fi
 
-cat << EOF >> $ICGC_FILTER_SH
+cat << EOF >> $SOMATIC_FEATURE_SELECTION_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $SHARC_FILTER_OUT.done ]; then
-    bash $STEPSDIR/icgc_filter.sh -v $SHARC_FILTER_OUT -s $ICGC_FILTER_SCRIPT -c $ICGC_FILTER_CANCER_TYPE -f $ICGC_FILTER_FLANK -p $ICGC_FILTER_SUPPORT -o $ICGC_FILTER_OUT
+    bash $STEPSDIR/somatic_feature_selection.sh -v $SHARC_FILTER_OUT -s $SOMATIC_FEATURE_SELECTION_SCRIPT -c $SOMATIC_FEATURE_SELECTION_CANCER_TYPE -f $SOMATIC_FEATURE_SELECTION_FLANK -p $SOMATIC_FEATURE_SELECTION_SUPPORT -id $SOMATIC_FEATURE_SELECTION_ICGC_DIRECTORY -cb $SOMATIC_FEATURE_SELECTION_COSMIC_BREAKPOINTS -o $SOMATIC_FEATURE_SELECTION_OUT -a $SOMATIC_FEATURE_SELECTION_ATTRIBUTES_OUT
     NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $SHARC_FILTER_OUT | wc -l | grep -oP "(^\d+)")
-    NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $ICGC_FILTER_OUT | wc -l | grep -oP "(^\d+)")
+    NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $SOMATIC_FEATURE_SELECTION_OUT | wc -l | grep -oP "(^\d+)")
 
     if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
-        touch $ICGC_FILTER_OUT.done
+        touch $SOMATIC_FEATURE_SELECTION_OUT.done
     else
         echo "The number of lines in the SHARC vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the ICGC file (\$NUMBER_OF_LINES_VCF_2)" >&2
     fi
@@ -1503,7 +1522,7 @@ fi
 
 echo \`date\`: Done
 EOF
-qsub $ICGC_FILTER_SH
+qsub $SOMATIC_FEATURE_SELECTION_SH
 }
 
 somatic_ranking() {
@@ -1516,16 +1535,16 @@ cat << EOF > $SOMATIC_RANKING_SH
 #$ -e $SOMATIC_RANKING_ERR
 #$ -o $SOMATIC_RANKING_LOG
 EOF
-if [ ! -z $ICGC_FILTER_JOBNAME ]; then
+if [ ! -z $SOMATIC_FEATURE_SELECTION_JOBNAME ]; then
 cat << EOF >> $SOMATIC_RANKING_SH
-#$ -hold_jid $ICGC_FILTER_JOBNAME
+#$ -hold_jid $SOMATIC_FEATURE_SELECTION_JOBNAME
 EOF
 fi
 cat << EOF >> $SOMATIC_RANKING_SH
 echo \`date\`: Running on \`uname -n\`
-if [ -e $ICGC_FILTER_OUT.done ]; then
-    bash $STEPSDIR/somatic_ranking.sh -v $ICGC_FILTER_OUT -s $SOMATIC_RANKING_SCRIPT -o $SOMATIC_RANKING_OUT -e $VENV
-    NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $ICGC_FILTER_OUT | wc -l | grep -oP "(^\d+)")
+if [ -e $SOMATIC_FEATURE_SELECTION_OUT.done ]; then
+    bash $STEPSDIR/somatic_ranking.sh -v $SOMATIC_FEATURE_SELECTION_OUT -s $SOMATIC_RANKING_SCRIPT -o $SOMATIC_RANKING_OUT -f $SOMATIC_FEATURE_SELECTION_ATTRIBUTES_OUT -e $VENV
+    NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $SOMATIC_FEATURE_SELECTION_OUT | wc -l | grep -oP "(^\d+)")
     NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $SOMATIC_RANKING_OUT | wc -l | grep -oP "(^\d+)")
     if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
         touch $SOMATIC_RANKING_OUT.done
@@ -1611,6 +1630,7 @@ cd $PRIMER_DESIGN_TMP_DIR
 
 if [ -e $VCF_FASTA_OUT.done ]; then
 EOF
+
 if [ -z $PRIMER_DESIGN_TILLING_PARAMS ]; then
 cat << EOF >> $PRIMER_DESIGN_SH
     bash $STEPSDIR/primer_design.sh -f $VCF_FASTA_OUT -pdb $PRIMER_DESIGN_BINDIR -pdpt $PRIMER_DESIGN_PCR_TYPE -pdp $PRIMER_DESIGN_PSR -pdgp $PRIMER_DESIGN_GUIX_PROFILE -pdpc $PRIMER_DESIGN_PRIMER3_CORE -pdm $PRIMER_DESIGN_MISPRIMING
@@ -1656,7 +1676,7 @@ cat << EOF >> $VCF_PRIMER_FILTER_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $PRIMER_DESIGN_OUT.done ]; then
-    bash $STEPSDIR/vcf_primer_filter.sh -v $ICGC_FILTER_OUT -p $PRIMER_DESIGN_OUT -o $VCF_PRIMER_FILTER_OUT -s $VCF_PRIMER_FILTER_SCRIPT
+    bash $STEPSDIR/vcf_primer_filter.sh -v $SOMATIC_RANKING_OUT -p $PRIMER_DESIGN_OUT -o $VCF_PRIMER_FILTER_OUT -s $VCF_PRIMER_FILTER_SCRIPT
     NUMBER_OF_LINES_PRIMER=\$(cat $PRIMER_DESIGN_OUT | wc -l | grep -oP "(^\d+)")
     NUMBER_OF_LINES_VCF=\$(grep -v "^#" $VCF_PRIMER_FILTER_OUT | wc -l | grep -oP "(^\d+)")
     if [ "\$NUMBER_OF_LINES_PRIMER" == "\$NUMBER_OF_LINES_VCF" ]; then
@@ -1785,10 +1805,10 @@ else
     CHECK_BOOL=false
 fi
 
-if [ -e $ICGC_FILTER_OUT.done ]; then
-    echo "ICGC filter: Done" >> $CHECK_SHARC_OUT
+if [ -e $SOMATIC_FEATURE_SELECTION_OUT.done ]; then
+    echo "Somatic feature selection: Done" >> $CHECK_SHARC_OUT
 else
-    echo "ICGC filter: Fail" >> $CHECK_SHARC_OUT
+    echo "Somatic feature selection: Fail" >> $CHECK_SHARC_OUT
     CHECK_BOOL=false
 fi
 if [ -e $SOMATIC_RANKING_OUT.done ]; then
@@ -1869,8 +1889,8 @@ fi
 if [ ! -e $SHARC_FILTER_OUT.done ]; then
   sharc_filter
 fi
-if [ ! -e $ICGC_FILTER_OUT.done ]; then
-  icgc_filter
+if [ ! -e $SOMATIC_FEATURE_SELECTION_OUT.done ]; then
+  somatic_feature_selection
 fi
 if [ ! -e $SOMATIC_RANKING_OUT.done ]; then
   somatic_ranking
