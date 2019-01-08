@@ -22,7 +22,7 @@ POSITIONAL=()
 VENV='/hpc/cog_bioinf/kloosterman/users/mroosmalen/vcf-explorer/vcf-explorer/env/bin/activate'
 DB_SCRIPT='/hpc/cog_bioinf/kloosterman/users/mroosmalen/vcf-explorer/vcf-explorer/vcfexplorer.py'
 NAME='DBFILTER'
-FLANK=10
+FLANK=100
 OUTPUT='/dev/stdout'
 SAMPLE_EXCLUSION=None
 
