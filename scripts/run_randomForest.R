@@ -1,6 +1,6 @@
 library(randomForest)
 
-load("/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/randomForest.Rdata")
+load("/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/randomforest_v3_3overlap_p96_r99.5_pc0.39.Rdata")
 
 args <- commandArgs(trailingOnly = TRUE)
 
