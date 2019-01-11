@@ -502,13 +502,13 @@ def overlap_COSMIC(REGIONS, COSMIC_BREAKPOINT_CSV, BREAKPOINT_FEATURES):
         BREAKPOINT_FEATURES[int(ID)]["COSMIC_BREAKPOINT_OVERLAP"]=0
         if len(regions)==1: #and REGIONS[ID]["LENGTH"] > 200:
             for sv in SV:
-                if regions[0]["Chrom"]== sv["Chrom"] and abs(int(regions[0]["Start"])-int(sv["Start"]))<1000:
+                if (regions[0]["Chrom"]== sv["Chrom"] and
+                ((int(regions[0]["Start"])<int(sv["Start"])+1000 and int(regions[0]["Start"])>int(sv["Start"])-1000) and
+                (int(regions[0]["End"])>int(sv["End"])-1000 and int(regions[0]["End"])<int(sv["End"])+1000)) and
+                int(regions[0]["End"])>int(regions[0]["Start"])):
                     if int(ID) not in COSMIC_GENES:
                         COSMIC_GENES.append(int(ID))
-                    print(sv)
                     BREAKPOINT_FEATURES[int(ID)]["COSMIC_BREAKPOINT_OVERLAP"]=1
-                    if abs(int(regions[0]["End"])-int(sv["End"]))<1000:
-                        BREAKPOINT_FEATURES[int(ID)]["COSMIC_BREAKPOINT_OVERLAP"]=2
         elif len(regions)==2:
             for tra in TRA:
                 if ((regions[0]["Chrom"]== tra["Begin_chrom"] and abs(int(tra["Start"]) - int(regions[0]["Start"])) < 1000) or
@@ -517,14 +517,7 @@ def overlap_COSMIC(REGIONS, COSMIC_BREAKPOINT_CSV, BREAKPOINT_FEATURES):
                 (regions[1]["Chrom"]== tra["End_chrom"] and abs(int(tra["End"]) - int(regions[1]["Start"])) < 1000)):
                     if int(ID) not in COSMIC_GENES:
                         COSMIC_GENES.append(int(ID))
-                        print(tra)
                     BREAKPOINT_FEATURES[int(ID)]["COSMIC_BREAKPOINT_OVERLAP"]=1
-
-                    if (((regions[0]["Chrom"]== tra["Begin_chrom"] and abs(int(tra["Start"]) - int(regions[0]["Start"])) < 1000) and
-                    (regions[1]["Chrom"]== tra["End_chrom"] and abs(int(tra["End"]) - int(regions[1]["Start"])) < 1000)) or
-                    ((regions[1]["Chrom"]== tra["Begin_chrom"] and abs(int(tra["Start"]) - int(regions[1]["Start"])) < 1000) and
-                    (regions[0]["Chrom"]== tra["End_chrom"] and abs(int(tra["End"]) - int(regions[0]["Start"])) < 1000))):
-                        BREAKPOINT_FEATURES[int(ID)]["COSMIC_BREAKPOINT_OVERLAP"]=2
     return (BREAKPOINT_FEATURES)
 
 #############################################   RUNNING CODE   #############################################
