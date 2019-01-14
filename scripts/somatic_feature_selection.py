@@ -75,7 +75,7 @@ def alt_convert( record ):
 
 
 #############################################   Filter out regions around breakpoints from given vcf file   #############################################
-def regions_from_vcf(INPUT_VCF):
+def regions_from_vcf(INPUT_VCF, REGION_FLANK=0):
     with open(INPUT_VCF, "r") as vcf:
         VCF_READER=pyvcf.Reader(vcf)
 
@@ -88,8 +88,8 @@ def regions_from_vcf(INPUT_VCF):
             SV_DATA[ID]={"REGION":[]}
 
             if "INS" in str(record.ALT[0]):
-                REGION_START=BEGIN_POS-FLANK
-                REGION_END=BEGIN_POS+1+FLANK
+                REGION_START=BEGIN_POS-REGION_FLANK
+                REGION_END=BEGIN_POS+1+REGION_FLANK
                 SV_DATA[ID]["REGION"].append({"Chrom":BEGIN_CHROM, "Start":REGION_START, "End":REGION_END})
 
             else:
@@ -101,40 +101,40 @@ def regions_from_vcf(INPUT_VCF):
 
                 if END_CHROM != BEGIN_CHROM:
                     if record.ALT[0].orientation and record.ALT[0].remoteOrientation:
-                        REGION_START_1 = BEGIN_POS-1-FLANK
-                        REGION_END_1 = BEGIN_POS+FLANK
+                        REGION_START_1 = BEGIN_POS-1-REGION_FLANK
+                        REGION_END_1 = BEGIN_POS+REGION_FLANK
                         SV_DATA[ID]["REGION"].append({"Chrom":BEGIN_CHROM, "Start":REGION_START_1, "End":REGION_END_1})
-                        REGION_START_2 = END_POS-1-FLANK
-                        REGION_END_2 = END_POS+FLANK
+                        REGION_START_2 = END_POS-1-REGION_FLANK
+                        REGION_END_2 = END_POS+REGION_FLANK
                         SV_DATA[ID]["REGION"].append({"Chrom":END_CHROM, "Start":REGION_START_2, "End":REGION_END_2})
                         continue
                     elif not record.ALT[0].orientation and record.ALT[0].remoteOrientation:
-                        REGION_START_1 = BEGIN_POS-FLANK
-                        REGION_END_1 = BEGIN_POS+1+FLANK
+                        REGION_START_1 = BEGIN_POS-REGION_FLANK
+                        REGION_END_1 = BEGIN_POS+1+REGION_FLANK
                         SV_DATA[ID]["REGION"].append({"Chrom":BEGIN_CHROM, "Start":REGION_START_1, "End":REGION_END_1})
-                        REGION_START_2 = END_POS-1-FLANK
-                        REGION_END_2 = END_POS+FLANK
+                        REGION_START_2 = END_POS-1-REGION_FLANK
+                        REGION_END_2 = END_POS+REGION_FLANK
                         SV_DATA[ID]["REGION"].append({"Chrom":END_CHROM, "Start":REGION_START_2, "End":REGION_END_2})
                         continue
                     elif record.ALT[0].orientation and not record.ALT[0].remoteOrientation:
-                        REGION_START_1 = BEGIN_POS-1-FLANK
-                        REGION_END_1 = BEGIN_POS+FLANK
+                        REGION_START_1 = BEGIN_POS-1-REGION_FLANK
+                        REGION_END_1 = BEGIN_POS+REGION_FLANK
                         SV_DATA[ID]["REGION"].append({"Chrom":BEGIN_CHROM, "Start":REGION_START_1, "End":REGION_END_1})
-                        REGION_START_2 = END_POS-FLANK
-                        REGION_END_2 = END_POS+1+FLANK
+                        REGION_START_2 = END_POS-REGION_FLANK
+                        REGION_END_2 = END_POS+1+REGION_FLANK
                         SV_DATA[ID]["REGION"].append({"Chrom":END_CHROM, "Start":REGION_START_2, "End":REGION_END_2})
                         continue
                     elif not record.ALT[0].orientation and not record.ALT[0].remoteOrientation:
-                        REGION_START_1 = BEGIN_POS-FLANK
-                        REGION_END_1 = BEGIN_POS+1+FLANK
+                        REGION_START_1 = BEGIN_POS-REGION_FLANK
+                        REGION_END_1 = BEGIN_POS+1+REGION_FLANK
                         SV_DATA[ID]["REGION"].append({"Chrom":BEGIN_CHROM, "Start":REGION_START_1, "End":REGION_END_1})
-                        REGION_START_2 = END_POS-FLANK
-                        REGION_END_2 = END_POS+1+FLANK
+                        REGION_START_2 = END_POS-REGION_FLANK
+                        REGION_END_2 = END_POS+1+REGION_FLANK
                         SV_DATA[ID]["REGION"].append({"Chrom":END_CHROM, "Start":REGION_START_2, "End":REGION_END_2})
                         continue
                 else:
-                    REGION_START = BEGIN_POS-FLANK
-                    REGION_END = END_POS+FLANK
+                    REGION_START = BEGIN_POS-REGION_FLANK
+                    REGION_END = END_POS+REGION_FLANK
                     SV_DATA[ID]["REGION"].append({"Chrom":BEGIN_CHROM, "Start":REGION_START, "End":REGION_END})
         return (SV_DATA)
 
@@ -479,7 +479,10 @@ def vcf_annotate_ICGC_genes_overlap(INPUT_VCF, OUTPUT_VCF, ICGC_GENES, REGIONS, 
             VCF_WRITER.write_record(record)
     return BREAKPOINT_FEATURES
 
-def overlap_COSMIC(REGIONS, COSMIC_BREAKPOINT_CSV, BREAKPOINT_FEATURES):
+def overlap_COSMIC(VCF, COSMIC_BREAKPOINT_CSV, BREAKPOINT_FEATURES):
+
+    REGIONS=regions_from_vcf(VCF)
+
     with open(COSMIC_BREAKPOINT_CSV, "r") as file:
         SV=[]
         TRA=[]
@@ -491,40 +494,67 @@ def overlap_COSMIC(REGIONS, COSMIC_BREAKPOINT_CSV, BREAKPOINT_FEATURES):
                 end_chrom=columns[19]
                 begin_pos=columns[16]
                 end_pos=columns[21]
+
                 if begin_chrom==end_chrom:
+                    if end_pos < begin_pos:
+                        end_pos=columns[16]
+                        begin_pos=columns[21]
                     SV.append({"Chrom":str(begin_chrom), "Start":str(begin_pos), "End":str(end_pos)})
                 else:
                     TRA.append({"Begin_chrom":str(begin_chrom), "Start":str(begin_pos), "End_chrom":str(end_chrom), "End":str(end_pos)})
 
-    COSMIC_GENES=[]
     for ID in REGIONS:
         regions=REGIONS[ID]["REGION"]
         BREAKPOINT_FEATURES[int(ID)]["COSMIC_BREAKPOINT_OVERLAP"]=0
         if len(regions)==1: #and REGIONS[ID]["LENGTH"] > 200:
             for sv in SV:
-                if regions[0]["Chrom"]== sv["Chrom"] and abs(int(regions[0]["Start"])-int(sv["Start"]))<1000:
-                    if int(ID) not in COSMIC_GENES:
-                        COSMIC_GENES.append(int(ID))
+                COSMIC_BREAKPOINT_OVERLAP=0
+
+                COSMIC_LENGTH=abs(int(sv["End"])-int(sv["Start"]))
+
+                DIS=float((int(regions[0]["End"])-int(regions[0]["Start"]))/4)
+                if DIS>1000:
+                    DIS=1000
+
+                if (regions[0]["Chrom"]== sv["Chrom"] and
+                abs(int(regions[0]["Start"])-int(sv["Start"]))<DIS and
+                int(regions[0]["Start"])<int(sv["End"]) and
+                int(regions[0]["End"])>int(sv["Start"]): #and
+                #int(regions[0]["End"])-int(sv["Start"])>COSMIC_LENGTH*0.5):
+                    #print (int(regions[0]["End"]), int(sv["Start"]))
+                    print(ID)
                     print(sv)
-                    BREAKPOINT_FEATURES[int(ID)]["COSMIC_BREAKPOINT_OVERLAP"]=1
-                    if abs(int(regions[0]["End"])-int(sv["End"]))<1000:
-                        BREAKPOINT_FEATURES[int(ID)]["COSMIC_BREAKPOINT_OVERLAP"]=2
+                    COSMIC_BREAKPOINT_OVERLAP+=1
+                if (regions[0]["Chrom"]== sv["Chrom"] and
+                abs(int(regions[0]["End"])-int(sv["End"]))<DIS and
+                int(regions[0]["End"])>int(sv["Start"]) and
+                int(regions[0]["Start"])<int(sv["End"]): #and
+                #int(regions[0]["Start"])-int(sv["End"])>COSMIC_LENGTH*0.5):
+                    COSMIC_BREAKPOINT_OVERLAP+=1
+                    #print (int(regions[0]["Start"]), int(sv["End"]))
+                    print(ID)
+                    print(sv)
+
+                if COSMIC_BREAKPOINT_OVERLAP > BREAKPOINT_FEATURES[int(ID)]["COSMIC_BREAKPOINT_OVERLAP"]:
+                    BREAKPOINT_FEATURES[int(ID)]["COSMIC_BREAKPOINT_OVERLAP"]=COSMIC_BREAKPOINT_OVERLAP
         elif len(regions)==2:
             for tra in TRA:
+                COSMIC_BREAKPOINT_OVERLAP=0
                 if ((regions[0]["Chrom"]== tra["Begin_chrom"] and abs(int(tra["Start"]) - int(regions[0]["Start"])) < 1000) or
                 (regions[0]["Chrom"]== tra["End_chrom"] and abs(int(tra["End"]) - int(regions[0]["Start"])) < 1000) or
                 (regions[1]["Chrom"]== tra["Begin_chrom"] and abs(int(tra["Start"]) - int(regions[1]["Start"])) < 1000) or
                 (regions[1]["Chrom"]== tra["End_chrom"] and abs(int(tra["End"]) - int(regions[1]["Start"])) < 1000)):
-                    if int(ID) not in COSMIC_GENES:
-                        COSMIC_GENES.append(int(ID))
-                        print(tra)
-                    BREAKPOINT_FEATURES[int(ID)]["COSMIC_BREAKPOINT_OVERLAP"]=1
+                    print(ID)
+                    print(tra)
+                    COSMIC_BREAKPOINT_OVERLAP=1
 
                     if (((regions[0]["Chrom"]== tra["Begin_chrom"] and abs(int(tra["Start"]) - int(regions[0]["Start"])) < 1000) and
                     (regions[1]["Chrom"]== tra["End_chrom"] and abs(int(tra["End"]) - int(regions[1]["Start"])) < 1000)) or
                     ((regions[1]["Chrom"]== tra["Begin_chrom"] and abs(int(tra["Start"]) - int(regions[1]["Start"])) < 1000) and
                     (regions[0]["Chrom"]== tra["End_chrom"] and abs(int(tra["End"]) - int(regions[0]["Start"])) < 1000))):
-                        BREAKPOINT_FEATURES[int(ID)]["COSMIC_BREAKPOINT_OVERLAP"]=2
+                        COSMIC_BREAKPOINT_OVERLAP=2
+                if COSMIC_BREAKPOINT_OVERLAP > BREAKPOINT_FEATURES[int(ID)]["COSMIC_BREAKPOINT_OVERLAP"]:
+                    BREAKPOINT_FEATURES[int(ID)]["COSMIC_BREAKPOINT_OVERLAP"]=COSMIC_BREAKPOINT_OVERLAP
     return (BREAKPOINT_FEATURES)
 
 #############################################   RUNNING CODE   #############################################
@@ -542,7 +572,7 @@ if COSMIC_SV is None:
     print("################## To add specificity, download CosmicBreakpointsExport.tsv.gz for "+str(CANCERTYPE.lower())+" cancer from https://cancer.sanger.ac.uk/cosmic/download\n")
 
 print("1) Selecting regions from VCF")
-REGIONS=regions_from_vcf(VCF_IN)
+REGIONS=regions_from_vcf(VCF_IN, FLANK)
 print("1) Done")
 
 print("2) Overlapping regions with known ENSEMBL GENES")
@@ -560,7 +590,7 @@ print("4) Done")
 
 if COSMIC_SV is not None:
     print("5) Overlapping regions with known COSMIC breakpoints")
-    FEATURES=overlap_COSMIC(REGIONS, COSMIC_SV, FEATURES)
+    FEATURES=overlap_COSMIC(VCF_IN, COSMIC_SV, FEATURES)
     print("5) Done")
 else:
     print("5) No COSMIC file; Skipping COSMIC database overlap")
