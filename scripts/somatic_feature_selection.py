@@ -513,23 +513,25 @@ def overlap_COSMIC(VCF, COSMIC_BREAKPOINT_CSV, BREAKPOINT_FEATURES):
                 COSMIC_LENGTH=abs(int(sv["End"])-int(sv["Start"]))
 
                 DIS=float((int(regions[0]["End"])-int(regions[0]["Start"]))/4)
+                #DIS=(int(regions[0]["End"])-int(regions[0]["Start"]))
                 if DIS>1000:
                     DIS=1000
-
                 if (regions[0]["Chrom"]== sv["Chrom"] and
                 abs(int(regions[0]["Start"])-int(sv["Start"]))<DIS and
                 int(regions[0]["Start"])<int(sv["End"]) and
-                int(regions[0]["End"])>int(sv["Start"]): #and
+                int(regions[0]["End"])>int(sv["Start"]) #and
                 #int(regions[0]["End"])-int(sv["Start"])>COSMIC_LENGTH*0.5):
-                    #print (int(regions[0]["End"]), int(sv["Start"]))
+                    #print (int(regions[0]["End"]), int(sv["Start"])
+                    ):
                     print(ID)
                     print(sv)
                     COSMIC_BREAKPOINT_OVERLAP+=1
                 if (regions[0]["Chrom"]== sv["Chrom"] and
                 abs(int(regions[0]["End"])-int(sv["End"]))<DIS and
                 int(regions[0]["End"])>int(sv["Start"]) and
-                int(regions[0]["Start"])<int(sv["End"]): #and
-                #int(regions[0]["Start"])-int(sv["End"])>COSMIC_LENGTH*0.5):
+                int(regions[0]["Start"])<int(sv["End"]) #and
+                #int(regions[0]["Start"])-int(sv["End"])>COSMIC_LENGTH*0.5
+                ):
                     COSMIC_BREAKPOINT_OVERLAP+=1
                     #print (int(regions[0]["Start"]), int(sv["End"]))
                     print(ID)
@@ -595,19 +597,19 @@ if COSMIC_SV is not None:
 else:
     print("5) No COSMIC file; Skipping COSMIC database overlap")
 
-# print("6) Producing output")
-# with open(BREAKPOINT_FEATURES_OUTPUT, "w") as output:
-#     FIRST=True
-#     for ID in sorted(list(FEATURES)):
-#         if FIRST:
-#             attributes=[]
-#             for attribute, value in FEATURES[ID].items():
-#                 attributes.append(str(attribute))
-#             attributes=sorted(attributes)
-#             output.write("ID"+"\t"+"\t".join(attributes) + "\n")
-#             FIRST=False
-#         values=[]
-#         for attribute in attributes:
-#             values.append(str(FEATURES[ID][attribute]))
-#         output.write(str(ID)+"\t"+"\t".join(values) + "\n")
-# print("6) Done")
+print("6) Producing output")
+with open(BREAKPOINT_FEATURES_OUTPUT, "w") as output:
+    FIRST=True
+    for ID in sorted(list(FEATURES)):
+        if FIRST:
+            attributes=[]
+            for attribute, value in FEATURES[ID].items():
+                attributes.append(str(attribute))
+            attributes=sorted(attributes)
+            output.write("ID"+"\t"+"\t".join(attributes) + "\n")
+            FIRST=False
+        values=[]
+        for attribute in attributes:
+            values.append(str(FEATURES[ID][attribute]))
+        output.write(str(ID)+"\t"+"\t".join(values) + "\n")
+print("6) Done")
