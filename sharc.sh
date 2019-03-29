@@ -1353,9 +1353,9 @@ for DB in ${DB_TYPES[@]|}; do
   DB_OUT=$DB_OUTDIR/$DB.vcf
   DB_JOBNAMES=$DB_JOBNAMES','$DB_JOBNAME
   DB_NAME=${DB}FILTER
-  DB_SCRIPT='/hpc/cog_bioinf/kloosterman/users/mroosmalen/vcf-explorer/vcf-explorer/vcfexplorer.py'
+  DB_SCRIPT=$SHARCDIR/vcf-explorer/vcf-explorer/vcfexplorer.py
   if [ $DB == 'SHARCDB' ]; then
-    DB_SCRIPT='/hpc/cog_bioinf/kloosterman/users/mroosmalen/vcf-explorer/sharc_database/vcfexplorer.py'
+    DB_SCRIPT=$SHARCDIR/vcf-explorer/sharc_database/vcfexplorer.py
   fi
   if [ -e $DB_OUT.done ]; then
     continue

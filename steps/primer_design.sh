@@ -10,7 +10,7 @@ Optional parameters:
     -pdb|--bindir		Bindir [$BINDIR]
     -pdpt|--pcr_type   PCR type [$PCR_TYPE]
     -pdtp|--tilling_params Tilling parameters [$TILLING_PARAMS]
-    -pdp|--psr  PSR [$PSR]
+    -psr|--psr  PSR [$PSR]
     -pdgp|--guix_profile   GUIX profile [$GUIX_PROFILE]
     -pdpc|--primer3_core   Primer3 core [$PRIMER3_CORE]
     -pdm|--mispriming     Mispriming [$MISPRIMING]
@@ -58,7 +58,7 @@ do
     shift # past argument
     shift # past value
     ;;
-    -pdp|--psr)
+    -psr|--psr)
     PSR="$2"
     shift # past argument
     shift # past value
