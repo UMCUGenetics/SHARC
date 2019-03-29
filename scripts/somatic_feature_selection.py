@@ -595,19 +595,19 @@ if COSMIC_SV is not None:
 else:
     print("5) No COSMIC file; Skipping COSMIC database overlap")
 
-print("6) Producing output")
-with open(BREAKPOINT_FEATURES_OUTPUT, "w") as output:
-    FIRST=True
-    for ID in sorted(list(FEATURES)):
-        if FIRST:
-            attributes=[]
-            for attribute, value in FEATURES[ID].items():
-                attributes.append(str(attribute))
-            attributes=sorted(attributes)
-            output.write("ID"+"\t"+"\t".join(attributes) + "\n")
-            FIRST=False
-        values=[]
-        for attribute in attributes:
-            values.append(str(FEATURES[ID][attribute]))
-        output.write(str(ID)+"\t"+"\t".join(values) + "\n")
-print("6) Done")
+# print("6) Producing output")
+# with open(BREAKPOINT_FEATURES_OUTPUT, "w") as output:
+#     FIRST=True
+#     for ID in sorted(list(FEATURES)):
+#         if FIRST:
+#             attributes=[]
+#             for attribute, value in FEATURES[ID].items():
+#                 attributes.append(str(attribute))
+#             attributes=sorted(attributes)
+#             output.write("ID"+"\t"+"\t".join(attributes) + "\n")
+#             FIRST=False
+#         values=[]
+#         for attribute in attributes:
+#             values.append(str(FEATURES[ID][attribute]))
+#         output.write(str(ID)+"\t"+"\t".join(values) + "\n")
+# print("6) Done")

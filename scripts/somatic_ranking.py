@@ -63,7 +63,6 @@ for SV in BREAKPOINTS:
 
 FINAL_RANKING=sorted(SCORE, key=lambda k: SCORE[k], reverse=True)
 
-print(SCORE)
 
 with open(VCF, "r") as vcf_input, open(RANKED_VCF, "w") as vcf_output:
     VCF_READ=pyvcf.Reader(vcf_input)
