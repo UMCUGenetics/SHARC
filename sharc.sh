@@ -248,7 +248,7 @@ SOMATIC_RANKING_SCRIPT=$SCRIPTSDIR/somatic_ranking.py
 
 # VCF_FASTA_DEFAULTS
 VCF_FASTA_MEM=2G
-VCF_FASTA_TIME=0:5:0
+VCF_FASTA_TIME=1:0:0
 VCF_FASTA_FLANK=200
 VCF_FASTA_OFFSET=0
 VCF_FASTA_MARK=false
@@ -1489,43 +1489,43 @@ EOF
 qsub $SHARC_FILTER_SH
 }
 
-somatic_feature_selection() {
-cat << EOF > $SOMATIC_FEATURE_SELECTION_SH
-#!/bin/bash
-
-#$ -N $SOMATIC_FEATURE_SELECTION_JOBNAME
-#$ -cwd
-#$ -l h_vmem=$SOMATIC_FEATURE_SELECTION_MEM
-#$ -l h_rt=$SOMATIC_FEATURE_SELECTION_TIME
-#$ -e $SOMATIC_FEATURE_SELECTION_ERR
-#$ -o $SOMATIC_FEATURE_SELECTION_LOG
-EOF
-
-if [ ! -z $SHARC_FILTER_JOBNAME ]; then
-cat << EOF >> $SOMATIC_FEATURE_SELECTION_SH
-#$ -hold_jid $SHARC_FILTER_JOBNAME
-EOF
-fi
-
-cat << EOF >> $SOMATIC_FEATURE_SELECTION_SH
-echo \`date\`: Running on \`uname -n\`
-
-if [ -e $SHARC_FILTER_OUT.done ]; then
-    bash $STEPSDIR/somatic_feature_selection.sh -v $SHARC_FILTER_OUT -s $SOMATIC_FEATURE_SELECTION_SCRIPT -c $SOMATIC_FEATURE_SELECTION_CANCER_TYPE -f $SOMATIC_FEATURE_SELECTION_FLANK -p $SOMATIC_FEATURE_SELECTION_SUPPORT -id $SOMATIC_FEATURE_SELECTION_ICGC_DIRECTORY -cb $SOMATIC_FEATURE_SELECTION_COSMIC_BREAKPOINTS -o $SOMATIC_FEATURE_SELECTION_OUT -a $SOMATIC_FEATURE_SELECTION_ATTRIBUTES_OUT
-    NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $SHARC_FILTER_OUT | wc -l | grep -oP "(^\d+)")
-    NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $SOMATIC_FEATURE_SELECTION_OUT | wc -l | grep -oP "(^\d+)")
-
-    if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
-        touch $SOMATIC_FEATURE_SELECTION_OUT.done
-    else
-        echo "The number of lines in the SHARC vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the ICGC file (\$NUMBER_OF_LINES_VCF_2)" >&2
-    fi
-fi
-
-echo \`date\`: Done
-EOF
-qsub $SOMATIC_FEATURE_SELECTION_SH
-}
+# somatic_feature_selection() {
+# cat << EOF > $SOMATIC_FEATURE_SELECTION_SH
+# #!/bin/bash
+# 
+# #$ -N $SOMATIC_FEATURE_SELECTION_JOBNAME
+# #$ -cwd
+# #$ -l h_vmem=$SOMATIC_FEATURE_SELECTION_MEM
+# #$ -l h_rt=$SOMATIC_FEATURE_SELECTION_TIME
+# #$ -e $SOMATIC_FEATURE_SELECTION_ERR
+# #$ -o $SOMATIC_FEATURE_SELECTION_LOG
+# EOF
+# 
+# if [ ! -z $SHARC_FILTER_JOBNAME ]; then
+# cat << EOF >> $SOMATIC_FEATURE_SELECTION_SH
+# #$ -hold_jid $SHARC_FILTER_JOBNAME
+# EOF
+# fi
+# 
+# cat << EOF >> $SOMATIC_FEATURE_SELECTION_SH
+# echo \`date\`: Running on \`uname -n\`
+# 
+# if [ -e $SHARC_FILTER_OUT.done ]; then
+#     bash $STEPSDIR/somatic_feature_selection.sh -v $SHARC_FILTER_OUT -s $SOMATIC_FEATURE_SELECTION_SCRIPT -c $SOMATIC_FEATURE_SELECTION_CANCER_TYPE -f $SOMATIC_FEATURE_SELECTION_FLANK -p $SOMATIC_FEATURE_SELECTION_SUPPORT -id $SOMATIC_FEATURE_SELECTION_ICGC_DIRECTORY -cb $SOMATIC_FEATURE_SELECTION_COSMIC_BREAKPOINTS -o $SOMATIC_FEATURE_SELECTION_OUT -a $SOMATIC_FEATURE_SELECTION_ATTRIBUTES_OUT
+#     NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $SHARC_FILTER_OUT | wc -l | grep -oP "(^\d+)")
+#     NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $SOMATIC_FEATURE_SELECTION_OUT | wc -l | grep -oP "(^\d+)")
+# 
+#     if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
+#         touch $SOMATIC_FEATURE_SELECTION_OUT.done
+#     else
+#         echo "The number of lines in the SHARC vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the ICGC file (\$NUMBER_OF_LINES_VCF_2)" >&2
+#     fi
+# fi
+# 
+# echo \`date\`: Done
+# EOF
+# qsub $SOMATIC_FEATURE_SELECTION_SH
+# }
 
 somatic_ranking() {
 cat << EOF > $SOMATIC_RANKING_SH
@@ -1537,21 +1537,21 @@ cat << EOF > $SOMATIC_RANKING_SH
 #$ -e $SOMATIC_RANKING_ERR
 #$ -o $SOMATIC_RANKING_LOG
 EOF
-if [ ! -z $SOMATIC_FEATURE_SELECTION_JOBNAME ]; then
+if [ ! -z $SHARC_FILTER_JOBNAME ]; then
 cat << EOF >> $SOMATIC_RANKING_SH
-#$ -hold_jid $SOMATIC_FEATURE_SELECTION_JOBNAME
+#$ -hold_jid $SHARC_FILTER_JOBNAME
 EOF
 fi
 cat << EOF >> $SOMATIC_RANKING_SH
 echo \`date\`: Running on \`uname -n\`
-if [ -e $SOMATIC_FEATURE_SELECTION_OUT.done ]; then
-    bash $STEPSDIR/somatic_ranking.sh -v $SOMATIC_FEATURE_SELECTION_OUT -s $SOMATIC_RANKING_SCRIPT -o $SOMATIC_RANKING_OUT -f $SOMATIC_FEATURE_SELECTION_ATTRIBUTES_OUT -e $VENV
-    NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $SOMATIC_FEATURE_SELECTION_OUT | wc -l | grep -oP "(^\d+)")
+if [ -e $SHARC_FILTER_OUT.done ]; then
+    bash $STEPSDIR/somatic_ranking.sh -v $SHARC_FILTER_OUT -s $SOMATIC_RANKING_SCRIPT -o $SOMATIC_RANKING_OUT -e $VENV
+    NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $SHARC_FILTER_OUT | wc -l | grep -oP "(^\d+)")
     NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $SOMATIC_RANKING_OUT | wc -l | grep -oP "(^\d+)")
     if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
         touch $SOMATIC_RANKING_OUT.done
     else
-        echo "The number of lines in the ICGC vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the Ranking file (\$NUMBER_OF_LINES_VCF_2)" >&2
+        echo "The number of lines in the SHARC vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the Ranking file (\$NUMBER_OF_LINES_VCF_2)" >&2
     fi
 fi
 echo \`date\`: Done
@@ -1807,12 +1807,12 @@ else
     CHECK_BOOL=false
 fi
 
-if [ -e $SOMATIC_FEATURE_SELECTION_OUT.done ]; then
-    echo "Somatic feature selection: Done" >> $CHECK_SHARC_OUT
-else
-    echo "Somatic feature selection: Fail" >> $CHECK_SHARC_OUT
-    CHECK_BOOL=false
-fi
+# if [ -e $SOMATIC_FEATURE_SELECTION_OUT.done ]; then
+#     echo "Somatic feature selection: Done" >> $CHECK_SHARC_OUT
+# else
+#     echo "Somatic feature selection: Fail" >> $CHECK_SHARC_OUT
+#     CHECK_BOOL=false
+# fi
 if [ -e $SOMATIC_RANKING_OUT.done ]; then
     echo "Somatic ranking: Done" >> $CHECK_SHARC_OUT
 else
@@ -1891,9 +1891,9 @@ fi
 if [ ! -e $SHARC_FILTER_OUT.done ]; then
   sharc_filter
 fi
-if [ ! -e $SOMATIC_FEATURE_SELECTION_OUT.done ]; then
-  somatic_feature_selection
-fi
+# if [ ! -e $SOMATIC_FEATURE_SELECTION_OUT.done ]; then
+#   somatic_feature_selection
+# fi
 if [ ! -e $SOMATIC_RANKING_OUT.done ]; then
   somatic_ranking
 fi

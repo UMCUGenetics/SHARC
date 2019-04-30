@@ -35,11 +35,6 @@ do
     shift # past argument
     shift # past value
     ;;
-    -f|--features)
-    FEATURES="$2"
-    shift # past argument
-    shift # past value
-    ;;
     -o|--output)
     OUTPUT="$2"
     shift # past argument
@@ -63,17 +58,12 @@ if [ -z $VCF ]; then
     echo "Missing -v|--vcf parameter"
     usage
     exit
-
-elif [ -z $FEATURES ]; then
-  echo "Missing -f|--features parameter"
-  usage
-  exit
 fi
 
 echo `date`: Running on `uname -n`
 
 . $VENV
 
-python $SCRIPT -v $VCF -o $OUTPUT -f $FEATURES
+python $SCRIPT -v $VCF -o $OUTPUT
 
 echo `date`: Done
