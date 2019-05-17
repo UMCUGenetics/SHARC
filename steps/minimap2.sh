@@ -20,7 +20,7 @@ Optional parameters:
 POSITIONAL=()
 
 # DEFAULTS
-MINIMAP2='/hpc/cog_bioinf/kloosterman/tools/minimap2_v2.12/minimap2'
+MINIMAP2='/hpc/cog_bioinf/cuppen/personal_data/jvalleinclan/tools_kloosterman/minimap2_v2.12/minimap2'
 THREADS=1
 REF='/hpc/cog_bioinf/GENOMES/Homo_sapiens.GRCh37.GATK.illumina/Homo_sapiens.GRCh37.GATK.illumina.fasta'
 SAMBAMBA='/hpc/local/CentOS7/cog_bioinf/sambamba_v0.6.5/sambamba'

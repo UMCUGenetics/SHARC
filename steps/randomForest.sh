@@ -20,12 +20,12 @@ Optional parameters:
 POSITIONAL=()
 
 # DEFAULTS
-CREATE_FEATURE_TABLE_SCRIPT='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/create_features_table.py'
-RANDOM_FOREST_SCRIPT='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/run_randomForest.R'
-ADD_PREDICT_SCRIPT='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/add_predict_annotation.py'
+CREATE_FEATURE_TABLE_SCRIPT='/hpc/cog_bioinf/cuppen/project_data/Jose_SHARC/sharc/scripts/create_features_table.py'
+RANDOM_FOREST_SCRIPT='/hpc/cog_bioinf/cuppen/project_data/Jose_SHARC/sharc/scripts/run_randomForest.R'
+ADD_PREDICT_SCRIPT='/hpc/cog_bioinf/cuppen/project_data/Jose_SHARC/sharc/scripts/add_predict_annotation.py'
 OUTPUT='/dev/stdout'
 OUTDIR='./'
-VENV='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/venv/bin/activate'
+VENV='/hpc/cog_bioinf/cuppen/project_data/Jose_SHARC/sharc/venv/bin/activate'
 
 while [[ $# -gt 0 ]]
 do

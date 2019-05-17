@@ -21,8 +21,8 @@ POSITIONAL=()
 THREADS=1
 SAMBAMBA='/hpc/local/CentOS7/cog_bioinf/sambamba_v0.6.5/sambamba'
 OUTPUT='/dev/stdout'
-VENV='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/venv/bin/activate'
-CONFIG='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/files/config_NanoSV_SHARC.ini'
+VENV='/hpc/cog_bioinf/cuppen/project_data/Jose_SHARC/sharc/venv/bin/activate'
+CONFIG='/hpc/cog_bioinf/cuppen/project_data/Jose_SHARC/sharc/files/config_NanoSV_SHARC.ini'
 
 
 while [[ $# -gt 0 ]]

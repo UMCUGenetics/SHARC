@@ -159,7 +159,7 @@ MAPPING_THREADS=1
 MAPPING_MEM=20G
 MAPPING_TIME=1:0:0
 MAPPING_REF='/hpc/cog_bioinf/GENOMES/Homo_sapiens.GRCh37.GATK.illumina/Homo_sapiens.GRCh37.GATK.illumina.fasta'
-MAPPING_MINIMAP2='/hpc/cog_bioinf/kloosterman/tools/minimap2_v2.12/minimap2'
+MAPPING_MINIMAP2='/hpc/cog_bioinf/cuppen/personal_data/jvalleinclan/tools_kloosterman/minimap2_v2.12/minimap2'
 MAPPING_MINIMAP2_SETTINGS='-x map-ont -a --MD'
 #MAPPING_MINIMAP2_SETTINGS='-a --MD --no-long-join -r50'
 MAPPING_SAMBAMBA=$SAMBAMBA
@@ -257,7 +257,7 @@ VCF_FASTA_SCRIPT=$SCRIPTSDIR/vcf_to_fasta.py
 # PRIMER_DESIGN_DEFAULTS
 PRIMER_DESIGN_MEM=2G
 PRIMER_DESIGN_TIME=0:5:0
-PRIMER_DESIGN_DIR='/hpc/cog_bioinf/kloosterman/tools/primer3/'
+PRIMER_DESIGN_DIR='/hpc/cog_bioinf/cuppen/personal_data/jvalleinclan/tools_kloosterman/primer3/'
 PRIMER_DESIGN_BINDIR=$PRIMER_DESIGN_DIR/primers
 PRIMER_DESIGN_PCR_TYPE='single'
 PRIMER_DESIGN_TILLING_PARAMS=''

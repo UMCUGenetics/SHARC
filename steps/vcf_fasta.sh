@@ -23,8 +23,8 @@ FLANK=200
 OFFSET=0
 MASK=false
 OUTPUT='/dev/stdout'
-VCF_FASTA_SCRIPT='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/vcf_to_fasta.py'
-VENV='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/venv/bin/activate'
+VCF_FASTA_SCRIPT='/hpc/cog_bioinf/cuppen/project_data/Jose_SHARC/sharc/scripts/vcf_to_fasta.py'
+VENV='/hpc/cog_bioinf/cuppen/project_data/Jose_SHARC/sharc/venv/bin/activate'
 
 while [[ $# -gt 0 ]]
 do

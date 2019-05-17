@@ -17,8 +17,8 @@ Optional parameters:
 POSITIONAL=()
 
 #DEFAULT
-SCRIPT="/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/primer_ranking.py"
-VENV='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/venv/bin/activate'
+SCRIPT="/hpc/cog_bioinf/cuppen/project_data/Jose_SHARC/sharc/scripts/primer_ranking.py"
+VENV='/hpc/cog_bioinf/cuppen/project_data/Jose_SHARC/sharc/venv/bin/activate'
 OUTPUT="/dev/stdout"
 
 while [[ $# -gt 0 ]]
