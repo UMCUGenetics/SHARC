@@ -115,7 +115,8 @@ echo $CMD
 eval $CMD
 
 if [ -e $OUTPUT ]; then
-    NUMBER_OF_READS_IN_FASTQ=$(grep "^@" $FASTQ | sort | uniq | wc -l)
+    NUMBER_OF_READS_IN_FASTQ=$(expr $(wc -l fastq_0.fastq | grep -oP "^\d+" ) / 4)
+
     NUMBER_OF_READS_IN_BAM=$($SAMBAMBA view $OUTPUT | cut -f 1 | sort | uniq | wc -l)
     if [ "$NUMBER_OF_READS_IN_FASTQ" == "$NUMBER_OF_READS_IN_BAM" ]; then
         touch $OUTPUT.done
