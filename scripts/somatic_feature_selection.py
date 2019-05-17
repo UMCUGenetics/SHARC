@@ -420,25 +420,27 @@ def create_ICGC_gene_list(CANCER_TYPE, DATABASE_OUTPUT_DIR):
 
 
 #############################################   OVERLAP GENES THAT OVERLAP WITH GIVEN SV VCF AND TCGA CANCER GENES   #############################################
-def vcf_annotate_ICGC_genes_overlap(INPUT_VCF, OUTPUT_VCF, ICGC_GENES, REGIONS, BREAKPOINT_FEATURES, MINIMAL_SUPPORT):
+#def vcf_annotate_ICGC_genes_overlap(INPUT_VCF, OUTPUT_VCF, ICGC_GENES, REGIONS, BREAKPOINT_FEATURES, MINIMAL_SUPPORT):
+def vcf_annotate(INPUT_VCF, OUTPUT_VCF, ICGC_GENES, REGIONS, BREAKPOINT_FEATURES, MINIMAL_SUPPORT):
+
     with open(INPUT_VCF, "r") as INPUT, open (OUTPUT_VCF, "w") as OUTPUT:
 
         VCF_READER=pyvcf.Reader(INPUT)
-        VCF_READER.infos['ICGC_OVERLAP']=pyvcf.parser._Info('ICGC_OVERLAP', ".", "String", "ICGC cancer gene ordered from high occurrence to low occurrence overlapping with the SV region (+"+str(FLANK)+"bp flanking region)", "NanoSV", "X")
+        #VCF_READER.infos['ICGC_OVERLAP']=pyvcf.parser._Info('ICGC_OVERLAP', ".", "String", "ICGC cancer gene ordered from high occurrence to low occurrence overlapping with the SV region (+"+str(FLANK)+"bp flanking region)", "NanoSV", "X")
         VCF_WRITER=pyvcf.Writer(OUTPUT, VCF_READER, lineterminator='\n')
 
-        occurrences=[]
-        for gene in ICGC_GENES:
-            occurrences.append(float(ICGC_GENES[gene]['occurrence']))
-        total_genes=int(requests.get("https://dcc.icgc.org/api/v1/genes/count").text)
-        occurrences=occurrences+[0]*(total_genes-len(occurrences))
-        average_occurrence=float(sum(occurrences)/len(occurrences))
-        print ("Average occurrence: "+str(average_occurrence))
+        #occurrences=[]
+        #for gene in ICGC_GENES:
+            #occurrences.append(float(ICGC_GENES[gene]['occurrence']))
+        #total_genes=int(requests.get("https://dcc.icgc.org/api/v1/genes/count").text)
+        #occurrences=occurrences+[0]*(total_genes-len(occurrences))
+        #average_occurrence=float(sum(occurrences)/len(occurrences))
+        #print ("Average occurrence: "+str(average_occurrence))
 
-        if MINIMAL_SUPPORT is None:
-            MINIMAL_SUPPORT=average_occurrence
+        #if MINIMAL_SUPPORT is None:
+            #MINIMAL_SUPPORT=average_occurrence
 
-        print("Selecting only ICGC overlapping genes with a minimal occurrence of "+str(MINIMAL_SUPPORT*100)+"%")
+        #print("Selecting only ICGC overlapping genes with a minimal occurrence of "+str(MINIMAL_SUPPORT*100)+"%")
 
         for record in VCF_READER:
             ID=int(record.ID)

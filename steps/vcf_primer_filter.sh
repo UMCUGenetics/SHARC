@@ -17,7 +17,7 @@ POSITIONAL=()
 
 # DEFAULTS
 OUTPUT='/dev/stdout'
-SCRIPT='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/vcf_primer_filter.py'
+SCRIPT='/hpc/cog_bioinf/cuppen/project_data/Jose_SHARC/sharc/scripts/vcf_primer_filter.py'
 
 while [[ $# -gt 0 ]]
 do

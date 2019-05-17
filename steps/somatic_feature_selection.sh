@@ -22,13 +22,13 @@ Optional parameters:
 POSITIONAL=()
 
 #DEFAULT
-SCRIPT="/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/somatic_feature_selection.py"
+SCRIPT="/hpc/cog_bioinf/cuppen/project_data/Jose_SHARC/sharc/scripts/somatic_feature_selection.py"
 OUTPUT="/dev/stdout"
-ICGC_DATABASE_DIRECTORY="/hpc/cog_bioinf/kloosterman/common_scripts/sharc/files/"
+ICGC_DATABASE_DIRECTORY="/hpc/cog_bioinf/cuppen/project_data/Jose_SHARC/sharc/files/"
 COSMIC_BREAKPOINTS=None
 SUPPORT=None
 FLANK=200
-VENV='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/venv/bin/activate'
+VENV='/hpc/cog_bioinf/cuppen/project_data/Jose_SHARC/sharc/venv/bin/activate'
 
 while [[ $# -gt 0 ]]
 do

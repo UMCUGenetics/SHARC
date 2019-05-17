@@ -1,9 +1,10 @@
+rm(list=ls())
 
 library(randomForest)
 library(ROCR)
 
-raw_data <- read.table("../NA12878_features_table.txt",sep="\t",header=T)
-meta <- read.table("../NA12878_train.txt",sep="\t",header=T)
+raw_data <- read.table("../train_data/NA12878_features_table_v3.txt",sep="\t",header=T)
+meta <- read.table("../train_data/NA12878_train_3overlap_v3.txt",sep="\t",header=T)
 mean_cov <- 30
 p <- 10
 random <- 100
@@ -19,7 +20,7 @@ data$val <- as.vector(data$val)
 match_data <- data[which(data$val == 1),]
 unmatch_data <- data[which(data$val == 0),]
 
-n <- 400
+n <- nrow(match_data)/3*2
 match_data_train_rows <- sample(c(1:nrow(match_data)),n)
 match_data_test_rows <- c(1:nrow(match_data))[-match_data_train_rows]
 unmatch_data_train_rows <- sample(c(1:nrow(unmatch_data)),length(match_data_train_rows))
@@ -69,17 +70,21 @@ for ( r in c(1:nrow(folds[[1]])) ) {
 }
 
 rp_matrix2 <- cbind(apply(recall_matrix,1,mean),apply(precision_matrix,1,mean))
-plot(rp_matrix2,type='l',ylim=c(0,1.2))
+plot(rp_matrix2,type='l',ylim=c(0,1.2),ylab='Precision',xlab='Recall')
 points(rp_matrix2[,1],rp_matrix2[,2]-apply(precision_matrix,1,sd),type='l',col='red')
 points(rp_matrix2[,1],rp_matrix2[,2]+apply(precision_matrix,1,sd),type='l',col='red')
 
+points(rp_matrix2[105,1],rp_matrix2[105,2],pch=20)
+points(c(rp_matrix2[105,1],rp_matrix2[105,1]),c(0,rp_matrix2[105,2]),pch=20,type='l',lty=2)
+points(c(0,rp_matrix2[105,1]),c(rp_matrix2[105,2],rp_matrix2[105,2]),pch=20,type='l',lty=2)
+
 rp_matrix2
 
-
-operation_point <- 40
+operation_point <- 105
 precision <- rp_matrix2[operation_point,2]
 recall <- rp_matrix2[operation_point,1]
 prob_cutoff <- mean(unlist(lapply(folds,`[`,operation_point)))
+#train_data <- train_data[,-which(names(train_data) == 'pred')]
 output.forest <- randomForest(as.factor(val) ~ ., data=train_data,cutoff=c(1-prob_cutoff,prob_cutoff))
 print(output.forest)
 importance(output.forest,type=2)
@@ -91,7 +96,7 @@ table(test_data[,c("val","pred")])
 #train_data$pred <- output.forest$predicted
 #train_data$id <- train_data2$id
 
-save(output.forest,file="randomforest.Rdata")
+save(output.forest,file=paste("randomforest_v3_2overlapILL_p",round(precision*100),"_r",round(recall*100),"_pc",round(prob_cutoff*100)/100,".Rdata",sep=""))
 
 
 

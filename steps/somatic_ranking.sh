@@ -17,8 +17,8 @@ Optional parameters:
 POSITIONAL=()
 
 #DEFAULT
-SCRIPT="/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/vcf_rank_somatic.py"
-VENV='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/venv/bin/activate'
+SCRIPT="/hpc/cog_bioinf/cuppen/project_data/Jose_SHARC/sharc/scripts/vcf_rank_somatic.py"
+VENV='/hpc/cog_bioinf/cuppen/project_data/Jose_SHARC/sharc/venv/bin/activate'
 OUTPUT="/dev/stdout"
 
 while [[ $# -gt 0 ]]
@@ -32,11 +32,6 @@ do
     ;;
     -v|--vcf)
     VCF="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    -f|--features)
-    FEATURES="$2"
     shift # past argument
     shift # past value
     ;;
@@ -63,17 +58,12 @@ if [ -z $VCF ]; then
     echo "Missing -v|--vcf parameter"
     usage
     exit
-
-elif [ -z $FEATURES ]; then
-  echo "Missing -f|--features parameter"
-  usage
-  exit
 fi
 
 echo `date`: Running on `uname -n`
 
 . $VENV
 
-python $SCRIPT -v $VCF -o $OUTPUT -f $FEATURES
+python $SCRIPT -v $VCF -o $OUTPUT
 
 echo `date`: Done

@@ -17,9 +17,9 @@ Optional parameters:
 POSITIONAL=()
 
 # DEFAULTS
-SCRIPT='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/get_closest_feature.py'
+SCRIPT='/hpc/cog_bioinf/cuppen/project_data/Jose_SHARC/sharc/scripts/get_closest_feature.py'
 OUTPUT='/dev/stdout'
-VENV='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/venv/bin/activate'
+VENV='/hpc/cog_bioinf/cuppen/project_data/Jose_SHARC/sharc/venv/bin/activate'
 
 while [[ $# -gt 0 ]]
 do

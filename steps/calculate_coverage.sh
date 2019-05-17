@@ -19,7 +19,7 @@ POSITIONAL=()
 
 # DEFAULTS
 THREADS=1
-BED='/hpc/cog_bioinf/kloosterman/common_scripts/sharc/files/human_hg19.bed'
+BED='/hpc/cog_bioinf/cuppen/project_data/Jose_SHARC/sharc/files/human_hg19.bed'
 SAMBAMBA='/hpc/local/CentOS7/cog_bioinf/sambamba_v0.6.5/sambamba'
 OUTPUT='/dev/stdout'
 SETTINGS='base --min-coverage=0'

@@ -10,7 +10,7 @@ Optional parameters:
     -pdb|--bindir		Bindir [$BINDIR]
     -pdpt|--pcr_type   PCR type [$PCR_TYPE]
     -pdtp|--tilling_params Tilling parameters [$TILLING_PARAMS]
-    -pdp|--psr  PSR [$PSR]
+    -psr|--psr  PSR [$PSR]
     -pdgp|--guix_profile   GUIX profile [$GUIX_PROFILE]
     -pdpc|--primer3_core   Primer3 core [$PRIMER3_CORE]
     -pdm|--mispriming     Mispriming [$MISPRIMING]
@@ -20,14 +20,14 @@ Optional parameters:
 POSITIONAL=()
 
 # DEFAULTS
-BINDIR='/hpc/cog_bioinf/kloosterman/tools/primer3/primers'
+BINDIR='/hpc/cog_bioinf/cuppen/personal_data/jvalleinclan/tools_kloosterman/primer3primers'
 PCR_TYPE='single'
 TILLING_PARAMS=' '
 PSR='30-230'
-GUIX_PROFILE='/hpc/cog_bioinf/kloosterman/tools/primer3/emboss/.guix-profile'
-PRIMER3_CORE='/hpc/cog_bioinf/kloosterman/tools/primer3/primer3/src/primer3_core'
-MISPRIMING='/hpc/cog_bioinf/kloosterman/tools/primer3/repbase/current/empty.ref'
-#MISPRIMING='/hpc/cog_bioinf/kloosterman/tools/primer3/repbase/current/humrep.ref'
+GUIX_PROFILE='/hpc/cog_bioinf/cuppen/personal_data/jvalleinclan/tools_kloosterman/primer3emboss/.guix-profile'
+PRIMER3_CORE='/hpc/cog_bioinf/cuppen/personal_data/jvalleinclan/tools_kloosterman/primer3primer3/src/primer3_core'
+MISPRIMING='/hpc/cog_bioinf/cuppen/personal_data/jvalleinclan/tools_kloosterman/primer3repbase/current/empty.ref'
+#MISPRIMING='/hpc/cog_bioinf/cuppen/personal_data/jvalleinclan/tools_kloosterman/primer3repbase/current/humrep.ref'
 
 while [[ $# -gt 0 ]]
 do
@@ -58,7 +58,7 @@ do
     shift # past argument
     shift # past value
     ;;
-    -pdp|--psr)
+    -psr|--psr)
     PSR="$2"
     shift # past argument
     shift # past value
