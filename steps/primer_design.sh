@@ -20,14 +20,14 @@ Optional parameters:
 POSITIONAL=()
 
 # DEFAULTS
-BINDIR='/hpc/cog_bioinf/cuppen/personal_data/jvalleinclan/tools_kloosterman/primer3primers'
+BINDIR='/hpc/cog_bioinf/cuppen/personal_data/jvalleinclan/tools_kloosterman/primer3/primers'
 PCR_TYPE='single'
 TILLING_PARAMS=' '
 PSR='30-230'
-GUIX_PROFILE='/hpc/cog_bioinf/cuppen/personal_data/jvalleinclan/tools_kloosterman/primer3emboss/.guix-profile'
-PRIMER3_CORE='/hpc/cog_bioinf/cuppen/personal_data/jvalleinclan/tools_kloosterman/primer3primer3/src/primer3_core'
-MISPRIMING='/hpc/cog_bioinf/cuppen/personal_data/jvalleinclan/tools_kloosterman/primer3repbase/current/empty.ref'
-#MISPRIMING='/hpc/cog_bioinf/cuppen/personal_data/jvalleinclan/tools_kloosterman/primer3repbase/current/humrep.ref'
+GUIX_PROFILE='/hpc/cog_bioinf/cuppen/personal_data/jvalleinclan/tools_kloosterman/primer3/emboss/.guix-profile'
+PRIMER3_CORE='/hpc/cog_bioinf/cuppen/personal_data/jvalleinclan/tools_kloosterman/primer3/primer3/src/primer3_core'
+MISPRIMING='/hpc/cog_bioinf/cuppen/personal_data/jvalleinclan/tools_kloosterman/primer3/repbase/current/empty.ref'
+#MISPRIMING='/hpc/cog_bioinf/cuppen/personal_data/jvalleinclan/tools_kloosterman/primer3/repbase/current/humrep.ref'
 
 while [[ $# -gt 0 ]]
 do
