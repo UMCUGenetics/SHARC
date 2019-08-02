@@ -9,6 +9,7 @@ Required parameters:
 Optional parameters:
     -h|--help       Shows help
     -s|--script     Path to vcf_primer_filter.py [$SCRIPT]
+    -e|--venv   Path to virtual env of NanoSV [$VENV]
     -o|--output     VCF output file [$OUTPUT]
 "
 }
@@ -18,6 +19,7 @@ POSITIONAL=()
 # DEFAULTS
 OUTPUT='/dev/stdout'
 SCRIPT='/hpc/cog_bioinf/cuppen/project_data/Jose_SHARC/sharc/scripts/vcf_primer_filter.py'
+VENV='/hpc/cog_bioinf/cuppen/project_data/Jose_SHARC/sharc/venv/bin/activate'
 
 while [[ $# -gt 0 ]]
 do
@@ -40,6 +42,11 @@ do
     ;;
     -s|--script)
     SCRIPT="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -e|--venv)
+    VENV="$2"
     shift # past argument
     shift # past value
     ;;
@@ -66,6 +73,8 @@ elif [ -z $PRIMERS ]; then
 fi
 
 echo `date`: Running on `uname -n`
+
+. $VENV
 
 python $SCRIPT $VCF $PRIMERS > $OUTPUT
 

@@ -100,6 +100,7 @@ echo `date`: Running on `uname -n`
 
 python $CREATE_FEATURE_TABLE_SCRIPT $VCF > $OUTDIR/features_table.txt
 
+module load R
 Rscript $RANDOM_FOREST_SCRIPT $OUTDIR/features_table.txt $MEANCOV
 
 python $ADD_PREDICT_SCRIPT $VCF $OUTDIR/predict_labels.txt > $OUTPUT
