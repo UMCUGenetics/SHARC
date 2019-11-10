@@ -1,3 +1,5 @@
+
+##PYTHON MODULES
 certifi==2018.8.24
 chardet==3.0.4
 idna==2.7
@@ -5,7 +7,7 @@ PyVCF==0.6.8
 requests==2.19.1
 urllib3==1.23
 configparser==3.5.0
-NanoSV==1.2.2
+NanoSV==1.2.4
 pysam==0.15.1
 PyVCF==0.6.8
 aniso8601==2.0.0
@@ -19,3 +21,19 @@ pytz==2017.3
 PyVCF==0.6.8
 six==1.11.0
 Werkzeug==0.14.1
+
+#R package randomForest
+
+##OTHER PROGRAMS
+#SAMBAMBA='/hpc/local/CentOS7/cog_bioinf/sambamba_v0.6.5/sambamba'
+#MINIMAP2='/hpc/cog_bioinf/cuppen/personal_data/jvalleinclan/tools_kloosterman/minimap2_v2.12/minimap2'
+#BINDIR='/hpc/cog_bioinf/cuppen/personal_data/jvalleinclan/tools_kloosterman/primer3/primers'
+#GUIX_PROFILE='/hpc/cog_bioinf/cuppen/personal_data/jvalleinclan/tools_kloosterman/primer3/emboss/.guix-profile'
+#PRIMER3_CORE='/hpc/cog_bioinf/cuppen/personal_data/jvalleinclan/tools_kloosterman/primer3/primer3/src/primer3_core'
+#MISPRIMING='/hpc/cog_bioinf/cuppen/personal_data/jvalleinclan/tools_kloosterman/primer3/repbase/current/empty.ref'
+
+###FILES
+#BED='/hpc/cog_bioinf/cuppen/project_data/Jose_SHARC/sharc/files/human_hg19.bed'
+#REF='/hpc/cog_bioinf/GENOMES/Homo_sapiens.GRCh37.GATK.illumina/Homo_sapiens.GRCh37.GATK.illumina.fasta'
+#CONFIG='/hpc/cog_bioinf/cuppen/project_data/Jose_SHARC/sharc/files/config_NanoSV_SHARC.ini'
+#
