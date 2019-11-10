@@ -2,11 +2,13 @@
 
 ## INSTALL
 ```
-virtualenv venv -p /hpc/local/CentOS7/common/lang/python/3.6.5/bin/python
+git clone git@github.com:UMCUGenetics/SHARC.git sharc
+cd sharc
+virtualenv venv -p python3
 . venv/bin/activate
 pip install -r requirements.txt
 ```
 ## How to run
 ```
-bash /hpc/cog_bioinf/kloosterman/common_scripts/sharc/sharc.sh -f </path/to/fastqdir> -m <email> -o </path/to/outputdir>
+bash sharc.sh -f </path/to/fastqdir> -m <email> -o </path/to/outputdir>
 ```
