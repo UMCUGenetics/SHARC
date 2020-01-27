@@ -5,7 +5,6 @@ echo "
 Required parameters:
     -f|--fastqdir                                        Path to fastq directory
     -m|--mail                                            Email adress
-    -c|--cancer_type                                     Cancer type used in ICGC database
 
 Optional parameters:
 
@@ -297,11 +296,7 @@ do
     shift # past argument
     shift # past value
     ;;
-    -c|--cancer_type)
-    SOMATIC_FEATURE_SELECTION_CANCER_TYPE="$2"
-    shift # past argument
-    shift # past value
-    ;;
+
 # GENERAL OPTIONS
     -h|--help)
     usage
