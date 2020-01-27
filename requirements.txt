@@ -3,7 +3,7 @@ chardet==3.0.4
 idna==2.7
 PyVCF==0.6.8
 requests==2.19.1
-urllib3==1.23
+urllib3==1.24.2
 configparser==3.5.0
 NanoSV==1.2.2
 pysam==0.15.1
