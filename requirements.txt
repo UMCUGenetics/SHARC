@@ -9,7 +9,7 @@ NanoSV==1.2.2
 pysam==0.15.1
 PyVCF==0.6.8
 aniso8601==2.0.0
-Flask==0.10.1
+Flask==1.0
 Flask-RESTful==0.3.5
 itsdangerous==0.24
 Jinja2==2.10
