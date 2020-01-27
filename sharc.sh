@@ -278,6 +278,12 @@ PRIMER_RANKING_MEM=1G
 PRIMER_RANKING_TIME=0:5:0
 PRIMER_RANKING_SCRIPT=$SCRIPTSDIR/primer_ranking.py
 
+
+# PRIMER_RANKING DEFAULTS
+TOP20_REPORT_MEM=1G
+TOP20_REPORT_TIME=0:10:0
+TOP20_REPORT_SCRIPT=$SCRIPTSDIR/top20_report.py
+
 # CHECK_SHARC FILTER DEFAULTS
 CHECK_SHARC_MEM=1G
 CHECK_SHARC_TIME=0:5:0
@@ -763,6 +769,23 @@ do
     shift # past argument
     shift # past value
     ;;
+    
+# TOP 20 REPORT OPTIONS
+    -tophv|--top_report_h_vmem)
+    TOP20_REPORT_MEM="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -tophr|--top_report_h_rt)
+    TOP20_REPORT_TIME="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -tops|--top_report_script)
+    TOP20_REPORT_SCRIPT="$2"
+    shift # past argument
+    shift # past value
+    ;;
     esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
@@ -918,6 +941,16 @@ PRIMER_RANKING_SH=$JOBDIR/$PRIMER_RANKING_JOBNAME.sh
 PRIMER_RANKING_ERR=$LOGDIR/$PRIMER_RANKING_JOBNAME.err
 PRIMER_RANKING_LOG=$LOGDIR/$PRIMER_RANKING_JOBNAME.log
 PRIMER_RANKING_OUT=$PRIMER_DESIGN_OUTDIR/$(basename ${PRIMER_DESIGN_OUT/.primers/.ranked.primers})
+
+TOP20_REPORT_JOBNAME=$OUTNAME'_TOP20_'$RAND
+TOP20_REPORT_SH=$JOBDIR/$TOP20_REPORT_JOBNAME.sh
+TOP20_REPORT_ERR=$LOGDIR/$TOP20_REPORT_JOBNAME.err
+TOP20_REPORT_LOG=$LOGDIR/$TOP20_REPORT_JOBNAME.log
+TOP20_REPORT_OUT_TABLE=$OUTPUTDIR/$OUTNAME.sharc.top20.tsv
+TOP20_REPORT_OUT_VCF=$OUTPUTDIR/$OUTNAME.sharc.top20.vcf
+
+
+
 
 CHECK_SHARC_OUTDIR=$OUTPUTDIR
 CHECK_SHARC_JOBNAME=$OUTNAME'_CHECKSHARC_'$RAND
@@ -1725,6 +1758,39 @@ EOF
 qsub $PRIMER_RANKING_SH
 }
 
+top20_report() {
+cat << EOF > $TOP20_REPORT_SH
+#!/bin/bash
+#$ -N $TOP20_REPORT_JOBNAME
+#$ -cwd
+#$ -l h_vmem=$TOP20_REPORT_MEM
+#$ -l h_rt=$TOP20_REPORT_TIME
+#$ -e $TOP20_REPORT_ERR
+#$ -o $TOP20_REPORT_LOG
+EOF
+if [ ! -z $PRIMER_RANKING_JOBNAME ]  && [ ! -z $SOMATIC_RANKING_JOBNAME ]; then
+cat << EOF >> $TOP20_REPORT_SH
+#$ -hold_jid $PRIMER_RANKING_JOBNAME,$SOMATIC_RANKING_JOBNAME
+EOF
+fi
+cat << EOF >> $TOP20_REPORT_SH
+echo \`date\`: Running on \`uname -n\`
+if [ -e $PRIMER_RANKING_OUT.done ]; then
+    bash $STEPSDIR/top20_report.sh -v $SOMATIC_RANKING_OUT -p $PRIMER_RANKING_OUT -ov $TOP20_REPORT_OUT_VCF -ot $TOP20_REPORT_OUT_TABLE
+    LINES_VCF=\$(grep -v "^#" $TOP20_REPORT_OUT_VCF | wc -l)
+    LINES_TSV=\$(tail -n +2 $TOP20_REPORT_OUT_TABLE | wc -l)
+    if [ "\$LINES_VCF" == "\$LINES_TSV" ] && [ "\$LINES_VCF" -eq 20 ] ; then
+        touch $TOP20_REPORT_OUT_VCF.done
+    else
+        echo "The number of lines in the TOP20 VCF (\$LINES_VCF) is different than the number of lines in the TOP20 table (\$LINES_TSV) or one is not 20" >&2
+    fi
+fi
+echo \`date\`: Done
+EOF
+qsub $TOP20_REPORT_SH
+}
+
+
 check_SHARC() {
 cat << EOF > $CHECK_SHARC_SH
 #!/bin/bash
@@ -1738,9 +1804,9 @@ cat << EOF > $CHECK_SHARC_SH
 
 EOF
 
-if [ ! -z $VCF_PRIMER_FILTER_JOBNAME ] && [ ! -z $PRIMER_RANKING_JOBNAME ]; then
+if [ ! -z $TOP20_REPORT_JOBNAME ]; then
 cat << EOF >> $CHECK_SHARC_SH
-#$ -hold_jid $VCF_PRIMER_FILTER_JOBNAME,$PRIMER_RANKING_JOBNAME
+#$ -hold_jid $TOP20_REPORT_JOBNAME
 EOF
 fi
 
@@ -1845,6 +1911,12 @@ else
     echo "Primer ranking: Fail" >> $CHECK_SHARC_OUT
     CHECK_BOOL=false
 fi
+if [ -e $TOP20_REPORT_OUT_VCF.done ]; then
+    echo "Top20 report: Done" >> $CHECK_SHARC_OUT
+else
+    echo "Top20 report: Fail" >> $CHECK_SHARC_OUT
+    CHECK_BOOL=false
+fi
 if [ \$CHECK_BOOL = true ]; then
     touch $CHECK_SHARC_OUT.done
     if [ $DONT_CLEAN = false ]; then
@@ -1908,6 +1980,9 @@ if [ ! -e $VCF_PRIMER_FILTER_OUT.done ]; then
 fi
 if [ ! -e $PRIMER_RANKING_OUT.done ]; then
   primer_ranking
+fi
+if [ ! -e $TOP20_REPORT_OUT_VCF.done ]; then
+  top20_report
 fi
 if [ ! -e $CHECK_SHARC_OUT.done ]; then
   check_SHARC
