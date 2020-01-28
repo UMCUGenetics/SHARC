@@ -12,7 +12,7 @@ aniso8601==2.0.0
 Flask==1.0
 Flask-RESTful==0.3.5
 itsdangerous==0.24
-Jinja2==2.10
+Jinja2>=2.10.1
 MarkupSafe==1.0
 pymongo==3.6.0
 pytz==2017.3
