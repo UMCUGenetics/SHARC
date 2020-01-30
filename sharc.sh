@@ -1073,7 +1073,7 @@ if [ ! -e $MAPPING_MERGE_OUT.done ]; then
             cp $MAPPING_TMP_DIR/*.sorted.bam $MAPPING_MERGE_OUT
             cp $MAPPING_TMP_DIR/*.sorted.bam.bai $MAPPING_MERGE_OUT.bai
         else
-            $MAPPING_SAMBAMBA merge -t $MAPPING_THREADS $MAPPING_MERGE_OUT $MAPPING_TMP_DIR/*.sorted.bam
+            $MAPPING_SAMBAMBA merge -t $MAPPING_MERGE_THREADS $MAPPING_MERGE_OUT $MAPPING_TMP_DIR/*.sorted.bam
         fi
     else
 	     echo "Not enough done files found"
