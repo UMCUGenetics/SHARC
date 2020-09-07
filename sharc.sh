@@ -1006,16 +1006,6 @@ mapping() {
 cat << EOF > $MAPPING_SH
 #!/bin/bash
 
-#$ -N $MAPPING_JOBNAME
-#$ -cwd
-#$ -t 1-$NUMBER_OF_FASTQ_FILES:1
-#$ -pe threaded $MAPPING_THREADS
-#$ -l h_vmem=$MAPPING_MEM
-#$ -l h_rt=$MAPPING_TIME
-#$ -e $MAPPING_ERR
-#$ -o $MAPPING_LOG
-
-
 ID=\$((\$SGE_TASK_ID-1))
 
 echo \`date\`: Running on \`uname -n\`
@@ -1040,29 +1030,18 @@ fi
 
 echo \`date\`: Done
 EOF
-qsub $MAPPING_SH
+MAPPING_JOBSETTINGS="-N ${MAPPING_JOBNAME} -cwd -t 1-${NUMBER_OF_FASTQ_FILES}:1 -pe threaded ${MAPPING_THREADS }-l h_vmem=${MAPPING_MEM} -l h_rt=${MAPPING_TIME} -e ${MAPPING_ERR} -o ${MAPPING_LOG}"
+
+
+
+
+qsub $MAPPING_SH $MAPPING_JOBSETTINGS
 }
 
 mapping_merge() {
 cat << EOF > $MAPPING_MERGE_SH
 #!/bin/bash
 
-#$ -N $MAPPING_MERGE_JOBNAME
-#$ -cwd
-#$ -pe threaded $MAPPING_MERGE_THREADS
-#$ -l h_vmem=$MAPPING_MERGE_MEM
-#$ -l h_rt=$MAPPING_MERGE_TIME
-#$ -e $MAPPING_MERGE_ERR
-#$ -o $MAPPING_MERGE_LOG
-EOF
-
-if [ ! -z $MAPPING_JOBNAME ]; then
-cat << EOF >> $MAPPING_MERGE_SH
-#$ -hold_jid $MAPPING_JOBNAME
-EOF
-fi
-
-cat << EOF >> $MAPPING_MERGE_SH
 echo \`date\`: Running on \`uname -n\`
 
 NUMBER_OF_DONE_FILES=\$(ls -l $MAPPING_TMP_DIR/*.done | wc -l)
@@ -1091,29 +1070,19 @@ fi
 
 echo \`date\`: Done
 EOF
-qsub $MAPPING_MERGE_SH
+
+MAPPING_MERGE_JOBSETTINGS="-N $MAPPING_MERGE_JOBNAME -cwd -pe threaded $MAPPING_MERGE_THREADS -l h_vmem=$MAPPING_MERGE_MEM -l h_rt=$MAPPING_MERGE_TIME -e $MAPPING_MERGE_ERR -o $MAPPING_MERGE_LOG"
+if [ ! -z $MAPPING_JOBNAME ]; then
+MAPPING_MERGE_JOBSETTINGS="${MAPPING_MERGE_JOBSETTINGS} -hold_jid $MAPPING_JOBNAME"
+fi
+
+qsub $MAPPING_MERGE_SH $MAPPING_MERGE_JOBSETTINGS
 }
 
 coverage_calculation() {
 cat << EOF > $COVERAGE_CALCULATION_SH
 #!/bin/bash
 
-#$ -N $COVERAGE_CALCULATION_JOBNAME
-#$ -cwd
-#$ -pe threaded $COVERAGE_CALCULATION_THREADS
-#$ -l h_vmem=$COVERAGE_CALCULATION_MEM
-#$ -l h_rt=$COVERAGE_CALCULATION_TIME
-#$ -e $COVERAGE_CALCULATION_ERR
-#$ -o $COVERAGE_CALCULATION_LOG
-EOF
-
-if [ ! -z $MAPPING_MERGE_JOBNAME ]; then
-cat << EOF >> $COVERAGE_CALCULATION_SH
-#$ -hold_jid $MAPPING_MERGE_JOBNAME
-EOF
-fi
-
-cat << EOF >> $COVERAGE_CALCULATION_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $MAPPING_MERGE_OUT.done ]; then
@@ -1131,29 +1100,20 @@ fi
 
 echo \`date\`: Done
 EOF
-qsub $COVERAGE_CALCULATION_SH
+
+COVERAGE_CALCULATION_JOBSETTINGS="-N $COVERAGE_CALCULATION_JOBNAME -cwd -pe threaded $COVERAGE_CALCULATION_THREADS -l h_vmem=$COVERAGE_CALCULATION_MEM -l h_rt=$COVERAGE_CALCULATION_TIME -e $COVERAGE_CALCULATION_ERR -o $COVERAGE_CALCULATION_LOG"
+
+
+if [ ! -z $MAPPING_MERGE_JOBNAME ]; then
+COVERAGE_CALCULATION_JOBSETTINGS="${COVERAGE_CALCULATION_JOBSETTINGS} -hold_jid $MAPPING_MERGE_JOBNAME"
+
+qsub $COVERAGE_CALCULATION_SH $COVERAGE_CALCULATION_JOBSETTINGS
 }
 
 sv() {
 cat << EOF > $SV_SH
 #!/bin/bash
 
-#$ -N $SV_JOBNAME
-#$ -cwd
-#$ -pe threaded $SV_THREADS
-#$ -l h_vmem=$SV_MEM
-#$ -l h_rt=$SV_TIME
-#$ -e $SV_ERR
-#$ -o $SV_LOG
-EOF
-
-if [ ! -z $MAPPING_MERGE_JOBNAME ]; then
-cat << EOF >> $SV_SH
-#$ -hold_jid $MAPPING_MERGE_JOBNAME
-EOF
-fi
-
-cat << EOF >> $SV_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $MAPPING_MERGE_OUT.done ]; then
@@ -1166,28 +1126,20 @@ fi
 
 echo \`date\`: Done
 EOF
-qsub $SV_SH
+
+SV_JOBSETTINGS="-N $SV_JOBNAME -cwd -pe threaded $SV_THREADS -l h_vmem=$SV_MEM -l h_rt=$SV_TIME -e $SV_ERR -o $SV_LOG"
+
+
+if [ ! -z $MAPPING_MERGE_JOBNAME ]; then
+SV_JOBSETTINGS="${SV_JOBSETTINGS} -hold_jid $MAPPING_MERGE_JOBNAME"
+
+qsub $SV_SH $SV_JOBSETTINGS
 }
 
 vcf_filter() {
 cat << EOF > $VCF_FILTER_SH
 #!/bin/bash
 
-#$ -N $VCF_FILTER_JOBNAME
-#$ -cwd
-#$ -l h_vmem=$VCF_FILTER_MEM
-#$ -l h_rt=$VCF_FILTER_TIME
-#$ -e $VCF_FILTER_ERR
-#$ -o $VCF_FILTER_LOG
-EOF
-
-if [ ! -z $SV_JOBNAME ]; then
-cat << EOF >> $VCF_FILTER_SH
-#$ -hold_jid $SV_JOBNAME
-EOF
-fi
-
-cat << EOF >> $VCF_FILTER_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $SV_OUT.done ]; then
@@ -1197,28 +1149,19 @@ fi
 
 echo \`date\`: Done
 EOF
-qsub $VCF_FILTER_SH
+
+VCF_FILTER_JOBSETTINGS="-N $VCF_FILTER_JOBNAME -cwd -l h_vmem=$VCF_FILTER_MEM -l h_rt=$VCF_FILTER_TIME -e $VCF_FILTER_ERR -o $VCF_FILTER_LOG"
+
+if [ ! -z $SV_JOBNAME ]; then
+VCF_FILTER_JOBSETTINGS="${VCF_FILTER_JOBSETTINGS} -hold_jid $SV_JOBNAME"
+
+qsub $VCF_FILTER_SH $VCF_FILTER_JOBSETTINGS
 }
 
 vcf_split() {
 cat << EOF > $VCF_SPLIT_SH
 #!/bin/bash
 
-#$ -N $VCF_SPLIT_JOBNAME
-#$ -cwd
-#$ -l h_vmem=$VCF_SPLIT_MEM
-#$ -l h_rt=$VCF_SPLIT_TIME
-#$ -e $VCF_SPLIT_ERR
-#$ -o $VCF_SPLIT_LOG
-EOF
-
-if [ ! -z $VCF_FILTER_JOBNAME ]; then
-cat << EOF >> $VCF_SPLIT_SH
-#$ -hold_jid $VCF_FILTER_JOBNAME
-EOF
-fi
-
-cat << EOF >> $VCF_SPLIT_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $VCF_FILTER_OUT.done ]; then
@@ -1235,7 +1178,13 @@ fi
 
 echo \`date\`: Done
 EOF
-qsub $VCF_SPLIT_SH
+
+VCF_SPLIT_JOBSETTINGS="-N $VCF_SPLIT_JOBNAME -cwd -l h_vmem=$VCF_SPLIT_MEM -l h_rt=$VCF_SPLIT_TIME -e $VCF_SPLIT_ERR -o $VCF_SPLIT_LOG"
+
+if [ ! -z $VCF_FILTER_JOBNAME ]; then
+VCF_SPLIT_JOBSETTINGS="${VCF_SPLIT_JOBSETTINGS} -hold_jid $VCF_FILTER_JOBNAME"
+
+qsub $VCF_SPLIT_SH $VCF_SPLIT_JOBSETTINGS
 }
 
 create_bed_annotation_jobs() {
@@ -1249,29 +1198,20 @@ done
 cat << EOF > $CREATE_BED_ANNOTATION_SH
 #!/bin/bash
 
-#$ -N $CREATE_BED_ANNOTATION_JOBNAME
-#$ -cwd
-#$ -l h_vmem=$CREATE_BED_ANNOTATION_MEM
-#$ -l h_rt=$CREATE_BED_ANNOTATION_TIME
-#$ -e $CREATE_BED_ANNOTATION_ERR
-#$ -o $CREATE_BED_ANNOTATION_LOG
-EOF
-
-if [ ! -z $VCF_SPLIT_JOBNAME ]; then
-cat << EOF >> $CREATE_BED_ANNOTATION_SH
-#$ -hold_jid $VCF_SPLIT_JOBNAME
-EOF
-fi
-
-cat << EOF >> $CREATE_BED_ANNOTATION_SH
-
 echo \`date\`: Running on \`uname -n\`
 if [ -e $VCF_SPLIT_OUT.done ]; then
   bash $STEPSDIR/create_bed_annotation_jobs.sh -j $BED_ANNOTATION_JOBNAMES -f $BED_ANNOTATION_FILES -v $VCF_SPLIT_OUTDIR -o $OUTPUTDIR -s $STEPSDIR -b $BED_ANNOTATION_SCRIPT -m $MAIL -i $BED_ANNOTATION_MERGE_JOBNAME -vm $BED_ANNOTATION_MEM -rt $BED_ANNOTATION_TIME -e $VENV
 fi
 echo \`date\`: Done
 EOF
-qsub $CREATE_BED_ANNOTATION_SH
+
+
+CREATE_BED_ANNOTATION_JOBSETTINGS="-N $CREATE_BED_ANNOTATION_JOBNAME -cwd -l h_vmem=$CREATE_BED_ANNOTATION_MEM -l h_rt=$CREATE_BED_ANNOTATION_TIME -e $CREATE_BED_ANNOTATION_ERR -o $CREATE_BED_ANNOTATION_LOG"
+
+if [ ! -z $VCF_SPLIT_JOBNAME ]; then
+CREATE_BED_ANNOTATION_JOBSETTINGS="${CREATE_BED_ANNOTATION_JOBSETTINGS} -hold_jid $VCF_SPLIT_JOBNAME"
+
+qsub $CREATE_BED_ANNOTATION_SH $CREATE_BED_ANNOTATION_JOBSETTINGS
 }
 
 annotation_merge() {
@@ -1286,21 +1226,6 @@ PASTE_CMD=$PASTE_CMD" -d ';') <(grep -v \"^#\" $VCF_FILTER_OUT | sort -k3n | cut
 cat << EOF > $BED_ANNOTATION_MERGE_SH
 #!/bin/bash
 
-#$ -N $BED_ANNOTATION_MERGE_JOBNAME
-#$ -cwd
-#$ -l h_vmem=$BED_ANNOTATION_MERGE_MEM
-#$ -l h_rt=$BED_ANNOTATION_MERGE_TIME
-#$ -e $BED_ANNOTATION_MERGE_ERR
-#$ -o $BED_ANNOTATION_MERGE_LOG
-EOF
-
-if [ ! -z $BED_ANNOTATION_JOBNAMES ]; then
-cat << EOF >> $BED_ANNOTATION_MERGE_SH
-#$ -hold_jid $BED_ANNOTATION_JOBNAMES
-EOF
-fi
-
-cat << EOF >> $BED_ANNOTATION_MERGE_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $VCF_SPLIT_OUT.done ]; then
@@ -1324,28 +1249,20 @@ fi
 
 echo \`date\`: Done
 EOF
-qsub $BED_ANNOTATION_MERGE_SH
+
+
+BED_ANNOTATION_MERGE_JOBSETTINGS="-N $BED_ANNOTATION_MERGE_JOBNAME -cwd -l h_vmem=$BED_ANNOTATION_MERGE_MEM -l h_rt=$BED_ANNOTATION_MERGE_TIME -e $BED_ANNOTATION_MERGE_ERR -o $BED_ANNOTATION_MERGE_LOG"
+
+if [ ! -z $BED_ANNOTATION_JOBNAMES ]; then
+BED_ANNOTATION_MERGE_JOBSETTINGS="${BED_ANNOTATION_MERGE_JOBSETTINGS} -hold_jid $BED_ANNOTATION_JOBNAMES"
+
+qsub $BED_ANNOTATION_MERGE_SH $BED_ANNOTATION_MERGE_JOBSETTINGS
 }
 
 random_forest() {
 cat << EOF > $RF_SH
 #!/bin/bash
 
-#$ -N $RF_JOBNAME
-#$ -cwd
-#$ -l h_vmem=$RF_MEM
-#$ -l h_rt=$RF_TIME
-#$ -e $RF_ERR
-#$ -o $RF_LOG
-EOF
-
-if [ ! -z $BED_ANNOTATION_MERGE_JOBNAME ] && [ ! -z $COVERAGE_CALCULATION_JOBNAME ]; then
-cat << EOF >> $RF_SH
-#$ -hold_jid $BED_ANNOTATION_MERGE_JOBNAME,$COVERAGE_CALCULATION_JOBNAME
-EOF
-fi
-
-cat << EOF >> $RF_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $BED_ANNOTATION_MERGE_OUT.done ] && [ -e $COVERAGE_CALCULATION_OUT.done ]; then
@@ -1367,7 +1284,13 @@ fi
 
 echo \`date\`: Done
 EOF
-qsub $RF_SH
+
+RF_JOBSETTINGS="-N $RF_JOBNAME -cwd -l h_vmem=$RF_MEM -l h_rt=$RF_TIME -e $RF_ERR -o $RF_LOG"
+
+if [ ! -z $BED_ANNOTATION_MERGE_JOBNAME ] && [ ! -z $COVERAGE_CALCULATION_JOBNAME ]; then
+RF_JOBSETTINGS="${RF_JOBSETTINGS} -hold_jid $BED_ANNOTATION_MERGE_JOBNAME,$COVERAGE_CALCULATION_JOBNAME"
+
+qsub $RF_SH $RF_JOBSETTINGS
 }
 
 db_filter() {
@@ -1390,21 +1313,6 @@ for DB in ${DB_TYPES[@]|}; do
 cat << EOF > $DB_SH
 #!/bin/bash
 
-#$ -N $DB_JOBNAME
-#$ -cwd
-#$ -l h_vmem=$DB_MEM
-#$ -l h_rt=$DB_TIME
-#$ -e $DB_ERR
-#$ -o $DB_LOG
-EOF
-
-if [ ! -z $RF_JOBNAME ]; then
-cat << EOF >> $DB_SH
-#$ -hold_jid $RF_JOBNAME
-EOF
-fi
-
-cat << EOF >> $DB_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $RF_OUT.done ]; then
@@ -1425,7 +1333,13 @@ fi
 
 echo \`date\`: Done
 EOF
-qsub $DB_SH
+
+DB_JOBSETTINGS="-N $DB_JOBNAME -cwd -l h_vmem=$DB_MEM -l h_rt=$DB_TIME -e $DB_ERR -o $DB_LOG"
+
+if [ ! -z $RF_JOBNAME ]; then
+DB_JOBSETTINGS="${DB_JOBSETTINGS} -hold_jid $RF_JOBNAME"
+
+qsub $DB_SH $DB_JOBSETTINGS
 done
 }
 
@@ -1446,21 +1360,6 @@ PASTE_CMD=$PASTE_CMD" <(grep -v \"^#\" $RF_OUT | sort -k3n | cut -f 9-) "
 cat << EOF > $DB_MERGE_SH
 #!/bin/bash
 
-#$ -N $DB_MERGE_JOBNAME
-#$ -cwd
-#$ -l h_vmem=$DB_MERGE_MEM
-#$ -l h_rt=$DB_MERGE_TIME
-#$ -e $DB_MERGE_ERR
-#$ -o $DB_MERGE_LOG
-EOF
-
-if [ ! -z $DB_JOBNAMES ]; then
-cat << EOF >> $DB_MERGE_SH
-#$ -hold_jid $DB_JOBNAMES
-EOF
-fi
-
-cat << EOF >> $DB_MERGE_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $RF_OUT.done ]; then
@@ -1481,7 +1380,14 @@ fi
 
 echo \`date\`: Done
 EOF
-qsub $DB_MERGE_SH
+
+DB_MERGE_JOBSETTINGS="-N $DB_MERGE_JOBNAME -cwd -l h_vmem=$DB_MERGE_MEM -l h_rt=$DB_MERGE_TIME -e $DB_MERGE_ERR -o $DB_MERGE_LOG"
+
+if [ ! -z $DB_JOBNAME ]; then
+DB_MERGE_JOBSETTINGS="${DB_MERGE_JOBSETTINGS} -hold_jid $DB_JOBNAME"
+
+qsub $DB_MERGE_SH $DB_MERGE_JOBSETTINGS
+
 }
 
 sharc_filter() {
@@ -1512,62 +1418,18 @@ fi
 
 echo \`date\`: Done
 EOF
-qsub $SHARC_FILTER_SH
+SHARC_FILTER_JOBSETTINGS="-N $SHARC_FILTER_JOBNAME -cwd -l h_vmem=$SHARC_FILTER_MEM -l h_rt=$SHARC_FILTER_TIME -e $SHARC_FILTER_ERR -o $SHARC_FILTER_LOG"
+
+if [ ! -z $DB_MERGE_JOBNAME ]; then
+SHARC_FILTER_JOBSETTINGS="${SHARC_FILTER_JOBSETTINGS} -hold_jid $DB_MERGE_JOBNAME"
+
+qsub $SHARC_FILTER_SH $SHARC_FILTER_JOBSETTINGS
 }
 
-# somatic_feature_selection() {
-# cat << EOF > $SOMATIC_FEATURE_SELECTION_SH
-# #!/bin/bash
-# 
-# #$ -N $SOMATIC_FEATURE_SELECTION_JOBNAME
-# #$ -cwd
-# #$ -l h_vmem=$SOMATIC_FEATURE_SELECTION_MEM
-# #$ -l h_rt=$SOMATIC_FEATURE_SELECTION_TIME
-# #$ -e $SOMATIC_FEATURE_SELECTION_ERR
-# #$ -o $SOMATIC_FEATURE_SELECTION_LOG
-# EOF
-# 
-# if [ ! -z $SHARC_FILTER_JOBNAME ]; then
-# cat << EOF >> $SOMATIC_FEATURE_SELECTION_SH
-# #$ -hold_jid $SHARC_FILTER_JOBNAME
-# EOF
-# fi
-# 
-# cat << EOF >> $SOMATIC_FEATURE_SELECTION_SH
-# echo \`date\`: Running on \`uname -n\`
-# 
-# if [ -e $SHARC_FILTER_OUT.done ]; then
-#     bash $STEPSDIR/somatic_feature_selection.sh -v $SHARC_FILTER_OUT -s $SOMATIC_FEATURE_SELECTION_SCRIPT -c $SOMATIC_FEATURE_SELECTION_CANCER_TYPE -f $SOMATIC_FEATURE_SELECTION_FLANK -p $SOMATIC_FEATURE_SELECTION_SUPPORT -id $SOMATIC_FEATURE_SELECTION_ICGC_DIRECTORY -cb $SOMATIC_FEATURE_SELECTION_COSMIC_BREAKPOINTS -o $SOMATIC_FEATURE_SELECTION_OUT -a $SOMATIC_FEATURE_SELECTION_ATTRIBUTES_OUT
-#     NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $SHARC_FILTER_OUT | wc -l | grep -oP "(^\d+)")
-#     NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $SOMATIC_FEATURE_SELECTION_OUT | wc -l | grep -oP "(^\d+)")
-# 
-#     if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
-#         touch $SOMATIC_FEATURE_SELECTION_OUT.done
-#     else
-#         echo "The number of lines in the SHARC vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the ICGC file (\$NUMBER_OF_LINES_VCF_2)" >&2
-#     fi
-# fi
-# 
-# echo \`date\`: Done
-# EOF
-# qsub $SOMATIC_FEATURE_SELECTION_SH
-# }
 
 somatic_ranking() {
 cat << EOF > $SOMATIC_RANKING_SH
 #!/bin/bash
-#$ -N $SOMATIC_RANKING_JOBNAME
-#$ -cwd
-#$ -l h_vmem=$SOMATIC_RANKING_MEM
-#$ -l h_rt=$SOMATIC_RANKING_TIME
-#$ -e $SOMATIC_RANKING_ERR
-#$ -o $SOMATIC_RANKING_LOG
-EOF
-if [ ! -z $SHARC_FILTER_JOBNAME ]; then
-cat << EOF >> $SOMATIC_RANKING_SH
-#$ -hold_jid $SHARC_FILTER_JOBNAME
-EOF
-fi
 cat << EOF >> $SOMATIC_RANKING_SH
 echo \`date\`: Running on \`uname -n\`
 if [ -e $SHARC_FILTER_OUT.done ]; then
@@ -1582,7 +1444,13 @@ if [ -e $SHARC_FILTER_OUT.done ]; then
 fi
 echo \`date\`: Done
 EOF
-qsub $SOMATIC_RANKING_SH
+
+SOMATIC_RANKING_JOBSETTINGS="-N $SOMATIC_RANKING_JOBNAME -cwd -l h_vmem=$SOMATIC_RANKING_MEM -l h_rt=$SOMATIC_RANKING_TIME -e $SOMATIC_RANKING_ERR -o $SOMATIC_RANKING_LOG"
+
+if [ ! -z $SHARC_FILTER_JOBNAME  ]; then
+SOMATIC_RANKING_JOBSETTINGS="${SOMATIC_RANKING_JOBSETTINGS} -hold_jid $SHARC_FILTER_JOBNAME "
+
+qsub $SOMATIC_RANKING_SH $SOMATIC_RANKING_JOBSETTINGS
 }
 
 
@@ -1590,21 +1458,6 @@ vcf_fasta() {
 cat << EOF > $VCF_FASTA_SH
 #!/bin/bash
 
-#$ -N $VCF_FASTA_JOBNAME
-#$ -cwd
-#$ -l h_vmem=$VCF_FASTA_MEM
-#$ -l h_rt=$VCF_FASTA_TIME
-#$ -e $VCF_FASTA_ERR
-#$ -o $VCF_FASTA_LOG
-EOF
-
-if [ ! -z $SOMATIC_RANKING_JOBNAME ]; then
-cat << EOF >> $VCF_FASTA_SH
-#$ -hold_jid $SOMATIC_RANKING_JOBNAME
-EOF
-fi
-
-cat << EOF >> $VCF_FASTA_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $SOMATIC_RANKING_OUT.done ]; then
@@ -1630,28 +1483,19 @@ fi
 
 echo \`date\`: Done
 EOF
-qsub $VCF_FASTA_SH
+
+VCF_FASTA_JOBSETTINGS="-N $VCF_FASTA_JOBNAME -cwd -l h_vmem=$VCF_FASTA_MEM -l h_rt=$VCF_FASTA_TIME -e $VCF_FASTA_ERR -o $VCF_FASTA_LOG"
+
+if [ ! -z $SOMATIC_RANKING_JOBNAME ]; then
+VCF_FASTA_JOBSETTINGS="${VCF_FASTA_JOBSETTINGS} -hold_jid $SOMATIC_RANKING_JOBNAME "
+
+qsub $VCF_FASTA_SH $VCF_FASTA_JOBSETTINGS
 }
 
 primer_design() {
 cat << EOF > $PRIMER_DESIGN_SH
 #!/bin/bash
 
-#$ -N $PRIMER_DESIGN_JOBNAME
-#$ -cwd
-#$ -l h_vmem=$PRIMER_DESIGN_MEM
-#$ -l h_rt=$PRIMER_DESIGN_TIME
-#$ -e $PRIMER_DESIGN_ERR
-#$ -o $PRIMER_DESIGN_LOG
-EOF
-
-if [ ! -z $VCF_FASTA_JOBNAME ]; then
-cat << EOF >> $PRIMER_DESIGN_SH
-#$ -hold_jid $VCF_FASTA_JOBNAME
-EOF
-fi
-
-cat << EOF >> $PRIMER_DESIGN_SH
 echo \`date\`: Running on \`uname -n\`
 
 cd $PRIMER_DESIGN_TMP_DIR
@@ -1679,28 +1523,19 @@ cd $OUTPUTDIR
 
 echo \`date\`: Done
 EOF
-qsub $PRIMER_DESIGN_SH
+
+PRIMER_DESIGN_JOBSETTINGS="-N $PRIMER_DESIGN_JOBNAME -cwd -l h_vmem=$PRIMER_DESIGN_MEM -l h_rt=$PRIMER_DESIGN_TIME -e $PRIMER_DESIGN_ERR -o $PRIMER_DESIGN_LOG"
+
+if [ ! -z $VCF_FASTA_JOBNAME ]; then
+PRIMER_DESIGN_JOBSETTINGS="${PRIMER_DESIGN_JOBSETTINGS} -hold_jid $VCF_FASTA_JOBNAME "
+
+qsub $PRIMER_DESIGN_SH $PRIMER_DESIGN_JOBSETTINGS
 }
 
 vcf_primer_filter() {
 cat << EOF > $VCF_PRIMER_FILTER_SH
 #!/bin/bash
 
-#$ -N $VCF_PRIMER_FILTER_JOBNAME
-#$ -cwd
-#$ -l h_vmem=$VCF_PRIMER_FILTER_MEM
-#$ -l h_rt=$VCF_PRIMER_FILTER_TIME
-#$ -e $VCF_PRIMER_FILTER_ERR
-#$ -o $VCF_PRIMER_FILTER_LOG
-EOF
-
-if [ ! -z $PRIMER_DESIGN_JOBNAME ]; then
-cat << EOF >> $VCF_PRIMER_FILTER_SH
-#$ -hold_jid $PRIMER_DESIGN_JOBNAME
-EOF
-fi
-
-cat << EOF >> $VCF_PRIMER_FILTER_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $PRIMER_DESIGN_OUT.done ]; then
@@ -1716,25 +1551,19 @@ fi
 
 echo \`date\`: Done
 EOF
-qsub $VCF_PRIMER_FILTER_SH
+
+VCF_PRIMER_FILTER_JOBSETTINGS="-N $VCF_PRIMER_FILTER_JOBNAME -cwd -l h_vmem=$VCF_PRIMER_FILTER_MEM -l h_rt=$VCF_PRIMER_FILTER_TIME -e $VCF_PRIMER_FILTER_ERR -o $VCF_PRIMER_FILTER_LOG"
+
+if [ ! -z $PRIMER_DESIGN_JOBNAME ]; then
+VCF_PRIMER_FILTER_JOBSETTINGS="${VCF_PRIMER_FILTER_JOBSETTINGS} -hold_jid $PRIMER_DESIGN_JOBNAME"
+
+qsub $VCF_PRIMER_FILTER_SH $VCF_PRIMER_FILTER_JOBSETTINGS
 }
 
 primer_ranking() {
 cat << EOF > $PRIMER_RANKING_SH
 #!/bin/bash
-#$ -N $PRIMER_RANKING_JOBNAME
-#$ -cwd
-#$ -l h_vmem=$PRIMER_RANKING_MEM
-#$ -l h_rt=$PRIMER_RANKING_TIME
-#$ -e $PRIMER_RANKING_ERR
-#$ -o $PRIMER_RANKING_LOG
-EOF
-if [ ! -z $PRIMER_DESIGN_JOBNAME ]  && [ ! -z $SOMATIC_RANKING_JOBNAME ]; then
-cat << EOF >> $PRIMER_RANKING_SH
-#$ -hold_jid $PRIMER_DESIGN_JOBNAME,$SOMATIC_RANKING_JOBNAME
-EOF
-fi
-cat << EOF >> $PRIMER_RANKING_SH
+
 echo \`date\`: Running on \`uname -n\`
 if [ -e $PRIMER_DESIGN_OUT.done ]; then
     bash $STEPSDIR/primer_ranking.sh -v $SOMATIC_RANKING_OUT -p $PRIMER_DESIGN_OUT -o $PRIMER_RANKING_OUT -e $VENV
@@ -1748,25 +1577,19 @@ if [ -e $PRIMER_DESIGN_OUT.done ]; then
 fi
 echo \`date\`: Done
 EOF
-qsub $PRIMER_RANKING_SH
+
+PRIMER_RANKING_JOBSETTINGS="-N $PRIMER_RANKING_JOBNAME -cwd -l h_vmem=$PRIMER_RANKING_MEM -l h_rt=$PRIMER_RANKING_TIME -e $PRIMER_RANKING_ERR -o $PRIMER_RANKING_LOG"
+
+if [ ! -z $PRIMER_DESIGN_JOBNAME ]  && [ ! -z $SOMATIC_RANKING_JOBNAME ]; then
+PRIMER_RANKING_JOBSETTINGS="${PRIMER_RANKING_JOBSETTINGS} -hold_jid $PRIMER_DESIGN_JOBNAME,$SOMATIC_RANKING_JOBNAME"
+
+qsub $PRIMER_RANKING_SH $PRIMER_RANKING_JOBSETTINGS
 }
 
 top20_report() {
 cat << EOF > $TOP20_REPORT_SH
 #!/bin/bash
-#$ -N $TOP20_REPORT_JOBNAME
-#$ -cwd
-#$ -l h_vmem=$TOP20_REPORT_MEM
-#$ -l h_rt=$TOP20_REPORT_TIME
-#$ -e $TOP20_REPORT_ERR
-#$ -o $TOP20_REPORT_LOG
-EOF
-if [ ! -z $PRIMER_RANKING_JOBNAME ]  && [ ! -z $SOMATIC_RANKING_JOBNAME ]; then
-cat << EOF >> $TOP20_REPORT_SH
-#$ -hold_jid $PRIMER_RANKING_JOBNAME,$SOMATIC_RANKING_JOBNAME
-EOF
-fi
-cat << EOF >> $TOP20_REPORT_SH
+
 echo \`date\`: Running on \`uname -n\`
 if [ -e $PRIMER_RANKING_OUT.done ]; then
     bash $STEPSDIR/top20_report.sh -v $SOMATIC_RANKING_OUT -p $PRIMER_RANKING_OUT -ov $TOP20_REPORT_OUT_VCF -ot $TOP20_REPORT_OUT_TABLE
@@ -1780,7 +1603,13 @@ if [ -e $PRIMER_RANKING_OUT.done ]; then
 fi
 echo \`date\`: Done
 EOF
-qsub $TOP20_REPORT_SH
+
+TOP20_REPORT_JOBSETTINGS="-N $TOP20_REPORT_JOBNAME -cwd -l h_vmem=$TOP20_REPORT_MEM -l h_rt=$TOP20_REPORT_TIME -e $TOP20_REPORT_ERR -o $TOP20_REPORT_LOG"
+
+if [ ! -z $PRIMER_RANKING ]; then
+TOP20_REPORT_JOBSETTINGS="${TOP20_REPORT_JOBSETTINGS} -hold_jid $PRIMER_RANKING"
+
+qsub $TOP20_REPORT_SH $TOP20_REPORT_JOBSETTINGS
 }
 
 
@@ -1788,22 +1617,6 @@ check_SHARC() {
 cat << EOF > $CHECK_SHARC_SH
 #!/bin/bash
 
-#$ -N $CHECK_SHARC_JOBNAME
-#$ -cwd
-#$ -l h_vmem=$CHECK_SHARC_MEM
-#$ -l h_rt=$CHECK_SHARC_TIME
-#$ -e $CHECK_SHARC_ERR
-#$ -o $CHECK_SHARC_LOG
-
-EOF
-
-if [ ! -z $TOP20_REPORT_JOBNAME ]; then
-cat << EOF >> $CHECK_SHARC_SH
-#$ -hold_jid $TOP20_REPORT_JOBNAME
-EOF
-fi
-
-cat << EOF >> $CHECK_SHARC_SH
 echo \`date\`: Running on \`uname -n\`
 CHECK_BOOL=true
 echo "------------------------------------------------" >> $CHECK_SHARC_OUT
@@ -1866,12 +1679,6 @@ else
     CHECK_BOOL=false
 fi
 
-# if [ -e $SOMATIC_FEATURE_SELECTION_OUT.done ]; then
-#     echo "Somatic feature selection: Done" >> $CHECK_SHARC_OUT
-# else
-#     echo "Somatic feature selection: Fail" >> $CHECK_SHARC_OUT
-#     CHECK_BOOL=false
-# fi
 if [ -e $SOMATIC_RANKING_OUT.done ]; then
     echo "Somatic ranking: Done" >> $CHECK_SHARC_OUT
 else
@@ -1922,7 +1729,13 @@ echo \`date\`: Done
 
 sleep 20
 EOF
-qsub $CHECK_SHARC_SH
+
+CHECK_SHARC_JOBSETTINGS="-N $CHECK_SHARC_JOBNAME -cwd -l h_vmem=$CHECK_SHARC_MEM -l h_rt=$CHECK_SHARC_TIME -e $CHECK_SHARC_ERR -o $CHECK_SHARC_LOG"
+
+if [ ! -z $TOP20_REPORT_JOBNAME ]; then
+CHECK_SHARC_JOBSETTINGS="${CHECK_SHARC_JOBSETTINGS} -hold_jid $TOP20_REPORT_JOBNAME"
+
+qsub $CHECK_SHARC_SH $CHECK_SHARC_JOBSETTINGS
 }
 
 prepare
