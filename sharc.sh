@@ -1290,7 +1290,7 @@ qsub $RF_SH $RF_JOBSETTINGS
 }
 
 db_filter() {
-for DB in ${DB_TYPES[@]|}; do
+for DB in ${DB_TYPES[@]}; do
   DB_JOBNAME=$OUTNAME'_'$DB'_'$RAND
   DB_SH=$JOBDIR/$DB_JOBNAME.sh
   DB_ERR=$LOGDIR/$DB_JOBNAME.err
