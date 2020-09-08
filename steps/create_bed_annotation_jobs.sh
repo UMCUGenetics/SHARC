@@ -176,8 +176,8 @@ fi
 echo \`date\`: Done
 EOF
 
-  BED_JOBSETTINGS="-N $BED_JOBNAME -cwd -t 1-${NUMBER_OF_SPLIT_FILES}:1 -l h_vmem=$BED_MEM -l h_rt=$BED_TIME -e $BED_ERR -o $BED_LOG"
-  qsub $BED_SH $BED_JOBSETTINGS
+  #BED_JOBSETTINGS="-N $BED_JOBNAME -cwd -t 1-${NUMBER_OF_SPLIT_FILES}:1 -l h_vmem=$BED_MEM -l h_rt=$BED_TIME -e $BED_ERR -o $BED_LOG"
+  #$BED_SH $BED_JOBSETTINGS
+  $BED_SH
   ((i=i+1))
 done
-#qalter -hold_jid $HOLDJOBNAMES $JOBID
