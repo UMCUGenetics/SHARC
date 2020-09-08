@@ -154,15 +154,6 @@ for BED in $BEDFILES/*.feature.bed; do
 cat << EOF > $BED_SH
 #!/bin/bash
 
-#$ -N $BED_JOBNAME
-#$ -cwd
-#$ -t 1-$NUMBER_OF_SPLIT_FILES:1
-#$ -l h_vmem=$BED_MEM
-#$ -l h_rt=$BED_TIME
-#$ -e $BED_ERR
-#$ -o $BED_LOG
-
-
 ID=\$SGE_TASK_ID
 
 echo \`date\`: Running on \`uname -n\`
@@ -184,8 +175,9 @@ fi
 
 echo \`date\`: Done
 EOF
-  qsub $BED_SH
+
+  BED_JOBSETTINGS="-N $BED_JOBNAME -cwd -t 1-${NUMBER_OF_SPLIT_FILES}:1 -l h_vmem=$BED_MEM -l h_rt=$BED_TIME -e $BED_ERR -o $BED_LOG"
+  qsub $BED_SH $BED_JOBSETTINGS
   ((i=i+1))
 done
-
-qalter -hold_jid $HOLDJOBNAMES $JOBID
+#qalter -hold_jid $HOLDJOBNAMES $JOBID
