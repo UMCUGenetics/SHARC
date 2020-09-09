@@ -77,15 +77,15 @@ RANDOM_FOREST
     -rfs|--rf_script                                     Path to run_randomForest.R script [$RF_SCRIPT]
     -rfps|--rf_p_script                                  Path to add_predict_annotation.py script [$RF_ADD_PREDICT_SCRIPT]
 
-DB FILTER
-    -dbhv|--db_h_vmem                                    DB filter memory [$DB_MEM]
-    -dbhr|--db_h_rt                                      DB filter time [$DB_TIME]
-    -dbf|--db_flank                                      Database filter flank [$DB_FLANK]
-    -dbse|--db_sample_exclusion                          List of samples to exclude from the SHARC database (e.g '[Sample1,Sample2]') [$DB_EXCLUSION]
+PON FILTER
+    -ponhv|--pon_h_vmem                                    PON filter memory [$PON_MEM]
+    -ponhr|--pon_h_rt                                      PON filter time [$PON_TIME]
+    -ponf|--pon_flank                                      Database filter flank [$PON_FLANK]
+    -ponfiles|--pon_files                                      Path to VCF files to be used as PON [$PON_FILES]
 
-DB MERGE
-    -dbmhv|--db_merge_h_vmem                             Merge DB annotation memory [$DB_MERGE_MEM]
-    -dbmhr|--db_merge_h_rt                               Merge DB annotation time [$DB_MERGE_TIME]
+PON MERGE
+    -ponmhv|--pon_merge_h_vmem                             Merge PON annotation memory [$PON_MERGE_MEM]
+    -ponmhr|--pon_merge_h_rt                               Merge PON annotation time [$PON_MERGE_TIME]
 
 SHARC_FILTER
     -sfhv|--sharc_filter_h_vmem                          SHARC Filter memory [$SHARC_FILTER_MEM]
@@ -215,21 +215,20 @@ RF_CREATE_FEATURE_TABLE_SCRIPT=$SCRIPTSDIR/create_features_table.py
 RF_SCRIPT=$SCRIPTSDIR/run_randomForest.R
 RF_ADD_PREDICT_SCRIPT=$SCRIPTSDIR/add_predict_annotation.py
 
-# DB DEFAULTS
-DB_MEM=2G
-DB_TIME=0:30:0
-DB_TYPES=("REFDB" "SHARCDB")
-DB_FLANK=100
-DB_EXCLUSION=None
+# PON DEFAULTS
+PON_MEM=2G
+PON_TIME=0:30:0
+PON_FLANK=100
+PON_FILES=${FILESDIR}/ref_pon.vcf,${FILESDIR}/sharc_pon.vcf
 
-# DB_MERGE
-DB_MERGE_MEM=2G
-DB_MERGE_TIME=0:30:0
+# PON_MERGE
+PON_MERGE_MEM=2G
+PON_MERGE_TIME=0:30:0
 
 # SHARC FILTER DEFAULTS
 SHARC_FILTER_MEM=2G
 SHARC_FILTER_TIME=0:30:0
-SHARC_FILTER_QUERY='grep "PREDICT_LABEL=1" | grep -v "SHARCDBFILTER" | grep -v "REFDBFILTER"'
+SHARC_FILTER_QUERY='grep "PREDICT_LABEL=1" | grep -v "SHARCPONFILTER" | grep -v "REFPONFILTER"'
 
 #ICGC FILTER DEFAULTS
 SOMATIC_FEATURE_SELECTION_MEM=10G
@@ -545,35 +544,31 @@ do
     shift # past argument
     shift # past value
     ;;
-# DB OPTIONS
-    -dbhv|--db_h_vmem)
-    DB_MEM="$2"
+# PON OPTIONS
+    -ponhv|--pon_h_vmem)
+    PON_MEM="$2"
     shift # past argument
     shift # past value
     ;;
-    -dbhr|--db_h_rt)
-    DB_TIME="$2"
+    -ponhr|--pon_h_rt)
+    PON_TIME="$2"
     shift # past argument
     shift # past value
     ;;
-    -dbf|--db_flank)
-    DB_FLANK="$2"
+    -ponf|--pon_flank)
+    PON_FLANK="$2"
     shift # past argument
     shift # past value
     ;;
-    -dbse|--db_sample_exclusion)
-    DB_EXCLUSION="$2"
+
+# PON_MERGE OPTIONS
+    -ponmhv|--pon_merge_h_vmem)
+    PON_MERGE_MEM="$2"
     shift # past argument
     shift # past value
     ;;
-# DB_MERGE OPTIONS
-    -dbmhv|--db_merge_h_vmem)
-    DB_MERGE_MEM="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    -dbmhr|--db_merge_h_rt)
-    DB_MERGE_TIME="$2"
+    -ponmhr|--pon_merge_h_rt)
+    PON_MERGE_TIME="$2"
     shift # past argument
     shift # past value
     ;;
@@ -877,14 +872,14 @@ RF_ERR=$LOGDIR/$RF_JOBNAME.err
 RF_LOG=$LOGDIR/$RF_JOBNAME.log
 RF_OUT=$SV_TMP_DIR/$(basename ${BED_ANNOTATION_MERGE_OUT/.vcf/.predict.vcf})
 
-DB_OUTDIR=$SV_TMP_DIR/db
-DB_JOBNAMES=''
+PON_OUTDIR=$SV_TMP_DIR/db
+PON_JOBNAMES=''
 
-DB_MERGE_JOBNAME=$OUTNAME'_DBMERGE_'$RAND
-DB_MERGE_SH=$JOBDIR/$DB_MERGE_JOBNAME.sh
-DB_MERGE_ERR=$LOGDIR/$DB_MERGE_JOBNAME.err
-DB_MERGE_LOG=$LOGDIR/$DB_MERGE_JOBNAME.log
-DB_MERGE_OUT=$SV_TMP_DIR/$(basename ${RF_OUT/.vcf/.dbfilter.vcf})
+PON_MERGE_JOBNAME=$OUTNAME'_PONMERGE_'$RAND
+PON_MERGE_SH=$JOBDIR/$PON_MERGE_JOBNAME.sh
+PON_MERGE_ERR=$LOGDIR/$PON_MERGE_JOBNAME.err
+PON_MERGE_LOG=$LOGDIR/$PON_MERGE_JOBNAME.log
+PON_MERGE_OUT=$SV_TMP_DIR/$(basename ${RF_OUT/.vcf/.dbfilter.vcf})
 
 SHARC_FILTER_JOBNAME=$OUTNAME'_SHARCFILTER_'$RAND
 SHARC_FILTER_SH=$JOBDIR/$SHARC_FILTER_JOBNAME.sh
@@ -988,8 +983,8 @@ mkdir -p $RF_OUTDIR
 if [ ! -d $RF_OUTDIR ]; then
     exit
 fi
-mkdir -p $DB_OUTDIR
-if [ ! -d $DB_OUTDIR ]; then
+mkdir -p $PON_OUTDIR
+if [ ! -d $PON_OUTDIR ]; then
     exit
 fi
 if [ -d $PRIMER_DESIGN_TMP_DIR ];then
@@ -1249,8 +1244,8 @@ EOF
 
 BED_ANNOTATION_MERGE_JOBSETTINGS="-N $BED_ANNOTATION_MERGE_JOBNAME -cwd -l h_vmem=$BED_ANNOTATION_MERGE_MEM -l h_rt=$BED_ANNOTATION_MERGE_TIME -e $BED_ANNOTATION_MERGE_ERR -o $BED_ANNOTATION_MERGE_LOG"
 
-if [ ! -z $BED_ANNOTATION_JOBNAMES ]; then
-BED_ANNOTATION_MERGE_JOBSETTINGS="${BED_ANNOTATION_MERGE_JOBSETTINGS} -hold_jid $BED_ANNOTATION_JOBNAMES"
+if [ ! -z $BED_ANNOTATION_JOBNAMEpi]; then
+BED_ANNOTATION_MERGE_JOBSETTINGS="${BED_ANNOTATION_MERGE_JOBSETTING} -hold_jid $BED_ANNOTATION_JOBNAME"
 fi
 qsub $BED_ANNOTATION_MERGE_SH $BED_ANNOTATION_MERGE_JOBSETTINGS
 }
@@ -1290,38 +1285,35 @@ qsub $RF_SH $RF_JOBSETTINGS
 }
 
 db_filter() {
-for DB in ${DB_TYPES[@]}; do
-  DB_JOBNAME=$OUTNAME'_'$DB'_'$RAND
-  DB_SH=$JOBDIR/$DB_JOBNAME.sh
-  DB_ERR=$LOGDIR/$DB_JOBNAME.err
-  DB_LOG=$LOGDIR/$DB_JOBNAME.log
-  DB_OUT=$DB_OUTDIR/$DB.vcf
-  DB_JOBNAMES=$DB_JOBNAMES','$DB_JOBNAME
-  DB_NAME=${DB}FILTER
-  DB_SCRIPT=$SHARCDIR/vcf-explorer/vcf-explorer_refdb/vcfexplorer.py
-  if [ $DB == 'SHARCDB' ]; then
-    DB_SCRIPT=$SHARCDIR/vcf-explorer/vcf-explorer_sharcdb/vcfexplorer.py
-  fi
-  if [ -e $DB_OUT.done ]; then
+
+PON_FILES=`sed "s:,: :g" $PON_FILES
+
+for PON in ${PON_FILES[@]}; do
+  PON_JOBNAME=$OUTNAME'_'$PON'_'$RAND
+  PON_SH=$JOBDIR/$PON_JOBNAME.sh
+  PON_ERR=$LOGDIR/$PON_JOBNAME.err
+  PON_LOG=$LOGDIR/$PON_JOBNAME.log
+  PON_OUT=$PON_OUTDIR/$PON.vcf
+  PON_JOBNAMES=$PON_JOBNAMES','$PON_JOBNAME
+  PON_NAME=`basename ${PON/.vcf/}`_FILTER
+  PON_SCRIPT=$SHARCDIR/scripts/annotate_sv_vcf_file.py
+  if [ -e $PON_OUT.done ]; then
     continue
   fi
 
-cat << EOF > $DB_SH
+cat << EOF > $PON_SH
 #!/bin/bash
 
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $RF_OUT.done ]; then
-    bash $STEPSDIR/database_filter.sh -v $RF_OUT -o $DB_OUT -e $VENV -f $DB_FLANK -n $DB_NAME -db $DB_SCRIPT -se $DB_EXCLUSION
-
-    sed -i s/DB_Count/${DB}_Count/g $DB_OUT
-    sed -i s/DB_Frequency/${DB}_Frequency/g $DB_OUT
+    python $PON_SCRIPT --input $RF_OUT --file2 $PON --annotation $PON_NAME --distance '$PON_FLANK' > $PON_OUT 
 
     NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $RF_OUT | wc -l | grep -oP "(^\d+)")
-    NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $DB_OUT | wc -l | grep -oP "(^\d+)")
+    NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $PON_OUT | wc -l | grep -oP "(^\d+)")
 
     if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
-        touch $DB_OUT.done
+        touch $PON_OUT.done
     else
         echo "The number of lines in the random forest vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the db vcf file (\$NUMBER_OF_LINES_VCF_2)" >&2
     fi
@@ -1330,45 +1322,46 @@ fi
 echo \`date\`: Done
 EOF
 
-DB_JOBSETTINGS="-N $DB_JOBNAME -cwd -l h_vmem=$DB_MEM -l h_rt=$DB_TIME -e $DB_ERR -o $DB_LOG"
+PON_JOBSETTINGS="-N $PON_JOBNAME -cwd -l h_vmem=$PON_MEM -l h_rt=$PON_TIME -e $PON_ERR -o $PON_LOG"
 
 if [ ! -z $RF_JOBNAME ]; then
-DB_JOBSETTINGS="${DB_JOBSETTINGS} -hold_jid $RF_JOBNAME"
+PON_JOBSETTINGS="${PON_JOBSETTINGS} -hold_jid $RF_JOBNAME"
 fi
-qsub $DB_SH $DB_JOBSETTINGS
+qsub $PON_SH $PON_JOBSETTINGS
 done
 }
 
 db_merge() {
+PON_FILES=`sed "s:,: :g" $PON_FILES
 PASTE_CMD="paste <(grep -v \"^#\" $RF_OUT | sort -k3n | cut -f -6) <(paste <(grep -v \"^#\" $RF_OUT | sort -k3n | cut -f 7 | sed s/PASS//)"
-for DB in ${DB_TYPES[@]}; do
-    PASTE_CMD=$PASTE_CMD" <(grep -v \"^#\" $DB_OUTDIR/$DB.vcf | sort -k3n | cut -f 7 | sed s/PASS//)"
+for PON in ${PON_TYPES[@]}; do
+    PASTE_CMD=$PASTE_CMD" <(grep -v \"^#\" $PON_OUTDIR/$PON.vcf | sort -k3n | cut -f 7 | sed s/PASS//)"
 done
 PASTE_CMD=$PASTE_CMD" -d ';' | sed s/^\;\;$/PASS/ /dev/stdin | sed  s/^\;*// /dev/stdin | sed s/\;*$// /dev/stdin)"
 PASTE_CMD=$PASTE_CMD" <(paste <(grep -v \"^#\" $RF_OUT | sort -k3n | cut -f 8)"
 
-for DB in ${DB_TYPES[@]}; do
-  PASTE_CMD=$PASTE_CMD" <(grep -v \"^#\" $DB_OUTDIR/$DB.vcf | sort -k3n | cut -f 8 | grep -oP \"${DB}_Count=(\d+);${DB}_Frequency=(.+?);\" | sed s/\;$//)"
+for PON in ${PON_TYPES[@]}; do
+  PASTE_CMD=$PASTE_CMD" <(grep -v \"^#\" $PON_OUTDIR/$PON.vcf | sort -k3n | cut -f 8 | grep -oP \"${PON}_Count=(\d+);${PON}_Frequency=(.+?);\" | sed s/\;$//)"
 done
 PASTE_CMD=$PASTE_CMD" -d ';' )"
 PASTE_CMD=$PASTE_CMD" <(grep -v \"^#\" $RF_OUT | sort -k3n | cut -f 9-) "
 
-cat << EOF > $DB_MERGE_SH
+cat << EOF > $PON_MERGE_SH
 #!/bin/bash
 
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $RF_OUT.done ]; then
-  HEADERS=\$(cat $DB_OUTDIR/*.vcf | grep "^##INFO" | grep "DB_")
-  grep "^#" $RF_OUT | awk -v headers="\$HEADERS" '/^##FORMAT/ && !modif { print headers; modif=1 } {print}' > $DB_MERGE_OUT
+  HEADERS=\$(cat $PON_OUTDIR/*.vcf | grep "^##INFO" | grep "PON_")
+  grep "^#" $RF_OUT | awk -v headers="\$HEADERS" '/^##FORMAT/ && !modif { print headers; modif=1 } {print}' > $PON_MERGE_OUT
 
-  $PASTE_CMD >> $DB_MERGE_OUT
+  $PASTE_CMD >> $PON_MERGE_OUT
 
   NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $RF_OUT | wc -l | grep -oP "(^\d+)")
-  NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $DB_MERGE_OUT | wc -l | grep -oP "(^\d+)")
+  NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $PON_MERGE_OUT | wc -l | grep -oP "(^\d+)")
 
   if [ "\$NUMBER_OF_LINES_VCF_1" == "\$NUMBER_OF_LINES_VCF_2" ]; then
-      touch $DB_MERGE_OUT.done
+      touch $PON_MERGE_OUT.done
   else
       echo "The number of lines in the random forest vcf file (\$NUMBER_OF_LINES_VCF_1) is different than the number of lines in the db merged vcf file (\$NUMBER_OF_LINES_VCF_2)" >&2
   fi
@@ -1377,14 +1370,17 @@ fi
 echo \`date\`: Done
 EOF
 
-DB_MERGE_JOBSETTINGS="-N $DB_MERGE_JOBNAME -cwd -l h_vmem=$DB_MERGE_MEM -l h_rt=$DB_MERGE_TIME -e $DB_MERGE_ERR -o $DB_MERGE_LOG"
+PON_MERGE_JOBSETTINGS="-N $PON_MERGE_JOBNAME -cwd -l h_vmem=$PON_MERGE_MEM -l h_rt=$PON_MERGE_TIME -e $PON_MERGE_ERR -o $PON_MERGE_LOG"
 
-if [ ! -z $DB_JOBNAME ]; then
-DB_MERGE_JOBSETTINGS="${DB_MERGE_JOBSETTINGS} -hold_jid $DB_JOBNAME"
+if [ ! -z $PON_JOBNAMES ]; then
+PON_MERGE_JOBSETTINGS="${PON_MERGE_JOBSETTINGS} -hold_jid $PON_JOBNAMES"
 fi
-qsub $DB_MERGE_SH $DB_MERGE_JOBSETTINGS
+qsub $PON_MERGE_SH $PON_MERGE_JOBSETTINGS
 
 }
+
+
+
 
 sharc_filter() {
 cat << EOF > $SHARC_FILTER_SH
@@ -1398,17 +1394,17 @@ cat << EOF > $SHARC_FILTER_SH
 #$ -o $SHARC_FILTER_LOG
 EOF
 
-if [ ! -z $DB_MERGE_JOBNAME ]; then
+if [ ! -z $PON_MERGE_JOBNAME ]; then
 cat << EOF >> $SHARC_FILTER_SH
-#$ -hold_jid $DB_MERGE_JOBNAME
+#$ -hold_jid $PON_MERGE_JOBNAME
 EOF
 fi
 
 cat << EOF >> $SHARC_FILTER_SH
 echo \`date\`: Running on \`uname -n\`
 
-if [ -e $DB_MERGE_OUT.done ]; then
-    bash $STEPSDIR/sharc_filter.sh -v $DB_MERGE_OUT -f '$SHARC_FILTER_QUERY' -o $SHARC_FILTER_OUT
+if [ -e $PON_MERGE_OUT.done ]; then
+    bash $STEPSDIR/sharc_filter.sh -v $PON_MERGE_OUT -f '$SHARC_FILTER_QUERY' -o $SHARC_FILTER_OUT
     touch $SHARC_FILTER_OUT.done
 fi
 
@@ -1416,8 +1412,8 @@ echo \`date\`: Done
 EOF
 SHARC_FILTER_JOBSETTINGS="-N $SHARC_FILTER_JOBNAME -cwd -l h_vmem=$SHARC_FILTER_MEM -l h_rt=$SHARC_FILTER_TIME -e $SHARC_FILTER_ERR -o $SHARC_FILTER_LOG"
 
-if [ ! -z $DB_MERGE_JOBNAME ]; then
-SHARC_FILTER_JOBSETTINGS="${SHARC_FILTER_JOBSETTINGS} -hold_jid $DB_MERGE_JOBNAME"
+if [ ! -z $PON_MERGE_JOBNAME ]; then
+SHARC_FILTER_JOBSETTINGS="${SHARC_FILTER_JOBSETTINGS} -hold_jid $PON_MERGE_JOBNAME"
 fi
 qsub $SHARC_FILTER_SH $SHARC_FILTER_JOBSETTINGS
 }
@@ -1661,10 +1657,10 @@ else
     CHECK_BOOL=false
 fi
 
-if [ -e $DB_MERGE_OUT.done ]; then
-    echo "DB filter: Done" >> $CHECK_SHARC_OUT
+if [ -e $PON_MERGE_OUT.done ]; then
+    echo "PON filter: Done" >> $CHECK_SHARC_OUT
 else
-    echo "DB filter: Fail" >> $CHECK_SHARC_OUT
+    echo "PON filter: Fail" >> $CHECK_SHARC_OUT
     CHECK_BOOL=false
 fi
 
@@ -1758,7 +1754,7 @@ fi
 if [ ! -e $RF_OUT.done ]; then
   random_forest
 fi
-if [ ! -e $DB_MERGE_OUT.done ]; then
+if [ ! -e $PON_MERGE_OUT.done ]; then
   db_filter
   db_merge
 fi

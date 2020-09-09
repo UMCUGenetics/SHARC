@@ -20,7 +20,6 @@ POSITIONAL=()
 
 # DEFAULTS
 VENV='/hpc/cog_bioinf/cuppen/project_data/Jose_SHARC/sharc/vcf-explorer/vcf-explorer/vcf-explorer_refdb/env/bin/activate'
-DB_SCRIPT='/hpc/cog_bioinf/cuppen/project_data/Jose_SHARC/sharc/vcf-explorer/vcf-explorer_refdb/vcfexplorer.py'
 NAME='DBFILTER'
 FLANK=100
 OUTPUT='/dev/stdout'
