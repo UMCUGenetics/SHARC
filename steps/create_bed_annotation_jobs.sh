@@ -146,15 +146,14 @@ for BED in $BEDFILES/*.feature.bed; do
   BEDNAME=${BEDNAME[0]}
   BED_JOBNAME=${JOBNAMES[i]}
   BED_SH=$JOBDIR/$BED_JOBNAME.sh
-  BED_ERR="$LOGDIR/${BED_JOBNAME}_\$TASK_ID.err"
-  BED_LOG="$LOGDIR/${BED_JOBNAME}_\$TASK_ID.log"
-  BED_IN="$VCF_SPLIT_OUTPUTDIR/\$ID.vcf"
-  BED_OUT="$VCF_SPLIT_OUTPUTDIR/\$ID.$BEDNAME.vcf"
+  BED_ERR="$LOGDIR/${BED_JOBNAME}_${i}.err"
+  BED_LOG="$LOGDIR/${BED_JOBNAME}_${i}.log"
+  BED_IN="$VCF_SPLIT_OUTPUTDIR/${i}.vcf"
+  BED_OUT="$VCF_SPLIT_OUTPUTDIR/${i}.$BEDNAME.vcf"
+
 
 cat << EOF > $BED_SH
 #!/bin/bash
-
-ID=\$SGE_TASK_ID
 
 echo \`date\`: Running on \`uname -n\`
 
