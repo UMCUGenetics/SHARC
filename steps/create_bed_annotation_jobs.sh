@@ -178,6 +178,7 @@ EOF
 
   #BED_JOBSETTINGS="-N $BED_JOBNAME -cwd -t 1-${NUMBER_OF_SPLIT_FILES}:1 -l h_vmem=$BED_MEM -l h_rt=$BED_TIME -e $BED_ERR -o $BED_LOG"
   #$BED_SH $BED_JOBSETTINGS
-  $BED_SH
+  chmod +x $BED_SH
+  $BED_SH >> "$BED_LOG" 2>> "$BED_ERR"
   ((i=i+1))
 done
