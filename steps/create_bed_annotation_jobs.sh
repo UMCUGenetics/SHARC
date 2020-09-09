@@ -179,7 +179,6 @@ EOF
 
   chmod +x $BED_SH
   for j in {1..$NUMBER_OF_SPLIT_FILES}; do
-    chmod +x $BED_SH
     $BED_SH "$j" >> "$BED_LOG" 2>> "$BED_ERR"
   done
 
