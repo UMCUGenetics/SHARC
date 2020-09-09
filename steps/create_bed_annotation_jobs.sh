@@ -178,7 +178,7 @@ echo \`date\`: Done
 EOF
 
   chmod +x $BED_SH
-  for j in {1..$NUMBER_OF_SPLIT_FILES}; do
+  for j in $(seq 1 $NUMBER_OF_SPLIT_FILES); do
     $BED_SH "$j"
   done
 
