@@ -102,6 +102,13 @@ venv.bak/
 
 # mypy
 .mypy_cache/
-
+files_old//
+test_data test_data_2 test_output
+train_data/
+vcf-explorer/
+test_data/ test_data_2/ test_output/
+*.Rdata
+vcf-explorer_backup/
+vcf-explorer_backup/*
 files/*.vcf
 
