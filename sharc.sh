@@ -1295,7 +1295,8 @@ for PON in ${PON_FILES[@]}; do
   PON_LOG=$LOGDIR/$PON_JOBNAME.log
   PON_OUT=$PON_OUTDIR/$PON.vcf
   PON_JOBNAMES=$PON_JOBNAMES','$PON_JOBNAME
-  PON_NAME=`basename ${PON/.vcf/}`_FILTER
+  PON_BASENAME=`basename ${PON}`
+  PON_NAME=${PON_BASENAME/.vcf/}_FILTER
   PON_SCRIPT=$SHARCDIR/scripts/annotate_sv_vcf_file.py
   if [ -e $PON_OUT.done ]; then
     continue
