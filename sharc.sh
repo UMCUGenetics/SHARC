@@ -1286,7 +1286,7 @@ qsub $RF_SH $RF_JOBSETTINGS
 
 db_filter() {
 
-PON_FILES=`sed "s:,: :g" $PON_FILES
+PON_FILES=`sed "s:,: :g" $PON_FILES`
 
 for PON in ${PON_FILES[@]}; do
   PON_JOBNAME=$OUTNAME'_'$PON'_'$RAND
@@ -1333,15 +1333,15 @@ done
 }
 
 db_merge() {
-PON_FILES=`sed "s:,: :g" $PON_FILES
+PON_FILES=`sed "s:,: :g" $PON_FILES`
 PASTE_CMD="paste <(grep -v \"^#\" $RF_OUT | sort -k3n | cut -f -6) <(paste <(grep -v \"^#\" $RF_OUT | sort -k3n | cut -f 7 | sed s/PASS//)"
-for PON in ${PON_TYPES[@]}; do
+for PON in ${PON_FILES[@]}; do
     PASTE_CMD=$PASTE_CMD" <(grep -v \"^#\" $PON_OUTDIR/$PON.vcf | sort -k3n | cut -f 7 | sed s/PASS//)"
 done
 PASTE_CMD=$PASTE_CMD" -d ';' | sed s/^\;\;$/PASS/ /dev/stdin | sed  s/^\;*// /dev/stdin | sed s/\;*$// /dev/stdin)"
 PASTE_CMD=$PASTE_CMD" <(paste <(grep -v \"^#\" $RF_OUT | sort -k3n | cut -f 8)"
 
-for PON in ${PON_TYPES[@]}; do
+for PON in ${PON_FILES[@]}; do
   PASTE_CMD=$PASTE_CMD" <(grep -v \"^#\" $PON_OUTDIR/$PON.vcf | sort -k3n | cut -f 8 | grep -oP \"${PON}_Count=(\d+);${PON}_Frequency=(.+?);\" | sed s/\;$//)"
 done
 PASTE_CMD=$PASTE_CMD" -d ';' )"
