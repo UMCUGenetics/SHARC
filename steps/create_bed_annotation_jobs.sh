@@ -141,32 +141,34 @@ JOBNAMES=(`echo $HOLDJOBNAMES | sed 's/,/ /g'`)
 NUMBER_OF_SPLIT_FILES=$(ls -l $VCF_SPLIT_OUTPUTDIR/*.vcf | wc -l)
 i=1
 
+
 for BED in $BEDFILES/*.feature.bed; do
   BEDNAME=($(basename $BED | tr '.' ' '))
   BEDNAME=${BEDNAME[0]}
   BED_JOBNAME=${JOBNAMES[i]}
   BED_SH=$JOBDIR/$BED_JOBNAME.sh
-  BED_ERR="$LOGDIR/${BED_JOBNAME}_${i}.err"
-  BED_LOG="$LOGDIR/${BED_JOBNAME}_${i}.log"
-  BED_IN="$VCF_SPLIT_OUTPUTDIR/${i}.vcf"
-  BED_OUT="$VCF_SPLIT_OUTPUTDIR/${i}.$BEDNAME.vcf"
-
+  BED_ERR="$LOGDIR/${BED_JOBNAME}_\$ID.err"
+  BED_LOG="$LOGDIR/${BED_JOBNAME}_\$ID.log"
+  BED_IN="$VCF_SPLIT_OUTPUTDIR/\$ID.vcf"
+  BED_OUT="$VCF_SPLIT_OUTPUTDIR/\$ID.$BEDNAME.vcf"
 
 cat << EOF > $BED_SH
 #!/bin/bash
+
+ID="\$1"
 
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $BED_IN ]; then
     if [ ! -e $BED_OUT.done ]; then
-	     bash $STEPSDIR/bed_annotation.sh \\
-	      -v $BED_IN \\
+         bash $STEPSDIR/bed_annotation.sh \\
+          -v $BED_IN \\
         -b $BED \\
         -s $BED_SCRIPT \\
         -e $VENV \\
         -o $BED_OUT
     else
-	     echo $BED_OUT already exists
+         echo $BED_OUT already exists
     fi
 else
     echo $BED_IN does not exists
@@ -175,9 +177,11 @@ fi
 echo \`date\`: Done
 EOF
 
-  #BED_JOBSETTINGS="-N $BED_JOBNAME -cwd -t 1-${NUMBER_OF_SPLIT_FILES}:1 -l h_vmem=$BED_MEM -l h_rt=$BED_TIME -e $BED_ERR -o $BED_LOG"
-  #$BED_SH $BED_JOBSETTINGS
   chmod +x $BED_SH
-  $BED_SH >> "$BED_LOG" 2>> "$BED_ERR"
+  for j in {1..$NUMBER_OF_SPLIT_FILES}; do
+    chmod +x $BED_SH
+    $BED_SH "$j" >> "$BED_LOG" 2>> "$BED_ERR"
+  done
+
   ((i=i+1))
 done
