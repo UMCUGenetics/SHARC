@@ -1289,14 +1289,15 @@ db_filter() {
 PON_FILES=`echo ${PON_FILES} | sed "s:,: :g"`
 
 for PON in ${PON_FILES[@]}; do
-  PON_JOBNAME=$OUTNAME'_'$PON'_'$RAND
+  PON_BASENAME=`basename ${PON}`
+  PON_NAME=${PON_BASENAME/.vcf/}_FILTER
+  PON_JOBNAME=$OUTNAME'_'${PON_NAME}'_'$RAND
   PON_SH=$JOBDIR/$PON_JOBNAME.sh
   PON_ERR=$LOGDIR/$PON_JOBNAME.err
   PON_LOG=$LOGDIR/$PON_JOBNAME.log
   PON_OUT=$PON_OUTDIR/$PON.vcf
   PON_JOBNAMES=$PON_JOBNAMES','$PON_JOBNAME
-  PON_BASENAME=`basename ${PON}`
-  PON_NAME=${PON_BASENAME/.vcf/}_FILTER
+
   PON_SCRIPT=$SHARCDIR/scripts/annotate_sv_vcf_file.py
   if [ -e $PON_OUT.done ]; then
     continue
