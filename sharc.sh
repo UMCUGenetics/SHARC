@@ -1299,7 +1299,7 @@ for PON in ${PON_FILES[@]}; do
   PON_OUT=$PON_OUTDIR/$PON_NAME.vcf
   PON_JOBNAMES=$PON_JOBNAMES','$PON_JOBNAME
 
-  PON_SCRIPT=$SHARCDIR/scripts/annotate_sv_vcf_file.py
+  PON_SCRIPT=$SCRIPTSDIR/annotate_sv_vcf_file.py
   if [ -e $PON_OUT.done ]; then
     continue
   fi
