@@ -144,7 +144,7 @@ i=1
 
 
 for BED in $BEDFILES/*.feature.bed; do
-  BEDNAME=($(basename $BED | tr '.' ' ')
+  BEDNAME=$(basename $BED | tr '.' ' ')
 #   BED_JOBNAME=${JOBNAMES[i]}
   BED_SH=$JOBDIR/$BEDNAME.sh
 #   BED_ERR="$LOGDIR/${BED_JOBNAME}_\$ID.err"
