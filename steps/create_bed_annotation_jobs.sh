@@ -31,7 +31,7 @@ do
 #     HOLDJOBNAMES="$2"
 #     shift # past argument
 #     shift # past value
-    ;;
+#    ;;
     -f|--bedfiles)
     BEDFILES="$2"
     shift # past argument
