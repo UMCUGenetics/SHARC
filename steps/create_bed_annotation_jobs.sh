@@ -9,7 +9,7 @@ Required parameters:
     -o|--outputdir  Path to output directory
     -s|--stepsdir Path to sharc steps directory
     -b|--bedscript		Path to get_closest_feature.py
-    -i|--jobid  Job id
+#     -i|--jobid  Job id
     -m|--mail   Mail
     -e|--venv   Path to virtual env of NanoSV [$VENV]
 
@@ -67,11 +67,11 @@ do
     shift # past argument
     shift # past value
     ;;
-    -i|--jobid)
-    JOBID="$2"
-    shift # past argument
-    shift # past value
-    ;;
+#     -i|--jobid)
+#     JOBID="$2"
+#     shift # past argument
+#     shift # past value
+#     ;;
     -vm|--vmem)
     BED_MEM="$2"
     shift # past argument
@@ -122,10 +122,10 @@ elif [ -z $VENV ]; then
     echo "Missing -e|--venv parameter"
     usage
     exit
-elif [ -z $JOBID ]; then
-    echo "Missing -i|--jobid parameter"
-    usage
-    exit
+# elif [ -z $JOBID ]; then
+#     echo "Missing -i|--jobid parameter"
+#     usage
+#     exit
 elif [ -z $BED_MEM ]; then
     echo "Missing -vm|--vmem parameter"
     usage
@@ -144,12 +144,11 @@ i=1
 
 
 for BED in $BEDFILES/*.feature.bed; do
-  BEDNAME=($(basename $BED | tr '.' ' '))
-  BEDNAME=${BEDNAME[0]}
+  BEDNAME=($(basename $BED | tr '.' ' ')
 #   BED_JOBNAME=${JOBNAMES[i]}
   BED_SH=$JOBDIR/$BEDNAME.sh
-  BED_ERR="$LOGDIR/${BED_JOBNAME}_\$ID.err"
-  BED_LOG="$LOGDIR/${BED_JOBNAME}_\$ID.log"
+#   BED_ERR="$LOGDIR/${BED_JOBNAME}_\$ID.err"
+#   BED_LOG="$LOGDIR/${BED_JOBNAME}_\$ID.log"
   BED_IN="$VCF_SPLIT_OUTPUTDIR/\$ID.vcf"
   BED_OUT="$VCF_SPLIT_OUTPUTDIR/\$ID.$BEDNAME.vcf"
 
