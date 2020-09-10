@@ -560,7 +560,10 @@ do
     shift # past argument
     shift # past value
     ;;
-
+    PON_FILES="$2"
+    shift # past argument
+    shift # past value
+    ;;
 # PON_MERGE OPTIONS
     -ponmhv|--pon_merge_h_vmem)
     PON_MERGE_MEM="$2"
