@@ -9,7 +9,6 @@ Required parameters:
     -o|--outputdir  Path to output directory
     -s|--stepsdir Path to sharc steps directory
     -b|--bedscript		Path to get_closest_feature.py
-#     -i|--jobid  Job id
     -m|--mail   Mail
     -e|--venv   Path to virtual env of NanoSV [$VENV]
 
@@ -27,11 +26,6 @@ do
     usage
     shift # past argument
     ;;
-#     -j|--jobnames)
-#     HOLDJOBNAMES="$2"
-#     shift # past argument
-#     shift # past value
-#    ;;
     -f|--bedfiles)
     BEDFILES="$2"
     shift # past argument
@@ -67,11 +61,6 @@ do
     shift # past argument
     shift # past value
     ;;
-#     -i|--jobid)
-#     JOBID="$2"
-#     shift # past argument
-#     shift # past value
-#     ;;
     -vm|--vmem)
     BED_MEM="$2"
     shift # past argument
@@ -89,11 +78,6 @@ do
     esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
-# if [ -z $HOLDJOBNAMES ]; then
-#     echo "Missing -j|--jobnames parameter"
-#     usage
-#     exit
-# elif [ -z $BEDFILES ]; then
 if [ -z $BEDFILES ]; then
     echo "Missing -f|--bedfiles parameter"
     usage
@@ -122,10 +106,6 @@ elif [ -z $VENV ]; then
     echo "Missing -e|--venv parameter"
     usage
     exit
-# elif [ -z $JOBID ]; then
-#     echo "Missing -i|--jobid parameter"
-#     usage
-#     exit
 elif [ -z $BED_MEM ]; then
     echo "Missing -vm|--vmem parameter"
     usage
@@ -138,17 +118,13 @@ fi
 
 JOBDIR=$OUTPUTDIR/jobs
 LOGDIR=$OUTPUTDIR/logs
-# JOBNAMES=(`echo $HOLDJOBNAMES | sed 's/,/ /g'`)
 NUMBER_OF_SPLIT_FILES=$(ls -l $VCF_SPLIT_OUTPUTDIR/*.vcf | wc -l)
 i=1
 
 
 for BED in $BEDFILES/*.feature.bed; do
   BEDNAME=$(basename $BED | cut -f1 -d'.')
-#   BED_JOBNAME=${JOBNAMES[i]}
   BED_SH=$JOBDIR/$BEDNAME.sh
-#   BED_ERR="$LOGDIR/${BED_JOBNAME}_\$ID.err"
-#   BED_LOG="$LOGDIR/${BED_JOBNAME}_\$ID.log"
   BED_IN="$VCF_SPLIT_OUTPUTDIR/\$ID.vcf"
   BED_OUT="$VCF_SPLIT_OUTPUTDIR/\$ID.$BEDNAME.vcf"
 

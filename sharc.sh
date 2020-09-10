@@ -560,6 +560,7 @@ do
     shift # past argument
     shift # past value
     ;;
+    -ponfiles|--pon_files)
     PON_FILES="$2"
     shift # past argument
     shift # past value
