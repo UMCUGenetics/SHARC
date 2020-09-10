@@ -3,7 +3,7 @@
 usage() {
 echo "
 Required parameters:
-    -j|--jobnames		Jobnames
+#     -j|--jobnames		Jobnames
     -f|--bedfiles		Path to directory with bed files
     -v|--vcfsplitdir  Path to vcf split directory
     -o|--outputdir  Path to output directory
@@ -27,10 +27,10 @@ do
     usage
     shift # past argument
     ;;
-    -j|--jobnames)
-    HOLDJOBNAMES="$2"
-    shift # past argument
-    shift # past value
+#     -j|--jobnames)
+#     HOLDJOBNAMES="$2"
+#     shift # past argument
+#     shift # past value
     ;;
     -f|--bedfiles)
     BEDFILES="$2"
@@ -89,11 +89,12 @@ do
     esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
-if [ -z $HOLDJOBNAMES ]; then
-    echo "Missing -j|--jobnames parameter"
-    usage
-    exit
-elif [ -z $BEDFILES ]; then
+# if [ -z $HOLDJOBNAMES ]; then
+#     echo "Missing -j|--jobnames parameter"
+#     usage
+#     exit
+# elif [ -z $BEDFILES ]; then
+if [ -z $BEDFILES ]; then
     echo "Missing -f|--bedfiles parameter"
     usage
     exit
@@ -145,10 +146,10 @@ i=1
 for BED in $BEDFILES/*.feature.bed; do
   BEDNAME=($(basename $BED | tr '.' ' '))
   BEDNAME=${BEDNAME[0]}
-  BED_JOBNAME=${JOBNAMES[i]}
-  BED_SH=$JOBDIR/$BED_JOBNAME.sh
-  BED_ERR="$LOGDIR/${BED_JOBNAME}_\$ID.err"
-  BED_LOG="$LOGDIR/${BED_JOBNAME}_\$ID.log"
+#   BED_JOBNAME=${JOBNAMES[i]}
+#   BED_SH=$JOBDIR/$BED_JOBNAME.sh
+#   BED_ERR="$LOGDIR/${BED_JOBNAME}_\$ID.err"
+#   BED_LOG="$LOGDIR/${BED_JOBNAME}_\$ID.log"
   BED_IN="$VCF_SPLIT_OUTPUTDIR/\$ID.vcf"
   BED_OUT="$VCF_SPLIT_OUTPUTDIR/\$ID.$BEDNAME.vcf"
 
