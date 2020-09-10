@@ -138,7 +138,7 @@ fi
 
 JOBDIR=$OUTPUTDIR/jobs
 LOGDIR=$OUTPUTDIR/logs
-JOBNAMES=(`echo $HOLDJOBNAMES | sed 's/,/ /g'`)
+# JOBNAMES=(`echo $HOLDJOBNAMES | sed 's/,/ /g'`)
 NUMBER_OF_SPLIT_FILES=$(ls -l $VCF_SPLIT_OUTPUTDIR/*.vcf | wc -l)
 i=1
 
@@ -147,9 +147,9 @@ for BED in $BEDFILES/*.feature.bed; do
   BEDNAME=($(basename $BED | tr '.' ' '))
   BEDNAME=${BEDNAME[0]}
 #   BED_JOBNAME=${JOBNAMES[i]}
-#   BED_SH=$JOBDIR/$BED_JOBNAME.sh
-#   BED_ERR="$LOGDIR/${BED_JOBNAME}_\$ID.err"
-#   BED_LOG="$LOGDIR/${BED_JOBNAME}_\$ID.log"
+  BED_SH=$JOBDIR/$BEDNAME.sh
+  BED_ERR="$LOGDIR/${BED_JOBNAME}_\$ID.err"
+  BED_LOG="$LOGDIR/${BED_JOBNAME}_\$ID.log"
   BED_IN="$VCF_SPLIT_OUTPUTDIR/\$ID.vcf"
   BED_OUT="$VCF_SPLIT_OUTPUTDIR/\$ID.$BEDNAME.vcf"
 
