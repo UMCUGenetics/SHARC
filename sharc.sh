@@ -1424,7 +1424,6 @@ qsub $SHARC_FILTER_SH $SHARC_FILTER_JOBSETTINGS
 somatic_ranking() {
 cat << EOF > $SOMATIC_RANKING_SH
 #!/bin/bash
-cat << EOF >> $SOMATIC_RANKING_SH
 echo \`date\`: Running on \`uname -n\`
 if [ -e $SHARC_FILTER_OUT.done ]; then
     bash $STEPSDIR/somatic_ranking.sh -v $SHARC_FILTER_OUT -s $SOMATIC_RANKING_SCRIPT -o $SOMATIC_RANKING_OUT -e $VENV
