@@ -1342,13 +1342,19 @@ db_merge() {
 PON_FILES=`echo ${PON_FILES} | sed "s:,: :g"`
 PASTE_CMD="paste <(grep -v \"^#\" $RF_OUT | sort -k3n | cut -f -6) <(paste <(grep -v \"^#\" $RF_OUT | sort -k3n | cut -f 7 | sed s/PASS//)"
 for PON in ${PON_FILES[@]}; do
-    PASTE_CMD=$PASTE_CMD" <(grep -v \"^#\" $PON_OUTDIR/$PON.vcf | sort -k3n | cut -f 7 | sed s/PASS//)"
+    PON_BASENAME=`basename ${PON}`
+    PON_NAME=${PON_BASENAME/.vcf/}_FILTER
+    PON_OUT=$PON_OUTDIR/$PON_NAME.vcf
+    PASTE_CMD=$PASTE_CMD" <(grep -v \"^#\" $PON_OUT | sort -k3n | cut -f 7 | sed s/PASS//)"
 done
 PASTE_CMD=$PASTE_CMD" -d ';' | sed s/^\;\;$/PASS/ /dev/stdin | sed  s/^\;*// /dev/stdin | sed s/\;*$// /dev/stdin)"
 PASTE_CMD=$PASTE_CMD" <(paste <(grep -v \"^#\" $RF_OUT | sort -k3n | cut -f 8)"
 
 for PON in ${PON_FILES[@]}; do
-  PASTE_CMD=$PASTE_CMD" <(grep -v \"^#\" $PON_OUTDIR/$PON.vcf | sort -k3n | cut -f 8 | grep -oP \"${PON}_Count=(\d+);${PON}_Frequency=(.+?);\" | sed s/\;$//)"
+    PON_BASENAME=`basename ${PON}`
+    PON_NAME=${PON_BASENAME/.vcf/}_FILTER
+    PON_OUT=$PON_OUTDIR/$PON_NAME.vcf
+    PASTE_CMD=$PASTE_CMD" <(grep -v \"^#\" $PON_OUT | sort -k3n | cut -f 8 | grep -oP \"${PON_NAME}_Count=(\d+);${PON_NAME}_Frequency=(.+?);\" | sed s/\;$//)"
 done
 PASTE_CMD=$PASTE_CMD" -d ';' )"
 PASTE_CMD=$PASTE_CMD" <(grep -v \"^#\" $RF_OUT | sort -k3n | cut -f 9-) "
