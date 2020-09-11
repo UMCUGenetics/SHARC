@@ -1366,7 +1366,7 @@ echo \`date\`: Running on \`uname -n\`
 
 if [ -e $RF_OUT.done ]; then
   HEADERS=\$(cat $PON_OUTDIR/*.vcf | grep "^##INFO" | grep "PON_")
-  grep "^#" $RF_OUT | awk -v headers="\$HEADERS" '/^##FORMAT/ && !modif { print headers; modif=1 } {print}' > $PON_MERGE_OUT
+  grep "^#" $RF_OUT | awk -v headers="\$HEADERS" '/^##FORMAT/ && !modif { print headers; modif=1 } {print}' | grep -v "^$" > $PON_MERGE_OUT
 
   $PASTE_CMD >> $PON_MERGE_OUT
 
