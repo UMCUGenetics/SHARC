@@ -1586,7 +1586,7 @@ cat << EOF > $TOP20_REPORT_SH
 
 echo \`date\`: Running on \`uname -n\`
 if [ -e $PRIMER_RANKING_OUT.done ]; then
-    bash $STEPSDIR/top20_report.sh -v $SOMATIC_RANKING_OUT -p $PRIMER_RANKING_OUT -ov $TOP20_REPORT_OUT_VCF -ot $TOP20_REPORT_OUT_TABLE
+    bash $STEPSDIR/top20_report.sh -v $SOMATIC_RANKING_OUT -p $PRIMER_RANKING_OUT -ov $TOP20_REPORT_OUT_VCF -ot $TOP20_REPORT_OUT_TABLE -s $TOP20_REPORT_SCRIPT
     LINES_VCF=\$(grep -v "^#" $TOP20_REPORT_OUT_VCF | wc -l)
     LINES_TSV=\$(tail -n +2 $TOP20_REPORT_OUT_TABLE | wc -l)
     if [ "\$LINES_VCF" == "\$LINES_TSV" ] && [ "\$LINES_VCF" -eq 20 ] ; then
