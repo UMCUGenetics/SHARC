@@ -9,7 +9,6 @@ Optional parameters:
     -h|--help     Shows help
     -pdb|--bindir		Bindir [$BINDIR]
     -pdpt|--pcr_type   PCR type [$PCR_TYPE]
-    -pdtp|--tilling_params Tilling parameters [$TILLING_PARAMS]
     -psr|--psr  PSR [$PSR]
     -pdpc|--primer3_core   Primer3 core [$PRIMER3_CORE]
     -pdm|--mispriming     Mispriming [$MISPRIMING]
@@ -40,11 +39,6 @@ do
     ;;
     -pdpt|--pcr_type)
     PCR_TYPE="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    -pdtp|--tilling_params)
-    TILLING_PARAMS="$2"
     shift # past argument
     shift # past value
     ;;
@@ -79,7 +73,6 @@ fi
 echo `date`: Running on `uname -n`
 
 export EMBOSS_PRIMER3_CORE=$PRIMER3_CORE
-$BINDIR/primerBATCH1 $MISPRIMING $PCR_TYPE $PSR $TILLING_PARAMS <$FASTA
-EOF
+$BINDIR/primerBATCH1 $MISPRIMING $PCR_TYPE $PSR <$FASTA
 
 echo `date`: Done
