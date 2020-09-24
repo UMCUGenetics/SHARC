@@ -1396,7 +1396,7 @@ cat << EOF > $SHARC_FILTER_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $PON_MERGE_OUT.done ]; then
-    bash $STEPSDIR/sharc_filter.sh -v $PON_MERGE_OUT -f $SHARC_FILTER_QUERY -o $SHARC_FILTER_OUT
+    bash $STEPSDIR/sharc_filter.sh -v $PON_MERGE_OUT -f "$SHARC_FILTER_QUERY" -o $SHARC_FILTER_OUT
     touch $SHARC_FILTER_OUT.done
 fi
 
