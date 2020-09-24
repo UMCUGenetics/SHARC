@@ -228,7 +228,7 @@ PON_MERGE_TIME=0:30:0
 # SHARC FILTER DEFAULTS
 SHARC_FILTER_MEM=2G
 SHARC_FILTER_TIME=0:30:0
-SHARC_FILTER_QUERY="grep \\\"PREDICT_LABEL=1\\\" | awk '\$7 == \\\"PASS\\\"'"
+SHARC_FILTER_QUERY="grep \\\"PREDICT_LABEL=1\\\" | awk '\\\$7 == \\\"PASS\\\"'"
 
 #ICGC FILTER DEFAULTS
 SOMATIC_FEATURE_SELECTION_MEM=10G
@@ -1367,7 +1367,7 @@ if [ -e $RF_OUT.done ]; then
   grep "^#" $RF_OUT | awk -v headers="\$HEADERS" '/^##FORMAT/ && !modif { print headers; modif=1 } {print}' | grep -v "^$" > $PON_MERGE_OUT
 
   $PASTE_CMD >> $PON_MERGE_OUT
-
+Ova1_SHARCFILTER_JIHyv.err
   NUMBER_OF_LINES_VCF_1=\$(grep -v "^#" $RF_OUT | wc -l | grep -oP "(^\d+)")
   NUMBER_OF_LINES_VCF_2=\$(grep -v "^#" $PON_MERGE_OUT | wc -l | grep -oP "(^\d+)")
 
