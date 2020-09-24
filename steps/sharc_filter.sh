@@ -16,7 +16,7 @@ POSITIONAL=()
 
 # DEFAULTS
 THREADS=1
-FILTER='grep "PREDICT_LABEL=1" | grep -v "SHARCDBFILTER" | grep -v "REFDBFILTER"'
+FILTER="grep \"PREDICT_LABEL=1\" | awk '\$7 == \"PASS\"'"
 OUTPUT='/dev/stdout'
 
 while [[ $# -gt 0 ]]

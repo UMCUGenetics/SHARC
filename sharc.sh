@@ -228,7 +228,7 @@ PON_MERGE_TIME=0:30:0
 # SHARC FILTER DEFAULTS
 SHARC_FILTER_MEM=2G
 SHARC_FILTER_TIME=0:30:0
-SHARC_FILTER_QUERY='grep "PREDICT_LABEL=1" | grep -v "SHARCPONFILTER" | grep -v "REFPONFILTER"'
+SHARC_FILTER_QUERY="grep \"PREDICT_LABEL=1\" | awk '\$7 == \"PASS\"'"
 
 #ICGC FILTER DEFAULTS
 SOMATIC_FEATURE_SELECTION_MEM=10G
@@ -835,7 +835,7 @@ COVERAGE_CALCULATION_OUT=${MAPPING_MERGE_OUT/.sorted.bam/.depth}
 
 SV_DIR=$OUTPUTDIR/sv/nanosv
 SV_TMP_DIR=$SV_DIR/tmp
-SV_JOBNAME=$OUTNAME'_SV_'$RAND
+SV_JOBNAME=$OUTNAME'_SV_'$RAND.sh
 SV_SH=$JOBDIR/$SV_JOBNAME
 SV_ERR=$LOGDIR/$SV_JOBNAME.err
 SV_LOG=$LOGDIR/$SV_JOBNAME.log
@@ -1343,9 +1343,9 @@ for PON in ${PON_FILES[@]}; do
     PON_BASENAME=`basename ${PON}`
     PON_NAME=${PON_BASENAME/.vcf/}_FILTER
     PON_OUT=$PON_OUTDIR/$PON_NAME.vcf
-    PASTE_CMD=$PASTE_CMD" <(grep -v \"^#\" $PON_OUT | sort -k3n | cut -f 7 | sed s/PASS//)"
+    PASTE_CMD=$PASTE_CMD" <(grep -v \"^#\" $PON_OUT | sort -k3n | cut -f 7)"
 done
-PASTE_CMD=$PASTE_CMD" -d ';' | sed s/^\;\;$/PASS/ /dev/stdin | sed  s/^\;*// /dev/stdin | sed s/\;*$// /dev/stdin)"
+PASTE_CMD=$PASTE_CMD" -d ';' | sed s/^\;\;$/PASS/ /dev/stdin | sed s/PASS\;PASS/PASS/ /dev/stdin | sed  s/^\;*// /dev/stdin | sed s/\;*$// /dev/stdin)"
 PASTE_CMD=$PASTE_CMD" <(paste <(grep -v \"^#\" $RF_OUT | sort -k3n | cut -f 8)"
 
 for PON in ${PON_FILES[@]}; do
@@ -1393,22 +1393,6 @@ qsub $PON_MERGE_SH $PON_MERGE_JOBSETTINGS
 sharc_filter() {
 cat << EOF > $SHARC_FILTER_SH
 #!/bin/bash
-
-#$ -N $SHARC_FILTER_JOBNAME
-#$ -cwd
-#$ -l h_vmem=$SHARC_FILTER_MEM
-#$ -l h_rt=$SHARC_FILTER_TIME
-#$ -e $SHARC_FILTER_ERR
-#$ -o $SHARC_FILTER_LOG
-EOF
-
-if [ ! -z $PON_MERGE_JOBNAME ]; then
-cat << EOF >> $SHARC_FILTER_SH
-#$ -hold_jid $PON_MERGE_JOBNAME
-EOF
-fi
-
-cat << EOF >> $SHARC_FILTER_SH
 echo \`date\`: Running on \`uname -n\`
 
 if [ -e $PON_MERGE_OUT.done ]; then
