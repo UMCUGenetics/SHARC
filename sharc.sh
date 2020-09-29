@@ -219,7 +219,7 @@ RF_ADD_PREDICT_SCRIPT=$SCRIPTSDIR/add_predict_annotation.py
 PON_MEM=2G
 PON_TIME=0:30:0
 PON_FLANK=100
-PON_FILES=${FILESDIR}/ref_pon.vcf,${FILESDIR}/sharc_pon.vcf
+PON_FILES=${FILESDIR}/gnomad_v2.1_sv.sites.vcf
 
 # PON_MERGE
 PON_MERGE_MEM=2G
