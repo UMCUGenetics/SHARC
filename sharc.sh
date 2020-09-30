@@ -1702,12 +1702,12 @@ fi
 EOF
 
 if [ ! -z $MAIL ]; then
-cat << EOF > $CHECK_SHARC_SH
+cat << EOF >> $CHECK_SHARC_SH
 tac $CHECK_SHARC_OUT | sed '/^Qsub/q' | tac | mail -s 'SHARC_${OUTNAME}_${RAND}' $MAIL
-fi
 EOF
+fi
 
-cat << EOF > $CHECK_SHARC_SH
+cat << EOF >> $CHECK_SHARC_SH
 echo \`date\`: Done
 sleep 20
 EOF
