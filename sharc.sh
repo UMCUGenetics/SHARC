@@ -4,17 +4,18 @@ usage() {
 echo "
 Required parameters:
     -f|--fastqdir                                        Path to fastq directory
-    -m|--mail                                            Email adress
 
 Optional parameters:
 
 GENERAL
     -h|--help                                            Shows help
+    -m|--mail                                            Email adress
     -sd|--sharc_dir                                      Path to sharc directory [$SHARCDIR]
     -v|--venv                                            Path to virtual env [$VENV]
     -o|--outputdir                                       Path to output directory [$OUTPUTDIR]
     -sm|--sample_name                                    Name of the sample [From FASTQ or OUTPUTDIR ]
     -dc|--dont_clean                                     Don't clean up the mapping tmp dir []
+    
 
 MAPPING
     -mt|--mapping_threads                                Number of threads [$MAPPING_THREADS]
@@ -292,16 +293,16 @@ do
     shift # past argument
     shift # past value
     ;;
-    -m|--mail)
-    MAIL="$2"
-    shift # past argument
-    shift # past value
-    ;;
 
 # GENERAL OPTIONS
     -h|--help)
     usage
     shift # past argument
+    ;;
+    -m|--mail)
+    MAIL="$2"
+    shift # past argument
+    shift # past value
     ;;
     -sd|--sharc_dir)
     SHARCDIR="$2"
@@ -781,9 +782,6 @@ done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 if [ -z $FASTQDIR ]; then
   echo "Missing -f|--fastqdir parameter"
-  usage
-elif [ -z $MAIL ]; then
-  echo "Missing -m|--mail parameter"
   usage
 fi
 
@@ -1701,10 +1699,16 @@ if [ \$CHECK_BOOL = true ]; then
       rm -rf $MAPPING_TMP_DIR
     fi
 fi
+EOF
+
+if [ ! -z $MAIL ]; then
+cat << EOF > $CHECK_SHARC_SH
 tac $CHECK_SHARC_OUT | sed '/^Qsub/q' | tac | mail -s 'SHARC_${OUTNAME}_${RAND}' $MAIL
+fi
+EOF
 
+cat << EOF > $CHECK_SHARC_SH
 echo \`date\`: Done
-
 sleep 20
 EOF
 
