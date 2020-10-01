@@ -4,9 +4,6 @@ load("/hpc/cog_bioinf/kloosterman/common_scripts/sharc/scripts/randomforest_vl_v
 
 args <- commandArgs(trailingOnly = TRUE)
 
-#args[1] <- "/data/hpc/cog_bioinf/kloosterman/users/jvalleinclan/nanopore/lowpassSV/emt026/features_table.txt"
-#args[2] <- 2
-
 test_feature_table <- read.table(args[1],sep="\t",header=T)
 test_mean_cov <- as.integer(args[2])
 
