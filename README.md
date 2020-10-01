@@ -49,7 +49,7 @@ docker load < sharc-docker.tar.gz
 docker images
 ... look for the IMAGE ID ...
 docker run --mount <PATH_TO_REF>=<PATH_TO_REF> ... -it <IMAGE-ID> -f <FASTQ_DIR> -o <OUTPUT_DIR>  -mr <PATH_TO_REF>
-
+```
 
 ## Parameters
 There are a lot of parameters to control the amount of memory and time a specific job can take. You can view them all by running
