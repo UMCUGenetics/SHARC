@@ -46,9 +46,7 @@ We tested using Singularity version 3.6
 ### Docker
 ```
 docker load < sharc-docker.tar.gz
-docker images
-... look for the IMAGE ID ...
-docker run --mount <PATH_TO_REF>=<PATH_TO_REF> ... -it <IMAGE-ID> -f <FASTQ_DIR> -o <OUTPUT_DIR>  -mr <PATH_TO_REF>
+docker run --mount type=bind,source=/home/roel,destination=/home/roel -it sharc -f <FASTQ_DIR> -o <OUTPUT_DIR>  -mr <PATH_TO_REF>
 ```
 
 ## Parameters
@@ -62,6 +60,7 @@ The ones that are most likely to be useful are:
     -sm|--sample_name                                    Name of the sample [taken from FASTQ name or outputdir]
     -mr|--mapping_ref                                    Path to reference genome [/hpc/cog_bioinf/GENOMES/Homo_sapiens.GRCh37.GATK.illumina/Homo_sapiens.GRCh37.GATK.illumina.fasta]
     -ponfiles|--pon_files                                Path to VCF files to be used as PON (comma separated) [files/gnomad_v2.1_sv.sites.vcf]
+    -mt|--mapping_threads                                Number of threads for mapping [$MAPPING_THREADS]
 
 bin/sharc -f <FASTQ_DIR> -o <OUTPUT_DIR>
 ```

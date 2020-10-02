@@ -93,15 +93,6 @@ SHARC_FILTER
     -sfhr|--sharc_filter_h_rt                            SHARC Filter time [$SHARC_FILTER_TIME]
     -sfq|--sharc_filter_query                            SHARC Filter query [$SHARC_FILTER_QUERY]
 
-SOMATIC FEATURE SELECTION
-    -sfshv|--somatic_feature_selection_h_vmem                   Somatic feature selection memory [$SOMATIC_FEATURE_SELECTION_MEM]
-    -sfshr|--somatic_feature_selection_h_rt                     Somatic feature selection time [$SOMATIC_FEATURE_SELECTION_TIME]
-    -sfsf|--somatic_feature_selection_flank                     Somatic feature selection flank [$SOMATIC_FEATURE_SELECTION_FLANK]
-    -sfsp|--somatic_feature_selection_support                   Somatic feature selection support [$SOMATIC_FEATURE_SELECTION_SUPPORT]
-    -sfss|--somatic_feature_selection_script                    Path to somatic_feature_selection.py [$SOMATIC_FEATURE_SELECTION_SCRIPT]
-    -sfsid|--somatic_feature_selection_icgc_directory           Path to ICGC database directory [$SOMATIC_FEATURE_SELECTION_ICGC_DIRECTORY]
-    -sfscb|--somatic_feature_selection_cosmic_breakpoints       Path to COSMIC database .csv file [$SOMATIC_FEATURE_SELECTION_COSMIC_BREAKPOINTS]
-
 SOMATIC_RANKING
     -srhv|--somatic_ranking_h_vmem                       Somatic ranking memory [$SOMATIC_RANKING_MEM]
     -srhr|--somatic_ranking_h_rt                         Somatic ranking time [$SOMATIC_RANKING_TIME]
@@ -230,15 +221,6 @@ PON_MERGE_TIME=0:30:0
 SHARC_FILTER_MEM=2G
 SHARC_FILTER_TIME=0:30:0
 SHARC_FILTER_QUERY="grep \\\"PREDICT_LABEL=1\\\" | awk '\\\$7 == \\\"PASS\\\"'"
-
-#ICGC FILTER DEFAULTS
-SOMATIC_FEATURE_SELECTION_MEM=10G
-SOMATIC_FEATURE_SELECTION_TIME=0:10:0
-SOMATIC_FEATURE_SELECTION_FLANK=200
-SOMATIC_FEATURE_SELECTION_SCRIPT=$SCRIPTSDIR/somatic_feature_selection.py
-SOMATIC_FEATURE_SELECTION_ICGC_DIRECTORY=$FILESDIR
-SOMATIC_FEATURE_SELECTION_COSMIC_BREAKPOINTS=$FILESDIR
-SOMATIC_FEATURE_SELECTION_SUPPORT=None
 
 #SOMATIC_RANKING VCF_FASTA_DEFAULTS
 SOMATIC_RANKING_MEM=2G
@@ -591,42 +573,6 @@ do
     shift # past argument
     shift # past value
     ;;
-# SOMATIC_FEATURE_SELECTION OPTIONS
-    -sfshv|--somatic_feature_selection_h_vmem)
-    SOMATIC_FEATURE_SELECTION_MEM="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    -sfshr|--somatic_feature_selection_h_rt)
-    SOMATIC_FEATURE_SELECTION_TIME="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    -sfsf|--somatic_feature_selection_flank)
-    SOMATIC_FEATURE_SELECTION_FLANK="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    -sfsp|--somatic_feature_selection_support)
-    SOMATIC_FEATURE_SELECTION_SUPPORT="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    -sfss|--somatic_feature_selection_script)
-    SOMATIC_FEATURE_SELECTION_SCRIPT="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    -sfsid|--somatic_feature_selection_icgc_directory)
-    SOMATIC_FEATURE_SELECTION_ICGC_DIRECTORY="$2"
-    shift # past argument
-    shift # past value
-    ;;
-    -sfscb|--somatic_feature_selection_cosmic_breakpoints)
-    SOMATIC_FEATURE_SELECTION_COSMIC_BREAKPOINTS="$2"
-    shift # past argument
-    shift # past value
-    ;;
 # SOMATIC_RANKING OPTIONS
     -srhv|--somatic_ranking_h_vmem)
     SOMATIC_RANKING_MEM="$2"
@@ -886,15 +832,6 @@ SHARC_FILTER_SH=$JOBDIR/$SHARC_FILTER_JOBNAME.sh
 SHARC_FILTER_ERR=$LOGDIR/$SHARC_FILTER_JOBNAME.err
 SHARC_FILTER_LOG=$LOGDIR/$SHARC_FILTER_JOBNAME.log
 SHARC_FILTER_OUT=$SV_TMP_DIR/$(basename ${SV_OUT/.vcf/.SHARC.vcf})
-
-
-SOMATIC_FEATURE_SELECTION_COSMIC_BREAKPOINTS=$SOMATIC_FEATURE_SELECTION_COSMIC_BREAKPOINTS/${SOMATIC_FEATURE_SELECTION_CANCER_TYPE}_COSMIC_SVs.csv
-SOMATIC_FEATURE_SELECTION_JOBNAME=$OUTNAME'_SOMATIC_FEATURE_SELECTION_'$RAND
-SOMATIC_FEATURE_SELECTION_SH=$JOBDIR/$SOMATIC_FEATURE_SELECTION_JOBNAME.sh
-SOMATIC_FEATURE_SELECTION_ERR=$LOGDIR/$SOMATIC_FEATURE_SELECTION_JOBNAME.err
-SOMATIC_FEATURE_SELECTION_LOG=$LOGDIR/$SOMATIC_FEATURE_SELECTION_JOBNAME.log
-SOMATIC_FEATURE_SELECTION_ATTRIBUTES_OUT=$RF_OUTDIR/'somatic_features_table.txt'
-SOMATIC_FEATURE_SELECTION_OUT=$SV_TMP_DIR/$(basename ${SHARC_FILTER_OUT/.vcf/.ICGC.vcf})
 
 SOMATIC_RANKING_JOBNAME=$OUTNAME'_SOMATICRANKING_'$RAND
 SOMATIC_RANKING_SH=$JOBDIR/$SOMATIC_RANKING_JOBNAME.sh
@@ -1751,9 +1688,6 @@ fi
 if [ ! -e $SHARC_FILTER_OUT.done ]; then
   sharc_filter
 fi
-# if [ ! -e $SOMATIC_FEATURE_SELECTION_OUT.done ]; then
-#   somatic_feature_selection
-# fi
 if [ ! -e $SOMATIC_RANKING_OUT.done ]; then
   somatic_ranking
 fi
