@@ -33,20 +33,21 @@ This will submit jobs to your cluster.
 ```
 tar axvf sharc-local.tar.gz
 
-bin/sharc -f <FASTQ_DIR> -o <OUTPUT_DIR>
+bin/sharc -f <FASTQ_DIR> -o <OUTPUT_DIR> -mr <PATH_TO_REF>
 ```
 It will run in your local machine. 
 
 ### Singularity
 ```
-singularity run --bind <PATH_TO_REF>:<PATH_TO_REF> sharc-singularity.squashfs -f <FASTQ_DIR> -o <OUTPUT_DIR> -mr <PATH_TO_REF>
+singularity run --bind <PATH_TO_DATA>:<PATH_TO_DATA> sharc-singularity.squashfs -f <FASTQ_DIR> -o <OUTPUT_DIR> -mr <PATH_TO_REF>
 ```
+You probably need to bind all the directories needed (FASTQ input, output, reference genome)
 We tested using Singularity version 3.6
 
 ### Docker
 ```
 docker load < sharc-docker.tar.gz
-docker run --mount type=bind,source=/home/roel,destination=/home/roel -it sharc -f <FASTQ_DIR> -o <OUTPUT_DIR>  -mr <PATH_TO_REF>
+docker run --mount type=bind,source=<PATH_TO_DATA>,destination=<PATH_TO_DATA> -it sharc -f <FASTQ_DIR> -o <OUTPUT_DIR>  -mr <PATH_TO_REF>
 ```
 
 ## Parameters
