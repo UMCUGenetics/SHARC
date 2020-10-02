@@ -50,7 +50,7 @@ docker run --mount type=bind,source=/home/roel,destination=/home/roel -it sharc 
 ```
 
 ## Parameters
-There are a lot of parameters to control the amount of memory and time a specific job can take. You can view them all by running
+There are a lot of parameters to control the amount of memory, time and threads a specific job can take. You can view them all by running
 ```
 bin/sharc --help
 ```
