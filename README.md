@@ -61,6 +61,4 @@ The ones that are most likely to be useful are:
     -mr|--mapping_ref                                    Path to reference genome [/hpc/cog_bioinf/GENOMES/Homo_sapiens.GRCh37.GATK.illumina/Homo_sapiens.GRCh37.GATK.illumina.fasta]
     -ponfiles|--pon_files                                Path to VCF files to be used as PON (comma separated) [files/gnomad_v2.1_sv.sites.vcf]
     -mt|--mapping_threads                                Number of threads for mapping [$MAPPING_THREADS]
-
-bin/sharc -f <FASTQ_DIR> -o <OUTPUT_DIR>
 ```
