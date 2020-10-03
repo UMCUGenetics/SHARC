@@ -11,8 +11,10 @@ We provide packages to run on:
 We also provide Docker and Singularity containers.
 
 ## Installation 
+Depending on your version and distribution system, download your package on: https://zenodo.org/record/4064767#.X3ihQHX7TJU
 
-Depending on your version and distribution system, download your package on:
+These packages were created using GNU-Guix (https://guix.gnu.org/ , https://github.com/UMCUGenetics/guix-additions)
+The Slurm and SGE versions need to be extracted on /gnu/ , which is suboptimal. We are working on a fix. 
 
 ### Slurm
 ```
@@ -45,7 +47,12 @@ You probably need to bind all the directories needed (FASTQ input, output, refer
 We tested using Singularity version 3.6
 
 ### Docker
+The docker image can be ran automatically from Docker hub (https://hub.docker.com/repository/docker/jaesvi/sharc)
 ```
+###Run automatically from docker hub
+docker run --mount type=bind,source=<PATH_TO_DATA>,destination=<PATH_TO_DATA> -it jaesvi/sharc -f <FASTQ_DIR> -o <OUTPUT_DIR>  -mr <PATH_TO_REF>
+
+###Load the image manually
 docker load < sharc-docker.tar.gz
 docker run --mount type=bind,source=<PATH_TO_DATA>,destination=<PATH_TO_DATA> -it sharc -f <FASTQ_DIR> -o <OUTPUT_DIR>  -mr <PATH_TO_REF>
 ```
