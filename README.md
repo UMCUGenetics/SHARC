@@ -11,7 +11,7 @@ We provide packages to run on:
 We also provide Docker and Singularity containers.
 
 ## Installation 
-Depending on your version and distribution system, download your package on [Zenodo](https://doi.org/10.5281/zenodo.4064767).
+Depending on your version and distribution system, download your preferred package on [Zenodo](https://doi.org/10.5281/zenodo.4064767).
 These packages were created using [GNU-Guix](https://guix.gnu.org/). Our other [GUIX packages](https://github.com/UMCUGenetics/guix-additions)
 
 ### Slurm
