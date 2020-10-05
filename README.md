@@ -45,7 +45,7 @@ You probably need to bind all the directories needed (FASTQ input, output, refer
 We tested using Singularity version 3.6
 
 ### Docker
-The docker image can be ran automatically from {Docker hub](https://hub.docker.com/r/jaesvi/sharc).
+The docker image can be ran automatically from [Docker hub](https://hub.docker.com/r/jaesvi/sharc).
 ```
 ###Run automatically from docker hub
 docker run --mount type=bind,source=<PATH_TO_DATA>,destination=<PATH_TO_DATA> -it jaesvi/sharc -f <FASTQ_DIR> -o <OUTPUT_DIR>  -mr <PATH_TO_REF>
